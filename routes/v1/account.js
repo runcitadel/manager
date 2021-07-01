@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 
-// const applicationLogic = require('logic/application.js');
 const authLogic = require('logic/auth.js');
 
 const auth = require('middlewares/auth.js');
@@ -35,13 +34,13 @@ router.post('/change-password', auth.convertReqBodyToBasicAuth, auth.basic, inco
 
     const status = await authLogic.getChangePasswordStatus();
 
-    // return a conflict if a change password process is already running
+    // Return a conflict if a change password process is already running
     if (status.percent > 0 && status.percent !== COMPLETE) {
         return res.status(constants.STATUS_CODES.CONFLICT).json();
     }
 
     try {
-        // start change password process in the background and immediately return
+    // Start change password process in the background and immediately return
         await authLogic.changePassword(currentPassword, newPassword, jwt.jwt);
         return res.status(constants.STATUS_CODES.OK).json();
     } catch (error) {
@@ -66,7 +65,6 @@ router.get('/registered', safeHandler((req, res) =>
 // Endpoint to register a password with the device. Wallet must not exist. This endpoint is authorized with basic auth
 // or the property password from the body.
 router.post('/register', auth.convertReqBodyToBasicAuth, auth.register, safeHandler(async (req, res, next) => {
-
     const seed = req.body.seed;
 
     if (seed.length !== 24) { // eslint-disable-line no-magic-numbers
@@ -83,7 +81,7 @@ router.post('/register', auth.convertReqBodyToBasicAuth, auth.register, safeHand
 
     const user = req.user;
 
-    //add name to user obj
+    // Add name to user obj
     user.name = req.body.name;
 
     const jwt = await authLogic.register(user, seed);

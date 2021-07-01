@@ -10,7 +10,7 @@ const safeHandler = require('utils/safeHandler');
 
 router.get('/', auth.jwt, safeHandler(async (req, res) => {
     const query = {
-      installed: req.query.installed === '1',
+        installed: req.query.installed === '1',
     };
     const apps = await appsLogic.get(query);
 

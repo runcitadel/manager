@@ -12,19 +12,19 @@ async function getInfo() {
     try {
         const info = await diskLogic.readUmbrelVersionFile();
         return info;
-    } catch (error) {
+    } catch {
         throw new NodeError('Unable to get system information');
     }
-};
+}
 
 async function getHiddenServiceUrl() {
     try {
         const url = await diskLogic.readHiddenService('web');
         return url;
-    } catch (error) {
+    } catch {
         throw new NodeError('Unable to get hidden service url');
     }
-};
+}
 
 async function getElectrumConnectionDetails() {
     try {
@@ -36,10 +36,10 @@ async function getElectrumConnectionDetails() {
             port,
             connectionString
         };
-    } catch (error) {
+    } catch {
         throw new NodeError('Unable to get Electrum hidden service url');
     }
-};
+}
 
 async function getBitcoinP2PConnectionDetails() {
     try {
@@ -51,16 +51,16 @@ async function getBitcoinP2PConnectionDetails() {
             port,
             connectionString
         };
-    } catch (error) {
+    } catch {
         throw new NodeError('Unable to get Bitcoin P2P hidden service url');
     }
-};
+}
 
 async function getBitcoinRPCConnectionDetails() {
     try {
         const [user, hiddenService] = await Promise.all([
-          diskLogic.readUserFile(),
-          diskLogic.readBitcoinRPCHiddenService(),
+            diskLogic.readUserFile(),
+            diskLogic.readBitcoinRPCHiddenService()
         ]);
         const label = encodeURIComponent(`${user.name}'s Umbrel`);
         const rpcuser = constants.BITCOIN_RPC_USER;
@@ -75,10 +75,10 @@ async function getBitcoinRPCConnectionDetails() {
             port,
             connectionString
         };
-    } catch (error) {
+    } catch {
         throw new NodeError('Unable to get Bitcoin RPC connection details');
     }
-};
+}
 
 async function getAvailableUpdate() {
     try {
@@ -99,8 +99,8 @@ async function getAvailableUpdate() {
             const latestVersionInfo = await axios.get(infoUrl);
             data = latestVersionInfo.data;
 
-            let latestVersion = data.version;
-            let requiresVersionRange = data.requires;
+            const latestVersion = data.version;
+            const requiresVersionRange = data.requires;
 
             // A new version is available if the latest version > local version
             isNewVersionAvailable = semverGt(latestVersion, currentVersion);
@@ -110,7 +110,7 @@ async function getAvailableUpdate() {
             isCompatibleWithCurrentVersion = semverSatisfies(currentVersion, requiresVersionRange);
 
             // Calculate the minimum required version
-            let minimumVersionRequired = `v${semverMinVersion(requiresVersionRange)}`;
+            const minimumVersionRequired = `v${semverMinVersion(requiresVersionRange)}`;
 
             // If the minimum required version is what we just checked for, exit
             // This usually happens when an OTA update breaking release x.y.z is made
@@ -123,29 +123,26 @@ async function getAvailableUpdate() {
             tag = minimumVersionRequired;
         }
 
-
         if (isNewVersionAvailable && isCompatibleWithCurrentVersion) {
             return data;
         }
 
-        return "Your Umbrel is up-to-date";
-    }
-    catch (error) {
+        return 'Your Umbrel is up-to-date';
+    } catch {
         throw new NodeError('Unable to check for update');
     }
-};
+}
 
 async function getUpdateStatus() {
     try {
-        const status = await diskLogic.readUpdateStatusFile()
+        const status = await diskLogic.readUpdateStatusFile();
         return status;
-    } catch (error) {
+    } catch {
         throw new NodeError('Unable to get update status');
     }
 }
 
 async function startUpdate() {
-
     let availableUpdate;
 
     // Fetch available update
@@ -154,7 +151,7 @@ async function startUpdate() {
         if (!availableUpdate.version) {
             return availableUpdate;
         }
-    } catch (error) {
+    } catch {
         throw new NodeError('Unable to fetch latest release');
     }
 
@@ -169,41 +166,40 @@ async function startUpdate() {
         const updateStatus = await diskLogic.readUpdateStatusFile();
         updateStatus.updateTo = `v${availableUpdate.version}`;
         await diskLogic.writeUpdateStatusFile(updateStatus);
-    } catch (error) {
+    } catch {
         throw new NodeError('Could not update the update-status file');
     }
 
     // Write update signal file
     try {
-        await diskLogic.writeUpdateSignalFile()
-        return { message: "Updating to Umbrel v" + availableUpdate.version };
-    } catch (error) {
+        await diskLogic.writeUpdateSignalFile();
+        return {message: 'Updating to Umbrel v' + availableUpdate.version};
+    } catch {
         throw new NodeError('Unable to write update signal file');
     }
 }
 
 async function getBackupStatus() {
     try {
-        const status = await diskLogic.readBackupStatusFile()
+        const status = await diskLogic.readBackupStatusFile();
         return status;
-    } catch (error) {
+    } catch {
         throw new NodeError('Unable to get backup status');
     }
 }
 
 async function getLndConnectUrls() {
-
     let cert;
     try {
         cert = await diskLogic.readLndCert();
-    } catch (error) {
+    } catch {
         throw new NodeError('Unable to read lnd cert file');
     }
 
     let macaroon;
     try {
         macaroon = await diskLogic.readLndAdminMacaroon();
-    } catch (error) {
+    } catch {
         throw new NodeError('Unable to read lnd macaroon file');
     }
 
@@ -211,40 +207,42 @@ async function getLndConnectUrls() {
     try {
         restTorHost = await diskLogic.readLndRestHiddenService();
         restTorHost += ':8080';
-    } catch (error) {
+    } catch {
         throw new NodeError('Unable to read lnd REST hostname file');
     }
+
     const restTor = encode({
         host: restTorHost,
         cert,
-        macaroon,
+        macaroon
     });
 
     let grpcTorHost;
     try {
         grpcTorHost = await diskLogic.readLndGrpcHiddenService();
         grpcTorHost += ':10009';
-    } catch (error) {
+    } catch {
         throw new NodeError('Unable to read lnd gRPC hostname file');
     }
+
     const grpcTor = encode({
         host: grpcTorHost,
         cert,
-        macaroon,
+        macaroon
     });
 
-    let restLocalHost = `${constants.DEVICE_HOSTNAME}:8080`;
+    const restLocalHost = `${constants.DEVICE_HOSTNAME}:8080`;
     const restLocal = encode({
         host: restLocalHost,
         cert,
-        macaroon,
+        macaroon
     });
 
-    let grpcLocalHost = `${constants.DEVICE_HOSTNAME}:10009`;
+    const grpcLocalHost = `${constants.DEVICE_HOSTNAME}:10009`;
     const grpcLocal = encode({
         host: grpcLocalHost,
         cert,
-        macaroon,
+        macaroon
     });
 
     return {
@@ -253,63 +251,62 @@ async function getLndConnectUrls() {
         grpcTor,
         grpcLocal
     };
-
 }
 
 async function requestDebug() {
     try {
         await diskLogic.writeSignalFile('debug');
-        return "Debug requested";
-    } catch (error) {
+        return 'Debug requested';
+    } catch {
         throw new NodeError('Could not write the signal file');
     }
 }
 
 async function getDebugResult() {
-  try {
-    return await diskLogic.readDebugStatusFile();
-  } catch (error) {
-    throw new NodeError('Unable to get debug results');
-  }
+    try {
+        return await diskLogic.readDebugStatusFile();
+    } catch {
+        throw new NodeError('Unable to get debug results');
+    }
 }
 
 async function requestShutdown() {
     try {
         await diskLogic.shutdown();
-        return "Shutdown requested";
-    } catch (error) {
+        return 'Shutdown requested';
+    } catch {
         throw new NodeError('Unable to request shutdown');
     }
-};
+}
 
 async function requestReboot() {
     try {
         await diskLogic.reboot();
-        return "Reboot requested";
-    } catch (error) {
+        return 'Reboot requested';
+    } catch {
         throw new NodeError('Unable to request reboot');
     }
-};
+}
 
 async function status() {
     try {
-      const highMemoryUsage = await diskLogic.memoryWarningStatusFileExists();
-      return {
-        highMemoryUsage
-      };
-    } catch (error) {
+        const highMemoryUsage = await diskLogic.memoryWarningStatusFileExists();
+        return {
+            highMemoryUsage
+        };
+    } catch {
         throw new NodeError('Unable check system status');
     }
-};
+}
 
 async function clearMemoryWarning() {
     try {
-      await diskLogic.deleteMemoryWarningStatusFile();
-      return "High memory warning dismissed"
-    } catch (error) {
+        await diskLogic.deleteMemoryWarningStatusFile();
+        return 'High memory warning dismissed';
+    } catch {
         throw new NodeError('Unable to dismiss high memory warning');
     }
-};
+}
 
 module.exports = {
     getInfo,
@@ -327,5 +324,5 @@ module.exports = {
     requestShutdown,
     requestReboot,
     status,
-    clearMemoryWarning,
+    clearMemoryWarning
 };

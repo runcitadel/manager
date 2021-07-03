@@ -121,7 +121,7 @@ export async function deriveUmbrelSeed(user: userInfo) {
 // Sets the LND password to a hardcoded password if it's locked so we can
 // auto unlock it in future
 export async function removeLndPasswordIfLocked(currentPassword: string, jwt: string) {
-    const lndStatus = await lndApiService.getStatus();
+    const lndStatus: {unlocked: boolean} = <any>await lndApiService.getStatus();
 
     if (!lndStatus.unlocked) {
         console.log('LND is locked on login, attempting to change password...');

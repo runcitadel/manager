@@ -81,7 +81,7 @@ export async function getBitcoinRPCConnectionDetails() {
 
 export async function getAvailableUpdate() {
     try {
-        const current = await diskLogic.readUmbrelVersionFile();
+        const current: any = await diskLogic.readUmbrelVersionFile();
         const currentVersion = current.version;
 
         // 'tag' should be master to begin with
@@ -162,7 +162,7 @@ export async function startUpdate() {
 
     // Update status file with update version
     try {
-        const updateStatus = await diskLogic.readUpdateStatusFile();
+        const updateStatus: any = await diskLogic.readUpdateStatusFile();
         updateStatus.updateTo = `v${availableUpdate.version}`;
         await diskLogic.writeUpdateStatusFile(updateStatus);
     } catch {

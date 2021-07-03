@@ -1,4 +1,4 @@
-# Build Stage
+# TS Build Stage
 FROM node:16-buster-slim as manager-builder
 
 # Install tools
@@ -11,16 +11,34 @@ WORKDIR /app
 COPY . .
 
 # Install dependencies
-RUN yarn install --production
+RUN yarn install
 
 # Build TS code
 RUN yarn build
+
+# Delete everyhing we don't need in the next stage
+RUN rm -rf node_modules tsconfig.tsbuildinfo *.ts **/*.ts .eslint* .git* .prettier* .vscode*
+
+# Build Stage
+FROM node:16-buster-slim as manager-installer
+
+# Copy built code from build stage to '/app' directory
+COPY --from=manager-builder /app /app
+
+# Change directory to '/app'
+WORKDIR /app
+
+# Install dependencies
+RUN yarn install --production
+
+# We don't need yarn.lock after this stage
+RUN rm yarn.lock
 
 # Final image
 FROM node:16-buster-slim AS manager
 
 # Copy built code from build stage to '/app' directory
-COPY --from=manager-builder /app /app
+COPY --from=manager-installer /app /app
 
 # Change directory to '/app'
 WORKDIR /app

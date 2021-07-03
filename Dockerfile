@@ -13,7 +13,7 @@ COPY yarn.lock package.json ./
 RUN yarn install --production
 
 # TS Build Stage
-FROM build-dependencies-base as manager-builder
+FROM build-dependencies-helper as manager-builder
 
 # Change directory to '/app'
 WORKDIR /app

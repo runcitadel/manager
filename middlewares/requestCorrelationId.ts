@@ -1,8 +1,10 @@
 import { v4 as createUUID } from 'uuid';
 import constants from '../utils/const';
-import { createNamespace } from 'continuation-local-storage';
+import {createNamespace} from 'continuation-local-storage';
 const apiRequest = createNamespace(constants.REQUEST_CORRELATION_NAMESPACE_KEY);
-function addCorrelationId(request, res, next) {
+import { Request, NextFunction, Response } from 'express';
+
+function addCorrelationId(request: Request, res: Response, next: NextFunction) {
     apiRequest.bindEmitter(request);
     apiRequest.bindEmitter(res);
     apiRequest.run(() => {
@@ -10,4 +12,5 @@ function addCorrelationId(request, res, next) {
         next();
     });
 }
+
 module.exports = addCorrelationId;

@@ -1,5 +1,5 @@
 # Build Stage
-FROM node:12-buster-slim as umbrel-manager-builder
+FROM node:14-buster-slim as manager-builder
 
 # Install tools
 RUN apt-get update && apt-get install -y build-essential libffi-dev libssl-dev python3
@@ -13,14 +13,17 @@ COPY yarn.lock package.json ./
 # Install dependencies
 RUN yarn install --production
 
+# Build TS code
+RUN yarn build
+
 # Copy project files and folders to the current working directory (i.e. '/app')
 COPY . .
 
 # Final image
-FROM node:12-buster-slim AS umbrel-manager
+FROM node:14-buster-slim AS manager
 
 # Copy built code from build stage to '/app' directory
-COPY --from=umbrel-manager-builder /app /app
+COPY --from=manager-builder /app /app
 
 # Change directory to '/app'
 WORKDIR /app

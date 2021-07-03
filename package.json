@@ -4,6 +4,8 @@
   "description": "Manager for Umbrel Node",
   "author": "Umbrel",
   "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
     "lint": "eslint --fix .",
     "start": "node ./bin/www",
     "test": "mocha --file test.setup 'test/**/*.js'",
@@ -15,6 +17,7 @@
     "bcrypt": "^5.0.1",
     "big.js": "^6.1.1",
     "camelize-keys": "^1.0.0",
+    "camelize-ts": "^1.0.4",
     "continuation-local-storage": "^3.2.1",
     "cors": "^2.8.5",
     "debug": "^4.3.1",
@@ -38,6 +41,22 @@
     "winston-daily-rotate-file": "^4.5.5"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "@types/big.js": "^6.1.1",
+    "@types/continuation-local-storage": "^3.2.3",
+    "@types/cors": "^2.8.10",
+    "@types/express": "^4.17.12",
+    "@types/fs-extra": "^9.0.11",
+    "@types/jsonwebtoken": "^8.5.3",
+    "@types/morgan": "^1.9.2",
+    "@types/node": "^15.12.5",
+    "@types/node-fetch": "^2.5.10",
+    "@types/node-rsa": "^1.1.0",
+    "@types/passport": "^1.0.6",
+    "@types/passport-http": "^0.3.8",
+    "@types/passport-jwt": "^3.0.5",
+    "@types/semver": "^7.3.6",
+    "@types/uuid": "^8.3.1",
     "@typescript-eslint/eslint-plugin": "^4.28.1",
     "@typescript-eslint/parser": "^4.28.1",
     "codecov": "^3.8.2",
@@ -60,5 +79,6 @@
       "text-summary"
     ],
     "cache": "false"
-  }
+  },
+  "type": "module"
 }

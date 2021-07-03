@@ -1,6 +1,7 @@
 /* eslint-disable no-magic-numbers */
 export class NodeError extends Error {
-    constructor(message, statusCode) {
+    statusCode?: number;
+    constructor (message: string, statusCode?: number) {
         super(message);
         Error.captureStackTrace(this, this.constructor);
         this.name = this.constructor.name;
@@ -8,8 +9,10 @@ export class NodeError extends Error {
         this.statusCode = statusCode;
     }
 }
+
 export class ValidationError extends Error {
-    constructor(message, statusCode) {
+    statusCode?: number;
+    constructor (message: string, statusCode: number) {
         super(message);
         Error.captureStackTrace(this, this.constructor);
         this.name = this.constructor.name;
@@ -17,3 +20,4 @@ export class ValidationError extends Error {
         this.statusCode = statusCode || 400;
     }
 }
+

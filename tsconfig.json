@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "module": "ES2020",
+        "strict": true,
+        "moduleResolution": "node",
+        "incremental": true,
+        "target": "ES2020",
+        "declaration": true,
+        "strictFunctionTypes": true,
+        "lib": [
+            "ES2020"
+        ],
+        "typeRoots": [
+            "node_modules/@types",
+            "types"
+        ],
+        "resolveJsonModule": true,
+        "allowSyntheticDefaultImports": true
+    }
+}

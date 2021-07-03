@@ -1,15 +1,17 @@
 export const corsOptions = {
-    origin: (origin, callback) => {
+    origin: (origin: string, callback: Function) => {
         const allowList = [
             'http://localhost:3000',
             'http://localhost:8080',
             'http://localhost',
             'http://umbrel.local',
-            ...process.env.DEVICE_HOSTS.split(',')
+            ...(<string>process.env.DEVICE_HOSTS).split(',')
         ];
+
         if (allowList.includes(origin) || !origin) {
             return callback(null, true);
         }
+
         return callback(new Error('Not allowed by CORS'));
     }
 };

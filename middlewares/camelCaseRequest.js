@@ -1,13 +1,7 @@
-const camelizeKeys = require('camelize-keys');
-
-function camelCaseRequest(request, res, next) {
+import camelize from 'camelize-ts';
+export function camelCaseRequest(request, res, next) {
     if (request && request.body) {
-        request.body = camelizeKeys(request.body, '_');
+        request.body = camelize(request.body);
     }
-
     next();
 }
-
-module.exports = {
-    camelCaseRequest
-};

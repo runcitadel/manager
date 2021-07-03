@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { app } from './apps.js';
 
 import constants from '../utils/const.js';
 import * as diskService from '../services/disk.js';
@@ -45,7 +46,7 @@ export async function readUserFile(): Promise<userFile> {
         seed: "",
         installedApps: [],
     };
-    const userFile: userFile = await diskService.readJsonFile(constants.USER_FILE);
+    const userFile: userFile = <userFile>await diskService.readJsonFile(constants.USER_FILE);
     return {...defaultProperties, ...userFile};
 }
 
@@ -197,7 +198,7 @@ export async function readStatusFile(statusFile: string) {
     return await diskService.readJsonFile(statusFilePath);
 }
 
-export function statusFileExists(statusFile: string) {
+export function statusFileExists(statusFile: string): Promise<boolean> {
     if(!/^[0-9a-zA-Z-_]+$/.test(statusFile)) {
         throw new Error('Invalid signal file characters');
     }
@@ -217,9 +218,9 @@ export function deleteStatusFile(statusFile: string) {
     return diskService.deleteFile(statusFilePath);
 }
 
-export function readAppRegistry() {
+export async function readAppRegistry(): Promise<app[]> {
     const appRegistryFile = path.join(constants.APPS_DIR, 'registry.json');
-    return diskService.readJsonFile(appRegistryFile);
+    return <app[]>await diskService.readJsonFile(appRegistryFile);
 }
 
 export function readHiddenService(id: string) {
@@ -230,10 +231,10 @@ export function readHiddenService(id: string) {
     return diskService.readUtf8File(hiddenServiceFile);
 }
 
-export function memoryWarningStatusFileExists() {
+export function memoryWarningStatusFileExists(): Promise<boolean> {
     return statusFileExists('memory-warning');
 }
 
-export function deleteMemoryWarningStatusFile() {
+export function deleteMemoryWarningStatusFile(): Promise<void | NodeJS.ErrnoException> {
     return deleteStatusFile('memory-warning');
 }

@@ -4,9 +4,9 @@ import fetch from 'node-fetch';
 const lnapiUrl = process.env.MIDDLEWARE_API_URL || 'http://localhost';
 const lnapiPort = process.env.MIDDLEWARE_API_PORT || 3005;
 
-export async function changePassword(currentPassword: string, newPassword: string, jwt: string) {
+export async function changePassword(currentPassword: string, newPassword: string, jwt: string): Promise<unknown> {
     const headers = {
-            Authorization: 'JWT ' + jwt
+        Authorization: 'JWT ' + jwt
     };
 
     const body = {
@@ -21,7 +21,7 @@ export async function changePassword(currentPassword: string, newPassword: strin
     });
 }
 
-export async function initializeWallet(password: string, seed: string[], jwt: string) {
+export async function initializeWallet(password: string, seed: string[], jwt: string): Promise<unknown> {
     const headers = {
         Authorization: 'JWT ' + jwt
     };
@@ -38,6 +38,6 @@ export async function initializeWallet(password: string, seed: string[], jwt: st
     });
 }
 
-export async function getStatus() {
+export async function getStatus(): Promise<unknown> {
     return await (await fetch(lnapiUrl + ':' + lnapiPort + '/v1/lnd/info/status')).json();
 }

@@ -2,10 +2,10 @@
  * Generic disk functions.
  */
 
- import * as fs from 'fs';
- import * as crypto from "crypto";
- import * as logger from '../utils/logger.js';
- import copy from 'recursive-copy';
+import * as fs from 'fs';
+import * as crypto from "crypto";
+import * as logger from '../utils/logger.js';
+import copy from 'recursive-copy';
 
 const uint32Bytes = 4;
 
@@ -31,7 +31,7 @@ export async function copyFolder(fromFile: string, toFile: string): Promise<Node
 }
 
 // Delete all items in a directory.
-export async function deleteItemsInDir(path: string) {
+export async function deleteItemsInDir(path: string): Promise<void> {
     const contents = fs.readdirSync(path);
 
     for (const item of contents) {
@@ -44,7 +44,7 @@ export async function deleteItemsInDir(path: string) {
     }
 }
 
-export async function deleteFoldersInDir(path: string) {
+export async function deleteFoldersInDir(path: string): Promise<void> {
     const contents = fs.readdirSync(path);
 
     for (const item of contents) {
@@ -54,7 +54,7 @@ export async function deleteFoldersInDir(path: string) {
     }
 }
 
-export function deleteFolderRecursive(path: string) {
+export function deleteFolderRecursive(path: string): void {
     if (fs.existsSync(path)) {
         const contents = fs.readdirSync(path);
 
@@ -71,7 +71,7 @@ export function deleteFolderRecursive(path: string) {
     }
 }
 
-export async function listDirsInDir(dir: string) {
+export async function listDirsInDir(dir: string): Promise<string[]> {
     const contents = fs.readdirSync(dir);
 
     const dirs = [];
@@ -85,7 +85,7 @@ export async function listDirsInDir(dir: string) {
     return dirs;
 }
 
-export async function moveFoldersToDir(fromDir: string, toDir: string) {
+export async function moveFoldersToDir(fromDir: string, toDir: string): Promise<void> {
     const contents = fs.readdirSync(fromDir);
 
     for (const item of contents) {
@@ -96,7 +96,7 @@ export async function moveFoldersToDir(fromDir: string, toDir: string) {
 }
 
 // Reads a file. Wraps fs.readFile into a native promise
-export function readFile(filePath: string, encoding: string = 'utf-8') {
+export function readFile(filePath: string, encoding = 'utf-8'): Promise<string> {
     return new Promise((resolve, reject) => fs.readFile(filePath, encoding, (error, string) => {
         if (error) {
             reject(error);
@@ -107,17 +107,17 @@ export function readFile(filePath: string, encoding: string = 'utf-8') {
 }
 
 // Reads a file as a utf8 string. Wraps fs.readFile into a native promise
-export async function readUtf8File(filePath: string) {
+export async function readUtf8File(filePath: string): Promise<string> {
     return (await readFile(filePath, 'utf8') as string).trim();
 }
 
-export async function readJsonFile(filePath: string) {
+export async function readJsonFile(filePath: string): Promise<unknown> {
     return readUtf8File(filePath).then(JSON.parse);
 }
 
 // Writes a string to a file. Wraps fs.writeFile into a native promise
 // This is _not_ concurrency safe, so don't export it without making it like writeJsonFile
-export function writeFile(filePath: string, data: string | NodeJS.ArrayBufferView, encoding: string = 'utf-8'): Promise<NodeJS.ErrnoException | void>{
+export function writeFile(filePath: string, data: string | NodeJS.ArrayBufferView, encoding = 'utf-8'): Promise<NodeJS.ErrnoException | void>{
     return new Promise((resolve, reject) => fs.writeFile(filePath, data, encoding, error => {
         if (error) {
             reject(error);
@@ -128,7 +128,7 @@ export function writeFile(filePath: string, data: string | NodeJS.ArrayBufferVie
 }
 
 // Like writeFile but will create the file if it doesn't already exist
-export async function ensureWriteFile(filePath: string, data: string, encoding: string = 'utf-8'): Promise<NodeJS.ErrnoException | void> {
+export async function ensureWriteFile(filePath: string, data: string, encoding = 'utf-8'): Promise<NodeJS.ErrnoException | void> {
     const time = new Date();
     try {
         fs.utimesSync(filePath, time, time);
@@ -146,8 +146,7 @@ export function writeJsonFile(filePath: string, object: unknown): Promise<NodeJS
             if (error) {
                 reject(error);
             } else {
-                // @ts-expect-error
-                resolve();
+                resolve(undefined);
             }
         })))
         .catch(error => {
@@ -169,8 +168,7 @@ export function writeKeyFile(filePath: string, object: string | NodeJS.ArrayBuff
             if (error) {
                 reject(error);
             } else {
-                // @ts-expect-error
-                resolve();
+                resolve(undefined);
             }
         })))
         .catch(error => {

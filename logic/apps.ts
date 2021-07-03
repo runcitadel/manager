@@ -1,10 +1,24 @@
 import * as diskLogic from './disk.js';
 import { NodeError } from '../models/errors.js';
 
-type app = {
+export type app = {
     id: string;
+    category: string;
+    name: string;
+    version: string;
+    tagline: string;
+    description: string;
+    developer: string;
+    website: string;
+    dependencies: string[];
+    repo: string;
+    support: string;
+    port: number;
+    gallery: string[];
+    path: string;
+    defaultPassword: string;
     hiddenService?: string;
-    installed: boolean;
+    installed?: boolean;
 }
 
 export type appQuery = {

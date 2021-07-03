@@ -1,5 +1,4 @@
 import { Router, Request, Response } from 'express';
-// @ts-ignore
 import pjson from '../package.json';
 const router = Router();
 

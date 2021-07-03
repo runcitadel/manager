@@ -1,26 +1,15 @@
 env:
-  commonjs: true
-  es2020: true
   node: true
 extends:
   - 'prettier'
+  - 'plugin:@typescript-eslint/eslint-recommended'
+  - 'plugin:@typescript-eslint/recommended'
+parser: '@typescript-eslint/parser'
+parserOptions:
+  ecmaVersion: 2020
 plugins:
+  - '@typescript-eslint'
   - 'prettier'
-sourceType: 'module'
-
-overrides:
-  - files:
-      - '**/*.ts'
-    extends:
-      - 'prettier'
-      - 'plugin:@typescript-eslint/eslint-recommended'
-      - 'plugin:@typescript-eslint/recommended'
-    parser: '@typescript-eslint/parser'
-    parserOptions:
-      ecmaVersion: 2020
-    plugins:
-      - '@typescript-eslint'
-      - 'prettier'
 
 rules: 
   indent: 2

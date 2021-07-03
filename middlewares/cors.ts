@@ -1,5 +1,5 @@
 export const corsOptions = {
-    origin: (origin: string, callback: Function) => {
+    origin: (origin: string, callback: (...args: unknown[]) => unknown) :unknown => {
         const allowList = [
             'http://localhost:3000',
             'http://localhost:8080',

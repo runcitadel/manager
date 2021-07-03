@@ -1,12 +1,12 @@
 import {Router} from 'express';
 const router = Router();
 
-import * as appsLogic from '../../logic/apps';
+import * as appsLogic from '../../logic/apps.js';
 
-import * as auth from '../../middlewares/auth';
+import * as auth from '../../middlewares/auth.js';
 
-import constants from '../../utils/const';
-import safeHandler from '../../utils/safeHandler';
+import constants from '../../utils/const.js';
+import {safeHandler} from '../../utils/safeHandler.js';
 
 router.get('/', auth.jwt, safeHandler(async (req, res) => {
     const query = {
@@ -31,4 +31,4 @@ router.post('/:id/uninstall', auth.jwt, safeHandler(async (req, res) => {
     return res.status(constants.STATUS_CODES.OK).json(result);
 }));
 
-module.exports = router;
+export default router;

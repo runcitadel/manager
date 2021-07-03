@@ -1,11 +1,11 @@
-import * as winston from 'winston';
-import { format } from 'winston';
-import 'winston-daily-rotate-file';
+import winston from 'winston';
+const {Container} = winston;
+import {format} from 'logform';
+import DailyRotateFile from 'winston-daily-rotate-file';
 import * as fs from 'fs';
 import * as path from 'path';
-const constants = require('utils/const.js');
-const {combine, timestamp, printf} = format;
-const getNamespace = require('continuation-local-storage').getNamespace;
+import constants from './const.js';
+import {getNamespace} from 'continuation-local-storage';
 
 const LOCAL = 'local';
 const logDir = './logs';
@@ -24,7 +24,7 @@ const appendCorrelationId = format((info, options) => {
     return info;
 });
 
-const errorFileTransport = new winston.transports.DailyRotateFile({
+const errorFileTransport = new DailyRotateFile({
     filename: path.join(logDir, 'error-%DATE%.log'),
     datePattern: 'YYYY-MM-DD',
     level: 'error',
@@ -32,14 +32,14 @@ const errorFileTransport = new winston.transports.DailyRotateFile({
     maxFiles: '7d'
 });
 
-const apiFileTransport = new winston.transports.DailyRotateFile({
+const apiFileTransport = new DailyRotateFile({
     filename: path.join(logDir, 'api-%DATE%.log'),
     datePattern: 'YYYY-MM-DD',
     maxSize: '10m',
     maxFiles: '7d'
 });
 
-const localLogFormat = printf(info => {
+const localLogFormat = format.printf(info => {
     let data = '';
     if (info.data) {
         data = JSON.stringify({data: info.data});
@@ -57,10 +57,13 @@ if (ENV === 'development') {
     localLoggerTransports.push(new winston.transports.Console());
 }
 
-winston.loggers.add(LOCAL, {
+
+const container = new Container();
+
+container.add(LOCAL, {
     level: 'info',
-    format: combine(
-        timestamp(),
+    format: winston.format.combine(
+        winston.format.timestamp(),
         appendCorrelationId(),
         localLogFormat
     ),
@@ -75,7 +78,7 @@ export const morganConfiguration = {
     }
 };
 
-const localLogger = winston.loggers.get(LOCAL);
+const localLogger = container.get(LOCAL);
 
 export function printToStandardOut(data: unknown) {
     if (data) {

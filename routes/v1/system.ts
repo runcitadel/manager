@@ -1,12 +1,12 @@
 import {Router} from 'express';
 const router = Router();
 
-import * as systemLogic from '../../logic/system';
+import * as systemLogic from '../../logic/system.js';
 
-import * as auth from '../../middlewares/auth';
+import * as auth from '../../middlewares/auth.js';
 
-import constants from '../../utils/const';
-import safeHandler from '../../utils/safeHandler';
+import constants from '../../utils/const.js';
+import {safeHandler} from '../../utils/safeHandler.js';
 
 router.get('/info', auth.jwt, safeHandler(async (req, res) => {
     const info = await systemLogic.getInfo();
@@ -104,4 +104,4 @@ router.post('/reboot', auth.jwt, safeHandler(async (req, res) => {
     return res.status(constants.STATUS_CODES.OK).json(result);
 }));
 
-module.exports = router;
+export default router;

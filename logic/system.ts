@@ -1,10 +1,11 @@
 import fetch from 'node-fetch';
-import { gt, satisfies, minVersion } from 'semver';
-import { encode } from 'lndconnect';
+import * as semver from 'semver';
+import * as lndconnect from 'lndconnect';
+const {encode} = lndconnect;
 
-import * as diskLogic from './disk';
-import constants from '../utils/const';
-import { NodeError } from '../models/errors';
+import * as diskLogic from './disk.js';
+import constants from '../utils/const.js';
+import { NodeError } from '../models/errors.js';
 
 export async function getInfo() {
     try {
@@ -101,14 +102,14 @@ export async function getAvailableUpdate() {
             const requiresVersionRange = data.requires;
 
             // A new version is available if the latest version > local version
-            isNewVersionAvailable = gt(latestVersion, currentVersion);
+            isNewVersionAvailable = semver.gt(latestVersion, currentVersion);
 
             // It's compatible with the current version if current version
             // satisfies the 'requires' condition of the new version
-            isCompatibleWithCurrentVersion = satisfies(currentVersion, requiresVersionRange);
+            isCompatibleWithCurrentVersion = semver.satisfies(currentVersion, requiresVersionRange);
 
             // Calculate the minimum required version
-            const minimumVersionRequired = `v${minVersion(requiresVersionRange)}`;
+            const minimumVersionRequired = `v${semver.minVersion(requiresVersionRange)}`;
 
             // If the minimum required version is what we just checked for, exit
             // This usually happens when an OTA update breaking release x.y.z is made
@@ -194,9 +195,9 @@ export async function getLndConnectUrls() {
         throw new NodeError('Unable to read lnd cert file');
     }
 
-    let macaroon;
+    let macaroon: string;
     try {
-        macaroon = await diskLogic.readLndAdminMacaroon();
+        macaroon = <string>await diskLogic.readLndAdminMacaroon();
     } catch {
         throw new NodeError('Unable to read lnd macaroon file');
     }

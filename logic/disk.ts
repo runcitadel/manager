@@ -1,7 +1,7 @@
-const path = require('path');
+import * as path from 'path';
 
-const constants = require('utils/const.js');
-const diskService = require('services/disk.js');
+import constants from '../utils/const.js';
+import * as diskService from '../services/disk.js';
 
 export type userFile = {
     name: string,
@@ -63,12 +63,6 @@ export async function umbrelSeedFileExists() {
         .catch(() => Promise.resolve(false));
 }
 
-export function settingsFileExists() {
-    return diskService.readJsonFile(constants.SETTINGS_FILE)
-        .then(() => Promise.resolve(true))
-        .catch(() => Promise.resolve(false));
-}
-
 export function hiddenServiceFileExists() {
     return diskService.readUtf8File(constants.UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE)
         .then(() => Promise.resolve(true))
@@ -115,10 +109,13 @@ export async function writeUpdateStatusFile(json: updateStatus) {
     return await writeStatusFile("update-status.json", JSON.stringify(json));
 }
 
-export function updateSignalFileExists(): boolean {
-    return diskService.statusFileExists("update-status.json")
-        .then(() => Promise.resolve(true))
-        .catch(() => Promise.resolve(false));
+export async function updateSignalFileExists(): Promise<boolean> {
+    try {
+        statusFileExists("update-status.json");
+        return true;
+    } catch {
+        return false;
+    }
 }
 
 export function updateLockFileExists() {

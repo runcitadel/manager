@@ -1,11 +1,11 @@
-import * as passport from 'passport';
+import passport from 'passport';
 import * as passportJWT from 'passport-jwt';
 import * as passportHTTP from 'passport-http';
 import * as bcrypt from 'bcrypt';
-import * as diskLogic from '../logic/disk';
-import * as authLogic from '../logic/auth';
-import { NodeError } from '../models/errors';
-import * as rsa from 'node-rsa';
+import * as diskLogic from '../logic/disk.js';
+import * as authLogic from '../logic/auth.js';
+import { NodeError } from '../models/errors.js';
+import rsa from 'node-rsa';
 import { NextFunction, Request, Response } from 'express';
 
 const JwtStrategy = passportJWT.Strategy;
@@ -37,7 +37,7 @@ export async function createJwtOptions() {
 
     return {
         jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('jwt'),
-        secretOrKey: pubKey,
+        secretOrKey: <any>pubKey,
         algorithm: 'RS256'
     };
 }

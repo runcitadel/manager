@@ -5,7 +5,7 @@ import { Request, Response, NextFunction } from 'express';
     inside of an async function
     Mostly copied from vault/server/utils/safeHandler.js
     */
-export default function safeHandler(handler: (request: Request, res: Response, next: NextFunction) => unknown) {
+export function safeHandler(handler: (request: Request, res: Response, next: NextFunction) => unknown) {
     return async (request: Request, res: Response, next: NextFunction) => {
         try {
             return await handler(request, res, next);

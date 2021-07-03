@@ -3,11 +3,11 @@ import * as crypto from 'crypto';
 import * as bcrypt from 'bcrypt';
 import {CipherSeed} from 'aezeed';
 import * as iocane from 'iocane';
-import * as diskLogic from './disk';
-import * as lndApiService from '../services/lndApi';
-import { NodeError } from '../models/errors';
-import * as JWTHelper from '../utils/jwt';
-import constants from '../utils/const';
+import * as diskLogic from './disk.js';
+import * as lndApiService from '../services/lndApi.js';
+import { NodeError } from '../models/errors.js';
+import * as JWTHelper from '../utils/jwt.js';
+import constants from '../utils/const.js';
 
 const saltRounds = 10;
 
@@ -123,7 +123,7 @@ export async function deriveUmbrelSeed(user: userInfo) {
 export async function removeLndPasswordIfLocked(currentPassword: string, jwt: string) {
     const lndStatus = await lndApiService.getStatus();
 
-    if (!lndStatus.data.unlocked) {
+    if (!lndStatus.unlocked) {
         console.log('LND is locked on login, attempting to change password...');
         try {
             await lndApiService.changePassword(currentPassword, constants.LND_WALLET_PASSWORD, jwt);

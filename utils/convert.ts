@@ -1,11 +1,13 @@
 // Source from https://github.com/richardschneider/bitcoin-convert/
 import Big from 'big.js';
-const BTC = 1;
-const SAT = 0.00000001;
 
 const units: Record<string, Big> = {
-    btc: new Big(BTC),
-    sat: new Big(SAT)
+    btc: new Big(1),
+    'mBTC': new Big(0.001),
+    'μBTC': new Big(0.000001),
+    'bit': new Big(0.000001),
+    'Satoshi': new Big(0.00000001),
+    'sat': new Big(0.00000001)
 };
 
 function convert(from: string | number | Big, fromUnit: string, toUnit: string, representation: string): string | number | Big {

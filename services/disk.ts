@@ -2,10 +2,11 @@
  * Generic disk functions.
  */
 
-import * as fs from 'fs';
-import * as crypto from "crypto";
-import * as logger from '../utils/logger';
-import * as fse from 'fs-extra';
+ import * as fs from 'fs';
+ import * as crypto from "crypto";
+ import * as logger from '../utils/logger.js';
+ import copy from 'recursive-copy';
+
 const uint32Bytes = 4;
 
 // Deletes a file from the filesystem
@@ -20,7 +21,7 @@ export function deleteFile(filePath: string): Promise<NodeJS.ErrnoException | vo
 }
 
 export async function copyFolder(fromFile: string, toFile: string): Promise<NodeJS.ErrnoException | void> {
-    return new Promise((resolve, reject) => fse.copy(fromFile, toFile, (error: NodeJS.ErrnoException | null) => {
+    return new Promise((resolve, reject) => copy(fromFile, toFile, (error: NodeJS.ErrnoException | null) => {
         if (error) {
             reject(error);
         } else {
@@ -95,7 +96,7 @@ export async function moveFoldersToDir(fromDir: string, toDir: string) {
 }
 
 // Reads a file. Wraps fs.readFile into a native promise
-export function readFile(filePath: string, encoding: string) {
+export function readFile(filePath: string, encoding: string = 'utf-8') {
     return new Promise((resolve, reject) => fs.readFile(filePath, encoding, (error, string) => {
         if (error) {
             reject(error);
@@ -116,7 +117,7 @@ export async function readJsonFile(filePath: string) {
 
 // Writes a string to a file. Wraps fs.writeFile into a native promise
 // This is _not_ concurrency safe, so don't export it without making it like writeJsonFile
-export function writeFile(filePath: string, data: string | NodeJS.ArrayBufferView, encoding: string): Promise<NodeJS.ErrnoException | void>{
+export function writeFile(filePath: string, data: string | NodeJS.ArrayBufferView, encoding: string = 'utf-8'): Promise<NodeJS.ErrnoException | void>{
     return new Promise((resolve, reject) => fs.writeFile(filePath, data, encoding, error => {
         if (error) {
             reject(error);
@@ -127,8 +128,13 @@ export function writeFile(filePath: string, data: string | NodeJS.ArrayBufferVie
 }
 
 // Like writeFile but will create the file if it doesn't already exist
-export async function ensureWriteFile(filePath: string, data: string, encoding: string): Promise<NodeJS.ErrnoException | void> {
-    await fse.ensureFile(filePath);
+export async function ensureWriteFile(filePath: string, data: string, encoding: string = 'utf-8'): Promise<NodeJS.ErrnoException | void> {
+    const time = new Date();
+    try {
+        fs.utimesSync(filePath, time, time);
+    } catch (err) {
+        fs.closeSync(fs.openSync(filePath, 'w'));
+    }
     return await writeFile(filePath, data, encoding);
 }
 
@@ -178,17 +184,3 @@ export function writeKeyFile(filePath: string, object: string | NodeJS.ArrayBuff
         });
 }
 
-module.exports = {
-    deleteItemsInDir,
-    deleteFile,
-    deleteFoldersInDir,
-    listDirsInDir,
-    moveFoldersToDir,
-    readFile,
-    readUtf8File,
-    readJsonFile,
-    writeJsonFile,
-    writeKeyFile,
-    writeFile,
-    ensureWriteFile
-};

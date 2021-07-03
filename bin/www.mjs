@@ -1,12 +1,13 @@
-#!/usr/bin/env node
+#!/usr/bin/env -S node --experimental-json-modules
 
 /**
  * Module dependencies.
  */
 
-var app = require('../app');
-var debug = require('debug')('nodejs-regular-webapp2:server');
-var http = require('http');
+import app from '../app.js';
+import debugPkg from 'debug';
+const debug = debugPkg('nodejs-regular-webapp2:server');
+import * as http from 'http';
 
 /**
  * Get port from environment and store in Express.

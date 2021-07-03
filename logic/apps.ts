@@ -1,5 +1,5 @@
-import * as diskLogic from './disk';
-const NodeError = require('models/errors.js').NodeError;
+import * as diskLogic from './disk.js';
+import { NodeError } from '../models/errors.js';
 
 type app = {
     id: string;

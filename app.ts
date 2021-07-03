@@ -1,30 +1,35 @@
 import { config } from 'dotenv';
 config();
 import * as path from 'path';
-import * as express from 'express';
-import * as morgan from 'morgan';
-import * as passport from 'passport';
-import * as cors from 'cors';
+import express from 'express';
+import { Request, Response } from 'express';
+import morgan from 'morgan';
+import passport from 'passport';
+import cors from 'cors';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 
 // Keep requestCorrelationId middleware as the first middleware. Otherwise we risk losing logs.
-const requestCorrelationMiddleware = require('./middlewares/requestCorrelationId'); // eslint-disable-line id-length
-const camelCaseRequestMiddleware = require('./middlewares/camelCaseRequest').camelCaseRequest;
-const corsOptions = require('./middlewares/cors').corsOptions;
-const errorHandleMiddleware = require('middlewares/errorHandling');
-require('./middlewares/auth');
+import requestCorrelationMiddleware from './middlewares/requestCorrelationId.js'; // eslint-disable-line id-length
+import {camelCaseRequest} from './middlewares/camelCaseRequest.js';
+import {corsOptions} from './middlewares/cors.js';
+import handleError from './middlewares/errorHandling.js';
 
-const logger = require('./utils/logger');
+import * as logger from './utils/logger.js';
 
-const ping = require('./routes/ping');
-const account = require('./routes/v1/account');
-const system = require('./routes/v1/system');
-const external = require('./routes/v1/external');
-const apps = require('./routes/v1/apps');
+import ping from './routes/ping.js';
+import account from './routes/v1/account.js';
+import system from './routes/v1/system.js';
+import external from './routes/v1/external.js';
+import apps from './routes/v1/apps.js';
 
 const app = express();
 
 // Handles CORS
-app.use(cors(corsOptions));
+app.use(cors(<any>corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
@@ -33,8 +38,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(requestCorrelationMiddleware);
-app.use(camelCaseRequestMiddleware);
-app.use(morgan(logger.morganConfiguration));
+app.use(camelCaseRequest);
+app.use(morgan(<any>logger.morganConfiguration));
 
 app.use('/ping', ping);
 app.use('/v1/account', account);
@@ -42,9 +47,9 @@ app.use('/v1/system', system);
 app.use('/v1/external', external);
 app.use('/v1/apps', apps);
 
-app.use(errorHandleMiddleware);
-app.use((request, res) => {
+app.use(handleError);
+app.use((request: Request, res: Response) => {
     res.status(404).json(); // eslint-disable-line no-magic-numbers
 });
 
-module.exports = app;
+export default app;

@@ -1,0 +1,43 @@
+import fetch from 'node-fetch';
+
+// Axios requires http
+const lnapiUrl = process.env.MIDDLEWARE_API_URL || 'http://localhost';
+const lnapiPort = process.env.MIDDLEWARE_API_PORT || 3005;
+
+export async function changePassword(currentPassword: string, newPassword: string, jwt: string) {
+    const headers = {
+            Authorization: 'JWT ' + jwt
+    };
+
+    const body = {
+        currentPassword,
+        newPassword
+    };
+
+    return fetch(lnapiUrl + ':' + lnapiPort + '/v1/lnd/wallet/changePassword', {
+        body: JSON.stringify(body),
+        headers,
+        method: 'POST'
+    });
+}
+
+export async function initializeWallet(password: string, seed: string[], jwt: string) {
+    const headers = {
+        Authorization: 'JWT ' + jwt
+    };
+
+    const body = {
+        password,
+        seed
+    };
+
+    return fetch(lnapiUrl + ':' + lnapiPort + '/v1/lnd/wallet/init', {
+        body: JSON.stringify(body),
+        headers,
+        method: 'POST'
+    });
+}
+
+export async function getStatus() {
+    return await (await fetch(lnapiUrl + ':' + lnapiPort + '/v1/lnd/info/status')).json();
+}

@@ -1,6 +1,6 @@
-const validator = require('validator');
+import validator from 'validator';
 
-const ValidationError = require('models/errors.js').ValidationError;
+import {ValidationError} from '../models/errors.js';
 
 // Max length is listed here,
 // https://github.com/lightningnetwork/lnd/blob/fd1f6a7bc46b1e50ff3879b8bd3876d347dbb73d/channeldb/invoices.go#L84
@@ -30,7 +30,7 @@ export function isBoolean(value: unknown) {
 }
 
 export function isDecimal(amount: unknown) {
-    if (!validator.isDecimal(amount)) {
+    if (!validator.isDecimal(<string>amount)) {
         throw new ValidationError('Must be decimal.');
     }
 }

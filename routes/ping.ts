@@ -1,10 +1,10 @@
 import { Router, Request, Response } from 'express';
 // @ts-ignore
-import * as pjson from '../package.json';
+import pjson from '../package.json';
 const router = Router();
 
-router.get('/', (request, res) => {
+router.get('/', (request: Request, res: Response) => {
     res.json({version: 'umbrel-manager-' + pjson.version});
 });
 
-module.exports = router;
+export default router;

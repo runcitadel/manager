@@ -1,15 +1,15 @@
 import { Router, Request, Response } from 'express';
 const router = Router();
 
-import * as authLogic from '../../logic/auth';
-import * as diskLogic from '../../logic/disk';
+import * as authLogic from '../../logic/auth.js';
+import * as diskLogic from '../../logic/disk.js';
 
-import * as auth from '../../middlewares/auth';
-import * as incorrectPasswordAuthHandler from '../../middlewares/incorrectPasswordAuthHandler';
+import * as auth from '../../middlewares/auth.js';
+import incorrectPasswordAuthHandler from '../../middlewares/incorrectPasswordAuthHandler.js';
 
-import constants from '../../utils/const';
-import safeHandler from '../../utils/safeHandler';
-import * as validator from '../../utils/validator';
+import constants from '../../utils/const.js';
+import {safeHandler} from '../../utils/safeHandler.js';
+import * as validator from '../../utils/validator.js';
 
 const COMPLETE = 100;
 
@@ -116,4 +116,4 @@ router.post('/refresh', auth.jwt, safeHandler((req, res) =>
         .then(jwt => res.json(jwt))
 ));
 
-module.exports = router;
+export default router;

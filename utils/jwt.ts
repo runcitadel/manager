@@ -1,4 +1,5 @@
-import {sign, verify, VerifyErrors} from 'jsonwebtoken';
+import jwt, {VerifyErrors} from 'jsonwebtoken';
+const { sign, verify } = jwt;
 import * as diskLogic from '../logic/disk.js';
 
 // Environmental variables are Strings, the expiry will be interpreted as milliseconds if not converted to int.

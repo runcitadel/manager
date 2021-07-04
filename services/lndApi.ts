@@ -31,7 +31,7 @@ export async function initializeWallet(password: string, seed: string[], jwt: st
         seed
     };
 
-    return fetch(lnapiUrl + ':' + lnapiPort + '/v1/lnd/wallet/init', {
+    return await fetch(lnapiUrl + ':' + lnapiPort + '/v1/lnd/wallet/init', {
         body: JSON.stringify(body),
         headers,
         method: 'POST'

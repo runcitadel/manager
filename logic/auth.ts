@@ -1,4 +1,3 @@
-import * as path from 'path';
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcrypt';
 import {CipherSeed} from 'aezeed';
@@ -6,7 +5,7 @@ import * as iocane from 'iocane';
 import * as diskLogic from './disk.js';
 import * as lndApiService from '../services/lndApi.js';
 import { NodeError } from '../models/errors.js';
-import * as JWTHelper from '../utils/jwt.js';
+import {generateJWT} from '../utils/jwt.js';
 import constants from '../utils/const.js';
 
 const saltRounds = 10;
@@ -137,7 +136,7 @@ export async function removeLndPasswordIfLocked(currentPassword: string, jwt: st
 // Log the user into the device. Caches the password if login is successful. Then returns jwt.
 export async function login(user: userInfo) {
     try {
-        const jwt = await JWTHelper.generateJWT(<string>user.username);
+        const jwt = await generateJWT(<string>user.username);
 
         // Cache plain text password
         // cachePassword(user.plainTextPassword);
@@ -225,7 +224,7 @@ export async function register(user: userInfo, seed: string[]) {
     // Generate JWt
     let jwt;
     try {
-        jwt = await JWTHelper.generateJWT(<string>user.username);
+        jwt = await generateJWT(<string>user.username);
     } catch {
         await diskLogic.deleteUserFile();
         throw new NodeError('Unable to generate JWT');
@@ -246,7 +245,7 @@ export async function register(user: userInfo, seed: string[]) {
 // Generate and return a new jwt token.
 export async function refresh(user: userInfo) {
     try {
-        const jwt = await JWTHelper.generateJWT(<string>user.username);
+        const jwt = await generateJWT(<string>user.username);
 
         return {jwt};
     } catch {

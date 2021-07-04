@@ -1,12 +1,12 @@
 import fetch from 'node-fetch';
 
-// Axios requires http
 const lnapiUrl = process.env.MIDDLEWARE_API_URL || 'http://localhost';
 const lnapiPort = process.env.MIDDLEWARE_API_PORT || 3005;
 
 export async function changePassword(currentPassword: string, newPassword: string, jwt: string): Promise<unknown> {
     const headers = {
-        Authorization: 'JWT ' + jwt
+        Authorization: 'JWT ' + jwt,
+        'Content-Type': 'text/json'
     };
 
     const body = {
@@ -23,7 +23,8 @@ export async function changePassword(currentPassword: string, newPassword: strin
 
 export async function initializeWallet(password: string, seed: string[], jwt: string): Promise<unknown> {
     const headers = {
-        Authorization: 'JWT ' + jwt
+        Authorization: 'JWT ' + jwt,
+        'Content-Type': 'text/json'
     };
 
     const body = {

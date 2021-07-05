@@ -49,7 +49,8 @@ async function isValidAppId(id: string): Promise<boolean> {
     if(!id) {
         return false;
     }
-    return true;
+    const appRegExp = new RegExp("^[a-z0-9\-]+$");
+    return appRegExp.test(id);
 }
 
 export async function install(id: string) {

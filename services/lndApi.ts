@@ -6,37 +6,41 @@ const lnapiPort = process.env.MIDDLEWARE_API_PORT || 3005;
 export async function changePassword(currentPassword: string, newPassword: string, jwt: string): Promise<unknown> {
     const headers = {
         Authorization: 'JWT ' + jwt,
-        'Content-Type': 'text/json'
+        'Content-Type': 'application/json'
     };
 
-    const body = {
+    const body = JSON.stringify({
         currentPassword,
         newPassword
-    };
+    });
 
-    return fetch(lnapiUrl + ':' + lnapiPort + '/v1/lnd/wallet/changePassword', {
-        body: JSON.stringify(body),
+    const data = await fetch(lnapiUrl + ':' + lnapiPort + '/v1/lnd/wallet/changePassword', {
+        body,
         headers,
         method: 'POST'
     });
+
+    return await data.json();
 }
 
 export async function initializeWallet(password: string, seed: string[], jwt: string): Promise<unknown> {
     const headers = {
         Authorization: 'JWT ' + jwt,
-        'Content-Type': 'text/json'
+        'Content-Type': 'application/json'
     };
 
-    const body = {
+    const body = JSON.stringify({
         password,
         seed
-    };
+    });
 
-    return await fetch(lnapiUrl + ':' + lnapiPort + '/v1/lnd/wallet/init', {
-        body: JSON.stringify(body),
+    const data = await fetch(lnapiUrl + ':' + lnapiPort + '/v1/lnd/wallet/init', {
+        body,
         headers,
         method: 'POST'
     });
+
+    return await data.json();
 }
 
 export async function getStatus(): Promise<unknown> {

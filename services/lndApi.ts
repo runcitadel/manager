@@ -20,7 +20,7 @@ export async function changePassword(currentPassword: string, newPassword: strin
         method: 'POST'
     });
 
-    return await data.json();
+    return data;
 }
 
 export async function initializeWallet(password: string, seed: string[], jwt: string): Promise<unknown> {
@@ -40,7 +40,7 @@ export async function initializeWallet(password: string, seed: string[], jwt: st
         method: 'POST'
     });
 
-    return await data.json();
+    return data;
 }
 
 export async function getStatus(): Promise<unknown> {

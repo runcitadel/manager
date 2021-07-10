@@ -48,7 +48,7 @@
     "@types/node-rsa": "^1.1.0",
     "@types/passport": "^1.0.7",
     "@types/passport-http": "^0.3.9",
-    "@types/passport-jwt": "^3.0.5",
+    "@types/passport-jwt": "^3.0.6",
     "@types/semver": "^7.3.7",
     "@types/uuid": "^8.3.1",
     "@types/validator": "^13.6.2",

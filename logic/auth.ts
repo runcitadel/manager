@@ -117,22 +117,6 @@ export async function deriveUmbrelSeed(user: userInfo) {
     return diskLogic.writeUmbrelSeedFile(umbrelSeed);
 }
 
-// Sets the LND password to a hardcoded password if it's locked so we can
-// auto unlock it in future
-export async function removeLndPasswordIfLocked(currentPassword: string, jwt: string) {
-    const lndStatus: {unlocked: boolean} = <any>await lndApiService.getStatus();
-
-    if (!lndStatus.unlocked) {
-        console.log('LND is locked on login, attempting to change password...');
-        try {
-            await lndApiService.changePassword(currentPassword, constants.LND_WALLET_PASSWORD, jwt);
-            console.log('Sucessfully changed LND password!');
-        } catch {
-            console.log('Failed to change LND password!');
-        }
-    }
-}
-
 // Log the user into the device. Caches the password if login is successful. Then returns jwt.
 export async function login(user: userInfo) {
     try {
@@ -147,11 +131,6 @@ export async function login(user: userInfo) {
         // This is only needed temporarily to update hardcoded passwords
         // on existing users without requiring them to change their password
         setSystemPassword(<string>user.password);
-
-        // This is only needed temporarily to remove the user set LND wallet
-        // password for old users and change it to a hardcoded one so we can
-        // auto unlock it in the future.
-        removeLndPasswordIfLocked(<string>user.password, jwt);
 
         return {jwt};
     } catch {
@@ -232,7 +211,7 @@ export async function register(user: userInfo, seed: string[]) {
 
     // Initialize lnd wallet
     try {
-        await lndApiService.initializeWallet(constants.LND_WALLET_PASSWORD, seed, jwt);
+        await lndApiService.initializeWallet(seed, jwt);
     } catch (error) {
         await diskLogic.deleteUserFile();
         throw new NodeError(error.response.data);

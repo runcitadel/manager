@@ -4,7 +4,7 @@ export const corsOptions = {
             'http://localhost:3000',
             'http://localhost:8080',
             'http://localhost',
-            'http://umbrel.local',
+            'http://citadel.local',
             ...(<string>process.env.DEVICE_HOSTS).split(',')
         ];
 

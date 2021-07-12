@@ -6,7 +6,6 @@ import * as diskLogic from './disk.js';
 import * as lndApiService from '../services/lndApi.js';
 import { NodeError } from '@runcitadel/utils';
 import {generateJWT} from '../utils/jwt.js';
-import constants from '../utils/const.js';
 
 const saltRounds = 10;
 
@@ -101,20 +100,20 @@ export async function isRegistered() {
     }
 }
 
-// Derives the root umbrel seed and persists it to disk to be used for
-// determinstically deriving further entropy for any other Umbrel service.
-export async function deriveUmbrelSeed(user: userInfo) {
-    if (await diskLogic.umbrelSeedFileExists()) {
+// Derives the root seed and persists it to disk to be used for
+// determinstically deriving further entropy for any other service.
+export async function deriveSeed(user: userInfo) {
+    if (await diskLogic.seedFileExists()) {
         return;
     }
 
     const mnemonic = (await seed(user)).seed.join(' ');
     const {entropy} = CipherSeed.fromMnemonic(mnemonic);
-    const umbrelSeed = crypto
+    const generatedSeed = crypto
         .createHmac('sha256', entropy)
         .update('umbrel-seed')
         .digest('hex');
-    return diskLogic.writeUmbrelSeedFile(umbrelSeed);
+    return diskLogic.writeSeedFile(generatedSeed);
 }
 
 // Log the user into the device. Caches the password if login is successful. Then returns jwt.
@@ -122,11 +121,9 @@ export async function login(user: userInfo) {
     try {
         const jwt = await generateJWT(<string>user.username);
 
-        // Cache plain text password
-        // cachePassword(user.plainTextPassword);
         cachePassword(<string>user.password);
 
-        deriveUmbrelSeed(user);
+        deriveSeed(user);
 
         // This is only needed temporarily to update hardcoded passwords
         // on existing users without requiring them to change their password
@@ -193,11 +190,11 @@ export async function register(user: userInfo, seed: string[]) {
         throw new NodeError('Unable to set system password');
     }
 
-    // Derive Umbrel seed
+    // Derive seed
     try {
-        await deriveUmbrelSeed(user);
+        await deriveSeed(user);
     } catch {
-        throw new NodeError('Unable to create Umbrel seed');
+        throw new NodeError('Unable to create seed');
     }
 
     // Generate JWt

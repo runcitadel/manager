@@ -9,7 +9,7 @@ import { NodeError } from '@runcitadel/utils';
 
 export async function getInfo() {
     try {
-        const info = await diskLogic.readUmbrelVersionFile();
+        const info = await diskLogic.readVersionFile();
         return info;
     } catch {
         throw new NodeError('Unable to get system information');
@@ -61,7 +61,7 @@ export async function getBitcoinRPCConnectionDetails() {
             diskLogic.readUserFile(),
             diskLogic.readBitcoinRPCHiddenService()
         ]);
-        const label = encodeURIComponent(`${user.name}'s Umbrel`);
+        const label = encodeURIComponent(`${user.name}'s Citadel`);
         const rpcuser = constants.BITCOIN_RPC_USER;
         const rpcpassword = constants.BITCOIN_RPC_PASSWORD;
         const address = hiddenService;
@@ -81,7 +81,7 @@ export async function getBitcoinRPCConnectionDetails() {
 
 export async function getAvailableUpdate() {
     try {
-        const current: any = await diskLogic.readUmbrelVersionFile();
+        const current: any = await diskLogic.readVersionFile();
         const currentVersion = current.version;
 
         // 'tag' should be master to begin with
@@ -126,7 +126,7 @@ export async function getAvailableUpdate() {
             return data;
         }
 
-        return 'Your Umbrel is up-to-date';
+        return 'Your Citadel is up-to-date';
     } catch {
         throw new NodeError('Unable to check for update');
     }

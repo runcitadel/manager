@@ -73,7 +73,7 @@ container.add(LOCAL, {
 export const morganConfiguration = {
     stream: {
         write(message: string) {
-            info(message, 'umbrel-manager', '');
+            info(message, 'manager', '');
         }
     }
 };

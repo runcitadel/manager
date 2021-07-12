@@ -35,7 +35,7 @@ Set the following environment variables directly or by placing them in `.env` fi
 | Variable | Description | Default |
 | ------------- | ------------- | ------------- |
 | `PORT` | Port where manager should listen for requests | `3006` |
-| `DEVICE_HOSTS` | Comma separated list of IPs or domain names to whitelist for CORS | `http://umbrel.local` |
+| `DEVICE_HOSTS` | Comma separated list of IPs or domain names to whitelist for CORS | `http://citadel.local` |
 | `USER_FILE` | Path to the user's data file (automatically created on user registration) | `/db/user.json` |
 | `MIDDLEWARE_API_URL` | IP or domain where [`umbrel-middleware`](https://github.com/getumbrel/umbrel-middleware) is listening | `http://localhost` |
 | `MIDDLEWARE_API_PORT` | Port where [`umbrel-middleware`](https://github.com/getumbrel/umbrel-middleware) is listening | `3005` |

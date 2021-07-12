@@ -56,18 +56,18 @@ export async function writeUserFile(json: userFile) {
     return fs_utils.writeJsonFile(constants.USER_FILE, json);
 }
 
-export async function writeUmbrelSeedFile(umbrelSeed: string) {
-    return diskService.ensureWriteFile(constants.UMBREL_SEED_FILE, umbrelSeed);
+export async function writeSeedFile(seed: string) {
+    return diskService.ensureWriteFile(constants.SEED_FILE, seed);
 }
 
-export async function umbrelSeedFileExists() {
-    return fs.readFile(constants.UMBREL_SEED_FILE)
+export async function seedFileExists() {
+    return fs.readFile(constants.SEED_FILE)
         .then(() => Promise.resolve(true))
         .catch(() => Promise.resolve(false));
 }
 
 export function hiddenServiceFileExists() {
-    return fs_utils.readUtf8File(constants.UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE)
+    return fs_utils.readUtf8File(constants.DASHBOARD_HIDDEN_SERVICE_FILE)
         .then(() => Promise.resolve(true))
         .catch(() => Promise.resolve(false));
 }
@@ -100,8 +100,8 @@ export function readLndAdminMacaroon() {
     return fs.readFile(constants.LND_ADMIN_MACAROON_FILE);
 }
 
-export function readUmbrelVersionFile() {
-    return fs_utils.readJsonFile(constants.UMBREL_VERSION_FILE);
+export function readVersionFile() {
+    return fs_utils.readJsonFile(constants.VERSION_FILE);
 }
 
 export async function readUpdateStatusFile() {

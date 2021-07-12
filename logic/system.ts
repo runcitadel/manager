@@ -5,7 +5,7 @@ const {encode} = lndconnect;
 
 import * as diskLogic from './disk.js';
 import constants from '../utils/const.js';
-import { NodeError } from '../models/errors.js';
+import { NodeError } from '@runcitadel/utils';
 
 export async function getInfo() {
     try {
@@ -197,7 +197,7 @@ export async function getLndConnectUrls() {
 
     let macaroon: string;
     try {
-        macaroon = <string>await diskLogic.readLndAdminMacaroon();
+        macaroon = await (await diskLogic.readLndAdminMacaroon()).toString('utf-8');
     } catch {
         throw new NodeError('Unable to read lnd macaroon file');
     }

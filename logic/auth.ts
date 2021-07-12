@@ -4,7 +4,7 @@ import {CipherSeed} from 'aezeed';
 import * as iocane from 'iocane';
 import * as diskLogic from './disk.js';
 import * as lndApiService from '../services/lndApi.js';
-import { NodeError } from '../models/errors.js';
+import { NodeError } from '@runcitadel/utils';
 import {generateJWT} from '../utils/jwt.js';
 import constants from '../utils/const.js';
 

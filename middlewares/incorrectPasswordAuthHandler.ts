@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars, no-magic-numbers */
-import {NodeError} from '../models/errors.js';
+import {NodeError} from '@runcitadel/utils';
 import { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
 
 const handleError = (err: Error, _request: Request, _res: Response, next: NextFunction) => {

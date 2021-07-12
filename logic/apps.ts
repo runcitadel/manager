@@ -1,5 +1,5 @@
 import * as diskLogic from './disk.js';
-import { NodeError } from '../models/errors.js';
+import { NodeError } from '@runcitadel/utils';
 
 export type app = {
     id: string;

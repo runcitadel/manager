@@ -8,8 +8,8 @@ import * as auth from '../../middlewares/auth.js';
 import incorrectPasswordAuthHandler from '../../middlewares/incorrectPasswordAuthHandler.js';
 
 import constants from '../../utils/const.js';
-import {safeHandler} from '../../utils/safeHandler.js';
-import * as validator from '../../utils/validator.js';
+import {safeHandler} from '@runcitadel/utils';
+import {validator} from '@runcitadel/utils';
 
 const COMPLETE = 100;
 
@@ -76,7 +76,7 @@ router.post('/register', auth.convertReqBodyToBasicAuth, auth.register, safeHand
     try {
         validator.isString(req.body.name);
         validator.isString(user.plainTextPassword);
-        validator.isMinPasswordLength(user.plainTextPassword);
+        validator.isMinPasswordLength(<string>user.plainTextPassword);
     } catch (error) {
         return next(error);
     }

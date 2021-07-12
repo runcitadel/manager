@@ -3,6 +3,8 @@ import { app } from './apps.js';
 
 import constants from '../utils/const.js';
 import * as diskService from '../services/disk.js';
+import * as fs from 'fs/promises';
+import {fs_utils} from '@runcitadel/utils';
 
 export type userFile = {
     name: string,
@@ -18,7 +20,7 @@ export type updateStatus = {
 }
 
 export async function deleteUserFile() {
-    return await diskService.deleteFile(constants.USER_FILE);
+    return await fs.unlink(constants.USER_FILE);
 }
 
 export async function deleteItemsInDir(directory: string) {
@@ -30,7 +32,7 @@ export async function deleteFoldersInDir(directory: string) {
 }
 
 export async function fileExists(path: string) {
-    return diskService.readJsonFile(path)
+    return fs_utils.readJsonFile(path)
         .then(() => Promise.resolve(true))
         .catch(() => Promise.resolve(false));
 }
@@ -46,12 +48,12 @@ export async function readUserFile(): Promise<userFile> {
         seed: "",
         installedApps: [],
     };
-    const userFile: userFile = <userFile>await diskService.readJsonFile(constants.USER_FILE);
+    const userFile: userFile = <userFile>await fs_utils.readJsonFile(constants.USER_FILE);
     return {...defaultProperties, ...userFile};
 }
 
 export async function writeUserFile(json: userFile) {
-    return diskService.writeJsonFile(constants.USER_FILE, json);
+    return fs_utils.writeJsonFile(constants.USER_FILE, json);
 }
 
 export async function writeUmbrelSeedFile(umbrelSeed: string) {
@@ -59,47 +61,47 @@ export async function writeUmbrelSeedFile(umbrelSeed: string) {
 }
 
 export async function umbrelSeedFileExists() {
-    return diskService.readFile(constants.UMBREL_SEED_FILE)
+    return fs.readFile(constants.UMBREL_SEED_FILE)
         .then(() => Promise.resolve(true))
         .catch(() => Promise.resolve(false));
 }
 
 export function hiddenServiceFileExists() {
-    return diskService.readUtf8File(constants.UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE)
+    return fs_utils.readUtf8File(constants.UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE)
         .then(() => Promise.resolve(true))
         .catch(() => Promise.resolve(false));
 }
 
 export function readElectrumHiddenService() {
-    return diskService.readUtf8File(constants.ELECTRUM_HIDDEN_SERVICE_FILE);
+    return fs_utils.readUtf8File(constants.ELECTRUM_HIDDEN_SERVICE_FILE);
 }
 
 export function readBitcoinP2PHiddenService() {
-    return diskService.readUtf8File(constants.BITCOIN_P2P_HIDDEN_SERVICE_FILE);
+    return fs_utils.readUtf8File(constants.BITCOIN_P2P_HIDDEN_SERVICE_FILE);
 }
 
 export function readBitcoinRPCHiddenService() {
-    return diskService.readUtf8File(constants.BITCOIN_RPC_HIDDEN_SERVICE_FILE);
+    return fs_utils.readUtf8File(constants.BITCOIN_RPC_HIDDEN_SERVICE_FILE);
 }
 
 export function readLndRestHiddenService() {
-    return diskService.readUtf8File(constants.LND_REST_HIDDEN_SERVICE_FILE);
+    return fs_utils.readUtf8File(constants.LND_REST_HIDDEN_SERVICE_FILE);
 }
 
 export function readLndGrpcHiddenService() {
-    return diskService.readUtf8File(constants.LND_GRPC_HIDDEN_SERVICE_FILE);
+    return fs_utils.readUtf8File(constants.LND_GRPC_HIDDEN_SERVICE_FILE);
 }
 
 export function readLndCert() {
-    return diskService.readUtf8File(constants.LND_CERT_FILE);
+    return fs_utils.readUtf8File(constants.LND_CERT_FILE);
 }
 
 export function readLndAdminMacaroon() {
-    return diskService.readFile(constants.LND_ADMIN_MACAROON_FILE);
+    return fs.readFile(constants.LND_ADMIN_MACAROON_FILE);
 }
 
 export function readUmbrelVersionFile() {
-    return diskService.readJsonFile(constants.UMBREL_VERSION_FILE);
+    return fs_utils.readJsonFile(constants.UMBREL_VERSION_FILE);
 }
 
 export async function readUpdateStatusFile() {
@@ -134,19 +136,19 @@ export async function readBackupStatusFile() {
 }
 
 export function readJWTPrivateKeyFile() {
-    return diskService.readFile(constants.JWT_PRIVATE_KEY_FILE);
+    return fs_utils.readUtf8File(constants.JWT_PRIVATE_KEY_FILE);
 }
 
 export function readJWTPublicKeyFile() {
-    return diskService.readFile(constants.JWT_PUBLIC_KEY_FILE);
+    return fs_utils.readUtf8File(constants.JWT_PUBLIC_KEY_FILE);
 }
 
-export function writeJWTPrivateKeyFile(data: string | NodeJS.ArrayBufferView) {
-    return diskService.writeKeyFile(constants.JWT_PRIVATE_KEY_FILE, data);
+export function writeJWTPrivateKeyFile(data: string) {
+    return fs_utils.safeWriteFile(constants.JWT_PRIVATE_KEY_FILE, data);
 }
 
-export function writeJWTPublicKeyFile(data: string | NodeJS.ArrayBufferView) {
-    return diskService.writeKeyFile(constants.JWT_PUBLIC_KEY_FILE, data);
+export function writeJWTPublicKeyFile(data: string) {
+    return fs_utils.safeWriteFile(constants.JWT_PUBLIC_KEY_FILE, data);
 }
 
 export async function shutdown() {
@@ -159,12 +161,12 @@ export async function reboot() {
 
 // Read the contends of a file.
 export async function readUtf8File(path: string) {
-    return await diskService.readUtf8File(path);
+    return await fs_utils.readUtf8File(path);
 }
 
 // Read the contents of a file and return a json object.
 export async function readJsonFile(path: string) {
-    return await diskService.readJsonFile(path);
+    return await fs_utils.readJsonFile(path);
 }
 
 export async function readDebugStatusFile() {
@@ -177,7 +179,7 @@ export function writeSignalFile(signalFile: string) {
     }
 
     const signalFilePath = path.join(constants.SIGNAL_DIR, signalFile);
-    return diskService.writeFile(signalFilePath, 'true');
+    return fs_utils.safeWriteFile(signalFilePath, 'true');
 }
 
 export function writeStatusFile(statusFile: string, contents: string) {
@@ -186,7 +188,7 @@ export function writeStatusFile(statusFile: string, contents: string) {
     }
 
     const statusFilePath = path.join(constants.STATUS_DIR, statusFile);
-    return diskService.writeFile(statusFilePath, contents);
+    return fs_utils.safeWriteFile(statusFilePath, contents);
 }
 
 export async function readStatusFile(statusFile: string) {
@@ -195,7 +197,7 @@ export async function readStatusFile(statusFile: string) {
     }
 
     const statusFilePath = path.join(constants.STATUS_DIR, statusFile);
-    return await diskService.readJsonFile(statusFilePath);
+    return await fs_utils.readJsonFile(statusFilePath);
 }
 
 export function statusFileExists(statusFile: string): Promise<boolean> {
@@ -204,7 +206,7 @@ export function statusFileExists(statusFile: string): Promise<boolean> {
     }
 
     const statusFilePath = path.join(constants.STATUS_DIR, statusFile);
-    return diskService.readUtf8File(statusFilePath)
+    return fs_utils.readUtf8File(statusFilePath)
         .then(() => Promise.resolve(true))
         .catch(() => Promise.resolve(false));
 }
@@ -215,12 +217,12 @@ export function deleteStatusFile(statusFile: string) {
     }
 
     const statusFilePath = path.join(constants.STATUS_DIR, statusFile);
-    return diskService.deleteFile(statusFilePath);
+    return fs.unlink(statusFilePath);
 }
 
 export async function readAppRegistry(): Promise<app[]> {
     const appRegistryFile = path.join(constants.APPS_DIR, 'registry.json');
-    return <app[]>await diskService.readJsonFile(appRegistryFile);
+    return <app[]>await fs_utils.readJsonFile(appRegistryFile);
 }
 
 export function readHiddenService(id: string) {
@@ -228,7 +230,7 @@ export function readHiddenService(id: string) {
         throw new Error('Invalid hidden service ID');
     }
     const hiddenServiceFile = path.join(constants.TOR_HIDDEN_SERVICE_DIR, id, 'hostname');
-    return diskService.readUtf8File(hiddenServiceFile);
+    return fs_utils.readUtf8File(hiddenServiceFile);
 }
 
 export function memoryWarningStatusFileExists(): Promise<boolean> {

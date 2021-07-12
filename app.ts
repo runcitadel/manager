@@ -14,9 +14,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Keep requestCorrelationId middleware as the first middleware. Otherwise we risk losing logs.
 import requestCorrelationMiddleware from './middlewares/requestCorrelationId.js'; // eslint-disable-line id-length
-import {camelCaseRequest} from './middlewares/camelCaseRequest.js';
+import {camelCaseMiddleware, errorHandlerMiddleware} from '@runcitadel/utils';
 import {corsOptions} from './middlewares/cors.js';
-import handleError from './middlewares/errorHandling.js';
 
 import * as logger from './utils/logger.js';
 
@@ -38,7 +37,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(requestCorrelationMiddleware);
-app.use(camelCaseRequest);
+app.use(camelCaseMiddleware);
 app.use(morgan(<any>logger.morganConfiguration));
 
 app.use('/ping', ping);
@@ -47,8 +46,8 @@ app.use('/v1/system', system);
 app.use('/v1/external', external);
 app.use('/v1/apps', apps);
 
-app.use(handleError);
-app.use((request: Request, res: Response) => {
+app.use(errorHandlerMiddleware);
+app.use((req: Request, res: Response) => {
     res.status(404).json(); // eslint-disable-line no-magic-numbers
 });
 

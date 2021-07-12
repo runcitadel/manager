@@ -4,7 +4,7 @@ const router = Router();
 import * as auth from '../../middlewares/auth.js';
 
 import constants from '../../utils/const.js';
-import {safeHandler} from '../../utils/safeHandler.js';
+import {safeHandler} from '@runcitadel/utils';
 
 import SocksProxyAgentPkg from 'socks-proxy-agent';
 const { SocksProxyAgent } = SocksProxyAgentPkg;

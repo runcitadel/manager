@@ -97,10 +97,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@runcitadel/utils@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@runcitadel/utils/-/utils-0.0.5.tgz#29a4e223ab25da8724d417b356b2103246b9f1e5"
-  integrity sha512-B3b1gTi9RR0ffyzSTkdEEiohYXaOaMw2AeadkLOrY3Capazk+NelaLTMHgEf/5TIWyd4xXIByqO6CK5SP/2sxA==
+"@runcitadel/utils@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@runcitadel/utils/-/utils-0.1.1.tgz#1574d09f7e4b42d7ed9de3ee56f694de113a57f6"
+  integrity sha512-/5k9uQ1LzRPnAyiLDYDV4pv+qV+alaCGqKZNsskiw+xQ95PzW5tLp+8Rb+yC77GJuLKH2viaQQIWNlhr9iRh4A==
   dependencies:
     "@types/big.js" "^6"
     "@types/express" "^4.17.13"

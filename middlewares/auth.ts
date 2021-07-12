@@ -4,7 +4,7 @@ import * as passportHTTP from 'passport-http';
 import * as bcrypt from 'bcrypt';
 import * as diskLogic from '../logic/disk.js';
 import * as authLogic from '../logic/auth.js';
-import { NodeError } from '../models/errors.js';
+import { NodeError } from '@runcitadel/utils';
 import rsa from 'node-rsa';
 import { NextFunction, Request, Response } from 'express';
 

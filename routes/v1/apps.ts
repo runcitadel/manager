@@ -6,7 +6,7 @@ import * as appsLogic from '../../logic/apps.js';
 import * as auth from '../../middlewares/auth.js';
 
 import constants from '../../utils/const.js';
-import {safeHandler} from '../../utils/safeHandler.js';
+import {safeHandler} from '@runcitadel/utils';
 
 router.get('/', auth.jwt, safeHandler(async (req, res) => {
     const query = {

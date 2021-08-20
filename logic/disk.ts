@@ -5,40 +5,13 @@ import constants from "../utils/const.js";
 import * as diskService from "../services/disk.js";
 import * as fs from "fs/promises";
 import { fs_utils } from "@runcitadel/utils";
-
-export type userFile = {
-  name: string;
-  password?: string;
-  plainTextPassword?: string;
-  seed?: string | Buffer | ArrayBuffer;
-  installedApps?: string[];
-};
-
-export type updateStatus = {
-  state: string;
-  progress: number;
-  description: string;
-  updateTo?: string;
-  //version?: string;
-};
-
-export type versionFile = {
-  version: string;
-  name: string;
-  requires: string;
-  notes: string;
-};
-
-export type backupStatus = {
-  status: string;
-  timestamp: number;
-};
-
-export type debugStatus = {
-  status: string;
-  debug: string;
-  dmesg: string;
-};
+import type {
+  user as userFile,
+  backupStatus,
+  updateStatus,
+  versionFile,
+  debugStatus,
+} from "@runcitadel/utils";
 
 export async function deleteUserFile(): Promise<void> {
   return await fs.unlink(constants.USER_FILE);

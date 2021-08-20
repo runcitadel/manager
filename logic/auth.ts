@@ -6,6 +6,7 @@ import * as diskLogic from "./disk.js";
 import * as lndApiService from "../services/lndApi.js";
 import { NodeError } from "@runcitadel/utils";
 import { generateJWT } from "../utils/jwt.js";
+import type { user as userFile } from "@runcitadel/utils";
 
 const saltRounds = 10;
 
@@ -152,7 +153,7 @@ export async function login(user: userInfo): Promise<string> {
   }
 }
 
-export async function getInfo(): Promise<diskLogic.userFile> {
+export async function getInfo(): Promise<userFile> {
   try {
     const user = await diskLogic.readUserFile();
 
@@ -241,8 +242,7 @@ export async function register(
     await lndApiService.initializeWallet(seed, jwt);
   } catch (error) {
     await diskLogic.deleteUserFile();
-    // @ts-expect-error No Error type known to TS
-    throw new NodeError(error.response.data);
+    throw new NodeError((<{ response: { data: string } }>error).response.data);
   }
 
   // Return token

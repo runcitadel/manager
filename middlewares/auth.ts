@@ -7,6 +7,7 @@ import * as authLogic from "../logic/auth.js";
 import { NodeError } from "@runcitadel/utils";
 import rsa from "node-rsa";
 import { NextFunction, Request, Response } from "express";
+import type { user as userFile } from "@runcitadel/utils";
 
 const JwtStrategy = passportJWT.Strategy;
 const BasicStrategy = passportHTTP.BasicStrategy;
@@ -122,7 +123,7 @@ export function basic(req: Request, res: Response, next: NextFunction): void {
 
     diskLogic
       .readUserFile()
-      .then((userData: diskLogic.userFile) => {
+      .then((userData: userFile) => {
         const storedPassword = userData.password;
 
         bcrypt
@@ -156,7 +157,7 @@ export async function accountJWTProtected(
   next: NextFunction
 ): Promise<void> {
   const isRegistered = await authLogic.isRegistered();
-  if (isRegistered.registered) {
+  if (isRegistered) {
     passport.authenticate(JWT_AUTH, { session: false }, (error, user) => {
       if (error || user === false) {
         return next(new NodeError("Invalid JWT", 401)); // eslint-disable-line no-magic-numbers

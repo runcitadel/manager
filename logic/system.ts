@@ -7,6 +7,13 @@ import * as diskLogic from "./disk.js";
 import constants from "../utils/const.js";
 import { NodeError } from "@runcitadel/utils";
 
+import type {
+  versionFile,
+  updateStatus,
+  debugStatus,
+  backupStatus,
+} from "@runcitadel/utils";
+
 export type connectionDetails = {
   address: string;
   port: number;
@@ -29,7 +36,7 @@ export type systemStatus = {
   highMemoryUsage: boolean;
 };
 
-export async function getInfo(): Promise<diskLogic.versionFile> {
+export async function getInfo(): Promise<versionFile> {
   try {
     const info = await diskLogic.readVersionFile();
     return info;
@@ -110,9 +117,7 @@ export async function getBitcoinRPCConnectionDetails(): Promise<RpcConnectionDet
   }
 }
 
-export async function getAvailableUpdate(): Promise<
-  diskLogic.versionFile | string
-> {
+export async function getAvailableUpdate(): Promise<versionFile | string> {
   try {
     const current = await diskLogic.readVersionFile();
     const currentVersion = current.version;
@@ -129,7 +134,7 @@ export async function getAvailableUpdate(): Promise<
       const infoUrl = `https://raw.githubusercontent.com/${constants.GITHUB_REPO}/${tag}/info.json`;
 
       const latestVersionInfo = await fetch(infoUrl);
-      data = (await latestVersionInfo.json()) as diskLogic.versionFile;
+      data = (await latestVersionInfo.json()) as versionFile;
 
       const latestVersion = data.version;
       const requiresVersionRange = data.requires;
@@ -161,7 +166,7 @@ export async function getAvailableUpdate(): Promise<
     }
 
     if (isNewVersionAvailable && isCompatibleWithCurrentVersion) {
-      return data as diskLogic.versionFile;
+      return data as versionFile;
     }
 
     return "Your Citadel is up-to-date";
@@ -170,7 +175,7 @@ export async function getAvailableUpdate(): Promise<
   }
 }
 
-export async function getUpdateStatus(): Promise<diskLogic.updateStatus> {
+export async function getUpdateStatus(): Promise<updateStatus> {
   try {
     const status = await diskLogic.readUpdateStatusFile();
     return status;
@@ -214,7 +219,7 @@ export async function startUpdate(): Promise<{ message: string } | string> {
   }
 }
 
-export async function getBackupStatus(): Promise<diskLogic.backupStatus> {
+export async function getBackupStatus(): Promise<backupStatus> {
   try {
     const status = await diskLogic.readBackupStatusFile();
     return status;
@@ -297,7 +302,7 @@ export async function requestDebug(): Promise<string> {
   }
 }
 
-export async function getDebugResult(): Promise<diskLogic.debugStatus> {
+export async function getDebugResult(): Promise<debugStatus> {
   try {
     return await diskLogic.readDebugStatusFile();
   } catch {

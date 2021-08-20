@@ -2,14 +2,13 @@ import { Router, Request, Response } from "express";
 const router = Router();
 
 import * as authLogic from "../../logic/auth.js";
-import * as diskLogic from "../../logic/disk.js";
 
 import * as auth from "../../middlewares/auth.js";
 import incorrectPasswordAuthHandler from "../../middlewares/incorrectPasswordAuthHandler.js";
 
 import constants from "../../utils/const.js";
-import { safeHandler } from "@runcitadel/utils";
-import { validator } from "@runcitadel/utils";
+import { safeHandler, validator } from "@runcitadel/utils";
+import type { user as userFile } from "@runcitadel/utils";
 
 const COMPLETE = 100;
 
@@ -83,7 +82,7 @@ router.post(
   auth.register,
   safeHandler(async (req, res, next) => {
     const seed = req.body.seed;
-    const user = <diskLogic.userFile>req.user;
+    const user = <userFile>req.user;
 
     if (seed.length !== 24) {
       // eslint-disable-line no-magic-numbers
@@ -112,7 +111,7 @@ router.post(
   auth.convertReqBodyToBasicAuth,
   auth.basic,
   safeHandler(async (req, res) => {
-    const jwt = await authLogic.login(<diskLogic.userFile>req.user);
+    const jwt = await authLogic.login(<userFile>req.user);
 
     return res.json({ jwt });
   })
@@ -134,7 +133,7 @@ router.post(
   auth.basic,
   incorrectPasswordAuthHandler,
   safeHandler(async (req, res) => {
-    const seed = await authLogic.seed(<diskLogic.userFile>req.user);
+    const seed = await authLogic.seed(<userFile>req.user);
 
     return res.json({ seed });
   })
@@ -144,7 +143,7 @@ router.post(
   "/refresh",
   auth.jwt,
   safeHandler((req, res) =>
-    authLogic.refresh(<diskLogic.userFile>req.user).then((jwt) => res.json(jwt))
+    authLogic.refresh(<userFile>req.user).then((jwt) => res.json(jwt))
   )
 );
 

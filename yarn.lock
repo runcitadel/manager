@@ -134,17 +134,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@runcitadel/utils@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "@runcitadel/utils@npm:0.3.0"
+"@runcitadel/utils@npm:^0.3.1":
+  version: 0.3.1
+  resolution: "@runcitadel/utils@npm:0.3.1"
   dependencies:
-    "@types/big.js": ^6
+    "@types/big.js": ^6.1.1
     "@types/express": ^4.17.13
     "@types/validator": ^13.6.3
     big.js: ^6.1.1
     validator: ^13.6.0
     yaml: ^1.10.2
-  checksum: 295be5e806044ab53256f62638192ffeb51e743b419c5d2a9527a109ec6314436e992172dcea91df1ae3b157569f37774b709e7db3f04ba090ba7482cd8d2096
+  checksum: ba835a0069de0cb56ad261d12adb4431ed83e4c2dd06d8f538a603121c89ccd0e6619aa5c15694ffce119649782108fbe23e7708dc4bea9a9f3a14b47c4a924d
   languageName: node
   linkType: hard
 
@@ -164,7 +164,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/big.js@npm:^6, @types/big.js@npm:^6.1.1":
+"@types/big.js@npm:^6.1.1":
   version: 6.1.1
   resolution: "@types/big.js@npm:6.1.1"
   checksum: 79eb557ab4c54666d5d587b4ec4bfc8929b1dfd74db8669fb449cd9fd10a18db13d63186c10537fa1a7c502abacad39547ad47ec28c3f80fda058373e351312c
@@ -236,12 +236,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jsonwebtoken@npm:*, @types/jsonwebtoken@npm:^8.5.4":
-  version: 8.5.4
-  resolution: "@types/jsonwebtoken@npm:8.5.4"
+"@types/jsonwebtoken@npm:*, @types/jsonwebtoken@npm:^8.5.5":
+  version: 8.5.5
+  resolution: "@types/jsonwebtoken@npm:8.5.5"
   dependencies:
     "@types/node": "*"
-  checksum: 541d41eb8115afd422e0333d7ba79399febc86818015b3ecb7c36b2b7f9b4476a33aa13a4f23f81a08b201c5cdacbe2903b6d03cd4930abf83a4e14be3696719
+  checksum: 33c30354641bc7849be7507e9f48685b1f487e944321a932650eac6c247c85184667f5e207ccfcab0da8cb24bde93a8372c09cacf1849e976bbf2cb90b26ce90
   languageName: node
   linkType: hard
 
@@ -2710,13 +2710,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "node-manager@workspace:."
   dependencies:
-    "@runcitadel/utils": ^0.3.0
+    "@runcitadel/utils": ^0.3.1
     "@types/bcrypt": ^5.0.0
     "@types/big.js": ^6.1.1
     "@types/continuation-local-storage": ^3.2.3
     "@types/cors": ^2.8.12
     "@types/express": ^4.17.13
-    "@types/jsonwebtoken": ^8.5.4
+    "@types/jsonwebtoken": ^8.5.5
     "@types/morgan": ^1.9.3
     "@types/node": ^16.6.2
     "@types/node-fetch": ^2.5.12

@@ -9,12 +9,11 @@ export const corsOptions = {
       "http://localhost:3000",
       "http://localhost:8080",
       "http://localhost",
-      "http://citadel.local",
+      "http://umbrel.local",
       ...(<string>process.env.DEVICE_HOSTS).split(","),
     ];
 
-    if (!origin) return callback(new Error("Not allowed by CORS"));
-    if (allowList.includes(origin) || !origin) {
+    if (allowList.includes(origin || "THISISNOTINTHEALLOWLIST") || !origin) {
       return callback(null, true);
     }
 

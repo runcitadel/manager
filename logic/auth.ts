@@ -134,6 +134,23 @@ export async function deriveSeed(
   return diskLogic.writeSeedFile(generatedSeed);
 }
 
+// Derives the root seed and persists it to disk to be used for
+// determinstically deriving further entropy for any other service.
+export async function deriveUmbrelSeed(
+  mnemonic: string[]
+): Promise<void | NodeJS.ErrnoException> {
+  if (await diskLogic.seedFileExists()) {
+    return;
+  }
+
+  const { entropy } = CipherSeed.fromMnemonic(mnemonic.join(" "));
+  const generatedSeed = crypto
+    .createHmac("sha256", entropy)
+    .update("umbrel-seed")
+    .digest("hex");
+  return diskLogic.writeSeedFile(generatedSeed);
+}
+
 // Log the user into the device. Caches the password if login is successful. Then returns jwt.
 export async function login(user: userInfo): Promise<string> {
   try {
@@ -223,7 +240,7 @@ export async function register(
 
   // Derive seed
   try {
-    await deriveSeed(user);
+    await deriveUmbrelSeed(seed);
   } catch {
     throw new NodeError("Unable to create seed");
   }

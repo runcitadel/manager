@@ -47,6 +47,7 @@ export default {
     "/lnd/data/chain/bitcoin/mainnet/admin.macaroon",
   LND_WALLET_PASSWORD: process.env.LND_WALLET_PASSWORD || "moneyprintergobrrr",
   GITHUB_REPO: process.env.GITHUB_REPO || "runcitadel/compose",
+  GITHUB_BRANCH: process.env.GITHUB_BRANCH || "master",
   VERSION_FILE:
     process.env.UMBREL_VERSION_FILE || process.env.VERSION_FILE || "/info.json",
   TOR_PROXY_IP: process.env.TOR_PROXY_IP || "192.168.0.1",

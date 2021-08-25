@@ -122,8 +122,8 @@ export async function getAvailableUpdate(): Promise<versionFile | string> {
     const current = await diskLogic.readVersionFile();
     const currentVersion = current.version;
 
-    // 'tag' should be master to begin with
-    let tag = "master";
+    // 'tag' should be the default Git branch
+    let tag = constants.GITHUB_BRANCH;
     let data;
     let isNewVersionAvailable = true;
     let isCompatibleWithCurrentVersion = false;

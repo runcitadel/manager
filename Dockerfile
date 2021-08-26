@@ -1,4 +1,4 @@
-FROM node:16-buster-slim as build-dependencies-helper
+FROM node:16-bullseye-slim as build-dependencies-helper
 
 # Install tools
 RUN apt-get update && apt-get install -y build-essential python3
@@ -31,7 +31,7 @@ RUN yarn build
 RUN rm -rf node_modules tsconfig.tsbuildinfo *.ts **/*.ts .eslint* .git* .prettier* .vscode* tsconfig.json
 
 # Final image
-FROM node:16-buster-slim AS manager
+FROM node:16-bullseye-slim AS manager
 
 # Copy built code from build stage to '/app' directory
 COPY --from=manager-builder /app /app

@@ -10,7 +10,7 @@
     "start": "node --experimental-json-modules ./bin/www.mjs"
   },
   "dependencies": {
-    "@runcitadel/utils": "^0.4.0",
+    "@runcitadel/utils": "^0.4.2",
     "aezeed": "^0.0.4",
     "bcrypt": "^5.0.1",
     "big.js": "^6.1.1",

@@ -1,6 +1,6 @@
 import * as crypto from 'node:crypto';
 import {Buffer} from 'node:buffer';
-import * as bcrypt from '@node-rs/bcrypt';
+import bcrypt from '@node-rs/bcrypt';
 import {CipherSeed} from 'aezeed';
 import * as iocane from 'iocane';
 import {NodeError} from '@runcitadel/utils';

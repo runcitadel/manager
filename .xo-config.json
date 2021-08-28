@@ -1,0 +1,7 @@
+{
+    "prettier": true,
+    "space": true,
+    "rules": {
+        "@typescript-eslint/no-unsafe-call": "off"
+    }
+}

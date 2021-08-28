@@ -1,39 +1,44 @@
-import { Router } from "express";
+import {Router} from 'express';
+
+import {NodeError, safeHandler} from '@runcitadel/utils';
+
+import socksProxyAgentPkg from 'socks-proxy-agent';
+import fetch from 'node-fetch';
+import constants from '../../utils/const.js';
+import * as auth from '../../middlewares/auth.js';
+
+// eslint-disable-next-line new-cap
 const router = Router();
-
-import * as auth from "../../middlewares/auth.js";
-
-import constants from "../../utils/const.js";
-import { safeHandler } from "@runcitadel/utils";
-
-import SocksProxyAgentPkg from "socks-proxy-agent";
-const { SocksProxyAgent } = SocksProxyAgentPkg;
-import fetch from "node-fetch";
+const {SocksProxyAgent} = socksProxyAgentPkg;
 
 const agent = new SocksProxyAgent(
-  `socks5h://${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`
+  `socks5h://${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`,
 );
 
 router.get(
-  "/price",
+  '/price',
   auth.jwt,
-  safeHandler(async (req, res) => {
+  safeHandler(async (request, response) => {
+    if (typeof request.query.currency !== 'string')
+      throw new NodeError('Currency is not a string');
     // Default to USD
-    const currency = req.query.currency || "USD";
-    const response = await fetch(
+    const currency = request.query.currency || 'USD';
+    const apiResponse = await fetch(
       `https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=${currency}`,
       {
         agent,
-        method: "GET",
-      }
+        method: 'GET',
+      },
     );
 
     try {
-      return res.status(constants.STATUS_CODES.OK).json(response.json());
+      return response
+        .status(constants.STATUS_CODES.OK)
+        .json(apiResponse.json());
     } catch {
-      return res.status(constants.STATUS_CODES.BAD_GATEWAY).json();
+      return response.status(constants.STATUS_CODES.BAD_GATEWAY).json();
     }
-  })
+  }),
 );
 
 export default router;

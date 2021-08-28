@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "module": "ES2020",
+        "module": "esnext",
         "strict": true,
         "moduleResolution": "node",
         "incremental": true,
@@ -15,6 +15,7 @@
             "types"
         ],
         "resolveJsonModule": true,
-        "allowSyntheticDefaultImports": true
+        "allowSyntheticDefaultImports": true,
+        "removeComments": true
     }
 }

@@ -1,215 +1,217 @@
-import { Router } from "express";
+import {Router} from 'express';
+
+import {safeHandler} from '@runcitadel/utils';
+import * as systemLogic from '../../logic/system.js';
+import * as diskLogic from '../../logic/disk.js';
+
+import * as auth from '../../middlewares/auth.js';
+
+import constants from '../../utils/const.js';
+
+// eslint-disable-next-line new-cap
 const router = Router();
 
-import * as systemLogic from "../../logic/system.js";
-import * as diskLogic from "../../logic/disk.js";
-
-import * as auth from "../../middlewares/auth.js";
-
-import constants from "../../utils/const.js";
-import { safeHandler } from "@runcitadel/utils";
-
 router.get(
-  "/info",
+  '/info',
   auth.jwt,
-  safeHandler(async (req, res) => {
+  safeHandler(async (request, response) => {
     const info = await systemLogic.getInfo();
 
-    return res.status(constants.STATUS_CODES.OK).json(info);
-  })
+    return response.status(constants.STATUS_CODES.OK).json(info);
+  }),
 );
 
 router.get(
-  "/status",
+  '/status',
   auth.jwt,
-  safeHandler(async (req, res) => {
+  safeHandler(async (request, response) => {
     const status = await systemLogic.status();
 
-    return res.status(constants.STATUS_CODES.OK).json(status);
-  })
+    return response.status(constants.STATUS_CODES.OK).json(status);
+  }),
 );
 
 router.post(
-  "/clear-memory-warning",
+  '/clear-memory-warning',
   auth.jwt,
-  safeHandler(async (req, res) => {
+  safeHandler(async (request, response) => {
     const result = await systemLogic.clearMemoryWarning();
 
-    return res.status(constants.STATUS_CODES.OK).json(result);
-  })
+    return response.status(constants.STATUS_CODES.OK).json(result);
+  }),
 );
 
 router.get(
-  "/dashboard-hidden-service",
+  '/dashboard-hidden-service',
   auth.jwt,
-  safeHandler(async (req, res) => {
+  safeHandler(async (request, response) => {
     const url = await systemLogic.getHiddenServiceUrl();
 
-    return res.status(constants.STATUS_CODES.OK).json(url);
-  })
+    return response.status(constants.STATUS_CODES.OK).json(url);
+  }),
 );
 
 router.get(
-  "/electrum-connection-details",
+  '/electrum-connection-details',
   auth.jwt,
-  safeHandler(async (req, res) => {
+  safeHandler(async (request, response) => {
     const connectionDetails = await systemLogic.getElectrumConnectionDetails();
 
-    return res.status(constants.STATUS_CODES.OK).json(connectionDetails);
-  })
+    return response.status(constants.STATUS_CODES.OK).json(connectionDetails);
+  }),
 );
 
 router.get(
-  "/bitcoin-p2p-connection-details",
+  '/bitcoin-p2p-connection-details',
   auth.jwt,
-  safeHandler(async (req, res) => {
+  safeHandler(async (request, response) => {
     const connectionDetails =
       await systemLogic.getBitcoinP2PConnectionDetails();
 
-    return res.status(constants.STATUS_CODES.OK).json(connectionDetails);
-  })
+    return response.status(constants.STATUS_CODES.OK).json(connectionDetails);
+  }),
 );
 
 router.get(
-  "/bitcoin-rpc-connection-details",
+  '/bitcoin-rpc-connection-details',
   auth.jwt,
-  safeHandler(async (req, res) => {
+  safeHandler(async (request, response) => {
     const connectionDetails =
       await systemLogic.getBitcoinRPCConnectionDetails();
 
-    return res.status(constants.STATUS_CODES.OK).json(connectionDetails);
-  })
+    return response.status(constants.STATUS_CODES.OK).json(connectionDetails);
+  }),
 );
 
 router.get(
-  "/lndconnect-urls",
+  '/lndconnect-urls',
   auth.jwt,
-  safeHandler(async (req, res) => {
+  safeHandler(async (request, response) => {
     const urls = await systemLogic.getLndConnectUrls();
 
-    return res.status(constants.STATUS_CODES.OK).json(urls);
-  })
+    return response.status(constants.STATUS_CODES.OK).json(urls);
+  }),
 );
 
 router.get(
-  "/get-update",
+  '/get-update',
   auth.jwt,
-  safeHandler(async (req, res) => {
+  safeHandler(async (request, response) => {
     const update = await systemLogic.getAvailableUpdate();
 
-    return res.status(constants.STATUS_CODES.OK).json(update);
-  })
+    return response.status(constants.STATUS_CODES.OK).json(update);
+  }),
 );
 
 router.get(
-  "/update-status",
-  safeHandler(async (req, res) => {
+  '/update-status',
+  safeHandler(async (request, response) => {
     const update = await systemLogic.getUpdateStatus();
 
-    return res.status(constants.STATUS_CODES.OK).json(update);
-  })
+    return response.status(constants.STATUS_CODES.OK).json(update);
+  }),
 );
 
 router.post(
-  "/update",
+  '/update',
   auth.jwt,
-  safeHandler(async (req, res) => {
+  safeHandler(async (request, response) => {
     const status = await systemLogic.startUpdate();
 
-    return res.status(constants.STATUS_CODES.OK).json(status);
-  })
+    return response.status(constants.STATUS_CODES.OK).json(status);
+  }),
 );
 
 router.get(
-  "/backup-status",
-  safeHandler(async (req, res) => {
+  '/backup-status',
+  safeHandler(async (request, response) => {
     const backup = await systemLogic.getBackupStatus();
 
-    return res.status(constants.STATUS_CODES.OK).json(backup);
-  })
+    return response.status(constants.STATUS_CODES.OK).json(backup);
+  }),
 );
 
 router.get(
-  "/debug-result",
+  '/debug-result',
   auth.jwt,
-  safeHandler(async (req, res) => {
+  safeHandler(async (request, response) => {
     const result = await systemLogic.getDebugResult();
 
-    return res.status(constants.STATUS_CODES.OK).json(result);
-  })
+    return response.status(constants.STATUS_CODES.OK).json(result);
+  }),
 );
 
 router.post(
-  "/debug",
+  '/debug',
   auth.jwt,
-  safeHandler(async (req, res) => {
+  safeHandler(async (request, response) => {
     const result = await systemLogic.requestDebug();
 
-    return res.status(constants.STATUS_CODES.OK).json(result);
-  })
+    return response.status(constants.STATUS_CODES.OK).json(result);
+  }),
 );
 
 router.post(
-  "/shutdown",
+  '/shutdown',
   auth.jwt,
-  safeHandler(async (req, res) => {
+  safeHandler(async (request, response) => {
     const result = await systemLogic.requestShutdown();
 
-    return res.status(constants.STATUS_CODES.OK).json(result);
-  })
+    return response.status(constants.STATUS_CODES.OK).json(result);
+  }),
 );
 
 router.post(
-  "/reboot",
+  '/reboot',
   auth.jwt,
-  safeHandler(async (req, res) => {
+  safeHandler(async (request, response) => {
     const result = await systemLogic.requestReboot();
 
-    return res.status(constants.STATUS_CODES.OK).json(result);
-  })
+    return response.status(constants.STATUS_CODES.OK).json(result);
+  }),
 );
 
 router.get(
-  "/storage",
-  safeHandler(async (req, res) => {
-    const update = await diskLogic.readJsonStatusFile("storage");
+  '/storage',
+  safeHandler(async (request, response) => {
+    const update = await diskLogic.readJsonStatusFile('storage');
 
-    return res.status(constants.STATUS_CODES.OK).json(update);
-  })
+    return response.status(constants.STATUS_CODES.OK).json(update);
+  }),
 );
 
 router.get(
-  "/memory",
-  safeHandler(async (req, res) => {
-    const update = await diskLogic.readJsonStatusFile("memory");
+  '/memory',
+  safeHandler(async (request, response) => {
+    const update = await diskLogic.readJsonStatusFile('memory');
 
-    return res.status(constants.STATUS_CODES.OK).json(update);
-  })
+    return response.status(constants.STATUS_CODES.OK).json(update);
+  }),
 );
 
 router.get(
-  "/temperature",
-  safeHandler(async (req, res) => {
-    const update = await diskLogic.readJsonStatusFile("temperature");
+  '/temperature',
+  safeHandler(async (request, response) => {
+    const update = await diskLogic.readJsonStatusFile('temperature');
 
-    return res.status(constants.STATUS_CODES.OK).json(update);
-  })
+    return response.status(constants.STATUS_CODES.OK).json(update);
+  }),
 );
 
 router.get(
-  "/uptime",
-  safeHandler(async (req, res) => {
-    const update = await diskLogic.readJsonStatusFile("uptime");
+  '/uptime',
+  safeHandler(async (request, response) => {
+    const update = await diskLogic.readJsonStatusFile('uptime');
 
-    return res.status(constants.STATUS_CODES.OK).json(update);
-  })
+    return response.status(constants.STATUS_CODES.OK).json(update);
+  }),
 );
 
 router.get(
-  "/is-umbrel-os",
-  safeHandler(async (req, res) => {
-    return res.status(constants.STATUS_CODES.OK).json(constants.IS_UMBREL_OS);
-  })
+  '/is-umbrel-os',
+  safeHandler(async (request, response) =>
+    response.status(constants.STATUS_CODES.OK).json(constants.IS_UMBREL_OS),
+  ),
 );
 
 export default router;

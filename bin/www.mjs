@@ -4,23 +4,25 @@
  * Module dependencies.
  */
 
-import app from '../app.js';
+import * as http from 'node:http';
+import * as process from 'node:process';
 import debugPkg from 'debug';
+import app from '../app.js';
+
 const debug = debugPkg('nodejs-regular-webapp2:server');
-import * as http from 'http';
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3005');
+const port = normalizePort(process.env.PORT || '3005');
 app.set('port', port);
 
 /**
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+const server = http.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -34,20 +36,21 @@ server.on('listening', onListening);
  * Normalize a port into a number, string, or false.
  */
 
-function normalizePort(val) {
-    var port = parseInt(val, 10);
+function normalizePort(value) {
+  const port = Number.parseInt(value, 10);
 
-    if (isNaN(port)) {
-    // named pipe
-        return val;
-    }
+  // eslint-disable-next-line unicorn/prefer-number-properties
+  if (isNaN(port)) {
+    // Named pipe
+    return value;
+  }
 
-    if (port >= 0) {
-    // port number
-        return port;
-    }
+  if (port >= 0) {
+    // Port number
+    return port;
+  }
 
-    return false;
+  return false;
 }
 
 /**
@@ -55,27 +58,23 @@ function normalizePort(val) {
  */
 
 function onError(error) {
-    if (error.syscall !== 'listen') {
-        throw error;
-    }
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
 
-    var bind = typeof port === 'string'
-        ? 'Pipe ' + port
-        : 'Port ' + port;
+  const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
 
-    // handle specific listen errors with friendly messages
-    switch (error.code) {
+  // Handle specific listen errors with friendly messages
+  switch (error.code) {
     case 'EACCES':
-        console.error(bind + ' requires elevated privileges');
-        process.exit(1);
-        break;
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
     case 'EADDRINUSE':
-        console.error(bind + ' is already in use');
-        process.exit(1);
-        break;
+      console.error(bind + ' is already in use');
+      process.exit(1);
     default:
-        throw error;
-    }
+      throw error;
+  }
 }
 
 /**
@@ -83,10 +82,8 @@ function onError(error) {
  */
 
 function onListening() {
-    var addr = server.address();
-    var bind = typeof addr === 'string'
-        ? 'pipe ' + addr
-        : 'port ' + addr.port;
-    debug('Listening on ' + bind);
-    console.log('Listening on ' + bind);
+  const addr = server.address();
+  const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+  console.log('Listening on ' + bind);
 }

@@ -1,56 +1,44 @@
-import winston from "winston";
-const { Container } = winston;
-import { format } from "logform";
-import DailyRotateFile from "winston-daily-rotate-file";
-import * as fs from "fs";
-import * as path from "path";
-import constants from "./const.js";
-import { getNamespace } from "continuation-local-storage";
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import * as process from 'node:process';
+import winston from 'winston';
+import {format} from 'logform';
+import DailyRotateFile from 'winston-daily-rotate-file';
 
-const LOCAL = "local";
-const logDir = "./logs";
+const {Container} = winston;
+
+const LOCAL = 'local';
+const logDir = './logs';
 const ENV = process.env.NODE_ENV;
 
 if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const appendCorrelationId = format((info, _options) => {
-  const apiRequest = getNamespace(constants.REQUEST_CORRELATION_NAMESPACE_KEY);
-  if (apiRequest) {
-    info.internalCorrelationId = apiRequest.get(
-      constants.REQUEST_CORRELATION_ID_KEY
-    );
-  }
-
-  return info;
-});
-
 const errorFileTransport = new DailyRotateFile({
-  filename: path.join(logDir, "error-%DATE%.log"),
-  datePattern: "YYYY-MM-DD",
-  level: "error",
-  maxSize: "10m",
-  maxFiles: "7d",
+  filename: path.join(logDir, 'error-%DATE%.log'),
+  datePattern: 'YYYY-MM-DD',
+  level: 'error',
+  maxSize: '10m',
+  maxFiles: '7d',
 });
 
 const apiFileTransport = new DailyRotateFile({
-  filename: path.join(logDir, "api-%DATE%.log"),
-  datePattern: "YYYY-MM-DD",
-  maxSize: "10m",
-  maxFiles: "7d",
+  filename: path.join(logDir, 'api-%DATE%.log'),
+  datePattern: 'YYYY-MM-DD',
+  maxSize: '10m',
+  maxFiles: '7d',
 });
 
 const localLogFormat = format.printf((info) => {
-  let data = "";
+  let data = '';
   if (info.data) {
-    data = JSON.stringify({ data: info.data });
+    data = JSON.stringify({data: info.data as unknown});
   }
 
-  return `${info.timestamp} ${info.level.toUpperCase()}: ${
-    info.internalCorrelationId
-  } [${info._module}] ${info.message} ${data}`;
+  return `${info.timestamp as string} ${info.level.toUpperCase()}: [${
+    info._module as string
+  }] ${info.message} ${data}`;
 });
 
 const localLoggerTransports: winston.transport[] = [
@@ -58,26 +46,22 @@ const localLoggerTransports: winston.transport[] = [
   apiFileTransport,
 ];
 
-if (ENV === "development") {
+if (ENV === 'development') {
   localLoggerTransports.push(new winston.transports.Console());
 }
 
 const container = new Container();
 
 container.add(LOCAL, {
-  level: "info",
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    appendCorrelationId(),
-    localLogFormat
-  ),
+  level: 'info',
+  format: winston.format.combine(winston.format.timestamp(), localLogFormat),
   transports: localLoggerTransports,
 });
 
 export const morganConfiguration = {
   stream: {
     write(message: string): void {
-      info(message, "manager", "");
+      info(message, 'manager', '');
     },
   },
 };

@@ -1,33 +1,35 @@
-import passport from "passport";
-import * as passportJWT from "passport-jwt";
-import * as passportHTTP from "passport-http";
-import * as bcrypt from "bcrypt";
-import * as diskLogic from "../logic/disk.js";
-import * as authLogic from "../logic/auth.js";
-import { NodeError } from "@runcitadel/utils";
-import rsa from "node-rsa";
-import { NextFunction, Request, Response } from "express";
-import type { user as userFile } from "@runcitadel/utils";
+import {Buffer} from 'node:buffer';
+import passport from 'passport';
+import * as passportJWT from 'passport-jwt';
+import * as passportHTTP from 'passport-http';
+import * as bcrypt from '@node-rs/bcrypt';
+import {NodeError} from '@runcitadel/utils';
+import rsa from 'node-rsa';
+import {NextFunction, Request, Response} from 'express';
+import type {user as userFile} from '@runcitadel/utils';
+import * as authLogic from '../logic/auth.js';
+import * as diskLogic from '../logic/disk.js';
 
 const JwtStrategy = passportJWT.Strategy;
 const BasicStrategy = passportHTTP.BasicStrategy;
 const ExtractJwt = passportJWT.ExtractJwt;
 
-const JWT_AUTH = "jwt";
-const REGISTRATION_AUTH = "register";
-const BASIC_AUTH = "basic";
+const JWT_AUTH = 'jwt';
+const REGISTRATION_AUTH = 'register';
+const BASIC_AUTH = 'basic';
 
-const SYSTEM_USER = "admin";
+const SYSTEM_USER = 'admin';
 
 const b64encode = (string: string) =>
-  Buffer.from(string, "utf-8").toString("base64");
-const b64decode = (b64: string) => Buffer.from(b64, "base64").toString("utf-8");
+  Buffer.from(string, 'utf-8').toString('base64');
+const b64decode = (b64: string) => Buffer.from(b64, 'base64').toString('utf-8');
 
 export async function generateJWTKeys(): Promise<void> {
-  const key = new rsa({ b: 512 }); // eslint-disable-line id-length
+  // eslint-disable-next-line new-cap
+  const key = new rsa({b: 512});
 
-  const privateKey = key.exportKey("private");
-  const publicKey = key.exportKey("public");
+  const privateKey = key.exportKey('private');
+  const publicKey = key.exportKey('public');
 
   await diskLogic.writeJWTPrivateKeyFile(privateKey);
   await diskLogic.writeJWTPublicKeyFile(publicKey);
@@ -42,14 +44,14 @@ export async function createJwtOptions(): Promise<{
   const pubKey = await diskLogic.readJWTPublicKeyFile();
 
   return {
-    jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme("jwt"),
+    jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('jwt'),
     secretOrKey: pubKey,
-    algorithm: "RS256",
+    algorithm: 'RS256',
   };
 }
 
 passport.serializeUser((user, done) => {
-  return done(null, SYSTEM_USER);
+  done(null, SYSTEM_USER);
 });
 
 passport.use(
@@ -61,20 +63,18 @@ passport.use(
       password,
       plainTextPassword: password,
     };
-    return next(null, user);
-  })
+    next(null, user);
+  }),
 );
 
-createJwtOptions().then((data) => {
-  const jwtOptions = data;
+const jwtOptions = await createJwtOptions();
 
-  passport.use(
-    JWT_AUTH,
-    new JwtStrategy(jwtOptions, (jwtPayload, done) => {
-      return done(null, { username: SYSTEM_USER });
-    })
-  );
-});
+passport.use(
+  JWT_AUTH,
+  new JwtStrategy(jwtOptions, (jwtPayload, done) => {
+    done(null, {username: SYSTEM_USER});
+  }),
+);
 
 passport.use(
   REGISTRATION_AUTH,
@@ -82,43 +82,53 @@ passport.use(
     password = b64decode(password);
     const credentials = authLogic.hashCredentials(password);
 
-    return next(null, credentials);
-  })
+    next(null, credentials);
+  }),
 );
 
 // Override the authorization header with password that is in the body of the request if basic auth was not supplied.
-export function convertReqBodyToBasicAuth(
-  req: Request,
-  _res: Response,
-  next: NextFunction
+export function convertRequestBodyToBasicAuth(
+  request: Request,
+  _response: Response,
+  next: NextFunction,
 ): void {
-  if (req.body.password && !req.headers.authorization) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  if (request.body.password && !request.headers.authorization) {
     // We need to Base64 encode because Passport breaks on ":" characters
-    const password = b64encode(req.body.password);
-    req.headers.authorization =
-      "Basic " + Buffer.from(SYSTEM_USER + ":" + password).toString("base64");
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const password = b64encode(request.body.password);
+    request.headers.authorization =
+      'Basic ' + Buffer.from(SYSTEM_USER + ':' + password).toString('base64');
   }
 
   next();
 }
 
-export function basic(req: Request, res: Response, next: NextFunction): void {
-  passport.authenticate(BASIC_AUTH, { session: false }, (error, user) => {
+export function basic(
+  request: Request,
+  response: Response,
+  next: NextFunction,
+): void {
+  passport.authenticate(BASIC_AUTH, {session: false}, (error, user) => {
     function handleCompare(equal: boolean) {
       if (!equal) {
-        return next(new NodeError("Incorrect password", 401)); // eslint-disable-line no-magic-numbers
+        next(new NodeError('Incorrect password', 401));
+        return;
       }
-      req.logIn(user, (error_) => {
+
+      request.logIn(user, (error_) => {
         if (error_) {
-          return next(new NodeError("Unable to authenticate", 401)); // eslint-disable-line no-magic-numbers
+          next(new NodeError('Unable to authenticate', 401));
+          return;
         }
 
-        return (<(error: unknown, user: unknown) => void>next)(null, user);
+        (next as (error: unknown, user: unknown) => void)(null, user);
       });
     }
 
     if (error || user === false) {
-      return next(new NodeError("Invalid state", 401)); // eslint-disable-line no-magic-numbers
+      next(new NodeError('Invalid state', 401));
+      return;
     }
 
     diskLogic
@@ -127,78 +137,87 @@ export function basic(req: Request, res: Response, next: NextFunction): void {
         const storedPassword = userData.password;
 
         bcrypt
-          .compare(user.password, <string>storedPassword)
+          .compare(
+            (user as {[key: string]: unknown; password: string}).password,
+            storedPassword!,
+          )
           .then(handleCompare)
           .catch(next);
       })
-      .catch(() => next(new NodeError("No user registered", 401))); // eslint-disable-line no-magic-numbers
-  })(req, res, next);
+      .catch(() => {
+        next(new NodeError('No user registered', 401));
+      });
+  })(request, response, next);
 }
 
-export function jwt(request: Request, res: Response, next: NextFunction): void {
-  passport.authenticate(JWT_AUTH, { session: false }, (error, user) => {
+// eslint-enable @typescript-eslint/no-unsafe-member-access
+export function jwt(
+  request: Request,
+  response: Response,
+  next: NextFunction,
+): void {
+  passport.authenticate(JWT_AUTH, {session: false}, (error, user) => {
     if (error || user === false) {
-      return next(new NodeError("Invalid JWT", 401)); // eslint-disable-line no-magic-numbers
+      next(new NodeError('Invalid JWT', 401));
+      return;
     }
 
     request.logIn(user, (error_) => {
       if (error_) {
-        return next(new NodeError("Unable to authenticate", 401)); // eslint-disable-line no-magic-numbers
+        next(new NodeError('Unable to authenticate', 401));
+        return;
       }
 
-      return (<(error: unknown, user: unknown) => void>next)(null, user);
+      (next as (error: unknown, user: unknown) => void)(null, user);
     });
-  })(request, res, next);
+  })(request, response, next);
 }
 
 export async function accountJWTProtected(
   request: Request,
-  res: Response,
-  next: NextFunction
+  response: Response,
+  next: NextFunction,
 ): Promise<void> {
   const isRegistered = await authLogic.isRegistered();
   if (isRegistered) {
-    passport.authenticate(JWT_AUTH, { session: false }, (error, user) => {
+    passport.authenticate(JWT_AUTH, {session: false}, (error, user) => {
       if (error || user === false) {
-        return next(new NodeError("Invalid JWT", 401)); // eslint-disable-line no-magic-numbers
+        next(new NodeError('Invalid JWT', 401));
+        return;
       }
 
       request.logIn(user, (error_: Error) => {
         if (error_) {
-          return next(new NodeError("Unable to authenticate", 401)); // eslint-disable-line no-magic-numbers
+          next(new NodeError('Unable to authenticate', 401));
+          return;
         }
 
-        return (<(error: unknown, user: unknown) => void>next)(null, user);
+        (next as (error: unknown, user: unknown) => void)(null, user);
       });
-    })(request, res, next);
+    })(request, response, next);
   } else {
-    return (<(error: unknown, user: unknown) => void>next)(
-      null,
-      "not-registered"
-    );
+    (next as (error: unknown, user: unknown) => void)(null, 'not-registered');
   }
 }
 
 export function register(
   request: Request,
-  res: Response,
-  next: NextFunction
+  response: Response,
+  next: NextFunction,
 ): void {
-  passport.authenticate(
-    REGISTRATION_AUTH,
-    { session: false },
-    (error, user) => {
-      if (error || user === false) {
-        return next(new NodeError("Invalid state", 401)); // eslint-disable-line no-magic-numbers
+  passport.authenticate(REGISTRATION_AUTH, {session: false}, (error, user) => {
+    if (error || user === false) {
+      next(new NodeError('Invalid state', 401));
+      return;
+    }
+
+    request.logIn(user, (error_) => {
+      if (error_) {
+        next(new NodeError('Unable to authenticate', 401));
+        return;
       }
 
-      request.logIn(user, (error_) => {
-        if (error_) {
-          return next(new NodeError("Unable to authenticate", 401)); // eslint-disable-line no-magic-numbers
-        }
-
-        return (<(error: unknown, user: unknown) => void>next)(null, user);
-      });
-    }
-  )(request, res, next);
+      (next as (error: unknown, user: unknown) => void)(null, user);
+    });
+  })(request, response, next);
 }

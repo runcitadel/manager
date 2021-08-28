@@ -1,5 +1,5 @@
-import * as diskLogic from "./disk.js";
-import { NodeError } from "@runcitadel/utils";
+import {NodeError} from '@runcitadel/utils';
+import * as diskLogic from './disk.js';
 
 export type app = {
   id: string;
@@ -34,13 +34,13 @@ export async function get(query: appQuery): Promise<app[]> {
       try {
         app.hiddenService = await diskLogic.readHiddenService(`app-${app.id}`);
       } catch {
-        app.hiddenService = "";
+        app.hiddenService = '';
       }
-    })
+    }),
   );
 
   if (query.installed === true) {
-    const installedApps = (await diskLogic.readUserFile()).installedApps || [];
+    const installedApps = (await diskLogic.readUserFile()).installedApps ?? [];
     apps = apps.filter((app: app) => installedApps.includes(app.id));
   }
 
@@ -51,30 +51,31 @@ async function isValidAppId(id: string): Promise<boolean> {
   if (!id) {
     return false;
   }
-  const appRegExp = new RegExp("^[a-z0-9-]+$");
+
+  const appRegExp = /^[a-z\d-]+$/;
   return appRegExp.test(id);
 }
 
 export async function install(id: string): Promise<void> {
   if (!(await isValidAppId(id))) {
-    throw new NodeError("Invalid app id");
+    throw new NodeError('Invalid app id');
   }
 
   try {
     await diskLogic.writeSignalFile(`app-install-${id}`);
   } catch {
-    throw new NodeError("Could not write the signal file");
+    throw new NodeError('Could not write the signal file');
   }
 }
 
 export async function uninstall(id: string): Promise<void> {
   if (!(await isValidAppId(id))) {
-    throw new NodeError("Invalid app id");
+    throw new NodeError('Invalid app id');
   }
 
   try {
     await diskLogic.writeSignalFile(`app-uninstall-${id}`);
   } catch {
-    throw new NodeError("Could not write the signal file");
+    throw new NodeError('Could not write the signal file');
   }
 }

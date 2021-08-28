@@ -1,12 +1,13 @@
-import * as crypto from "crypto";
-import * as bcrypt from "bcrypt";
-import { CipherSeed } from "aezeed";
-import * as iocane from "iocane";
-import * as diskLogic from "./disk.js";
-import * as lndApiService from "../services/lndApi.js";
-import { NodeError } from "@runcitadel/utils";
-import { generateJWT } from "../utils/jwt.js";
-import type { user as userFile } from "@runcitadel/utils";
+import * as crypto from 'node:crypto';
+import {Buffer} from 'node:buffer';
+import * as bcrypt from '@node-rs/bcrypt';
+import {CipherSeed} from 'aezeed';
+import * as iocane from 'iocane';
+import {NodeError} from '@runcitadel/utils';
+import type {user as userFile} from '@runcitadel/utils';
+import * as lndApiService from '../services/lnd-api.js';
+import {generateJWT} from '../utils/jwt.js';
+import * as diskLogic from './disk.js';
 
 const saltRounds = 10;
 
@@ -19,17 +20,17 @@ export type userInfo = {
   installedApps?: string[];
 };
 
-let devicePassword = "";
+let devicePassword = '';
 type changePasswordStatusType = {
   percent: number;
   error?: boolean;
 };
-let changePasswordStatus: changePasswordStatusType = { percent: 0 };
+let changePasswordStatus: changePasswordStatusType = {percent: 0};
 
 resetChangePasswordStatus();
 
 export function resetChangePasswordStatus(): void {
-  changePasswordStatus = { percent: 0 };
+  changePasswordStatus = {percent: 0};
 }
 
 // Caches the password.
@@ -44,27 +45,32 @@ export function getCachedPassword(): string {
 
 // Sets system password
 const setSystemPassword = async (password: string) => {
-  await diskLogic.writeStatusFile("password", password);
-  await diskLogic.writeSignalFile("change-password");
+  await diskLogic.writeStatusFile('password', password);
+  await diskLogic.writeSignalFile('change-password');
 };
 
 // Change the dashboard and system password.
 export async function changePassword(
   currentPassword: string,
-  newPassword: string
+  newPassword: string,
 ): Promise<void> {
   resetChangePasswordStatus();
-  changePasswordStatus.percent = 1; // eslint-disable-line no-magic-numbers
+  changePasswordStatus.percent = 1;
 
   try {
     // Update user file
     const user = await diskLogic.readUserFile();
     const credentials = hashCredentials(newPassword);
 
+    // Check if user.seed is of type ArrayBuffer, if so convert it to Buffer
+    if (user.seed instanceof ArrayBuffer) {
+      user.seed = Buffer.from(user.seed);
+    }
+
     // Re-encrypt seed with new password
     const decryptedSeed = await iocane
       .createAdapter()
-      .decrypt(<string | Buffer>user.seed, currentPassword);
+      .decrypt(user.seed as string | Buffer, currentPassword);
     const encryptedSeed = await iocane
       .createAdapter()
       .encrypt(decryptedSeed, newPassword);
@@ -87,7 +93,7 @@ export async function changePassword(
     changePasswordStatus.percent = 100;
     changePasswordStatus.error = true;
 
-    throw new Error("Unable to change password");
+    throw new Error('Unable to change password');
   }
 }
 
@@ -102,7 +108,7 @@ export function hashCredentials(password: string): {
 } {
   const hash = bcrypt.hashSync(password, saltRounds);
 
-  return { password: hash, plainTextPassword: password };
+  return {password: hash, plainTextPassword: password};
 }
 
 // Returns true if the user is registered otherwise false.
@@ -119,54 +125,54 @@ export async function isRegistered(): Promise<boolean> {
 // Derives the root seed and persists it to disk to be used for
 // determinstically deriving further entropy for any other service.
 export async function deriveSeed(
-  user: userInfo
+  user: userInfo,
 ): Promise<void | NodeJS.ErrnoException> {
   if (await diskLogic.seedFileExists()) {
     return;
   }
 
-  const mnemonic = (await seed(user)).join(" ");
-  const { entropy } = CipherSeed.fromMnemonic(mnemonic);
+  const mnemonic = (await seed(user)).join(' ');
+  const {entropy} = CipherSeed.fromMnemonic(mnemonic);
   const generatedSeed = crypto
-    .createHmac("sha256", entropy)
-    .update("umbrel-seed")
-    .digest("hex");
+    .createHmac('sha256', entropy)
+    .update('umbrel-seed')
+    .digest('hex');
   return diskLogic.writeSeedFile(generatedSeed);
 }
 
 // Derives the root seed and persists it to disk to be used for
 // determinstically deriving further entropy for any other service.
 export async function deriveUmbrelSeed(
-  mnemonic: string[]
+  mnemonic: string[],
 ): Promise<void | NodeJS.ErrnoException> {
   if (await diskLogic.seedFileExists()) {
     return;
   }
 
-  const { entropy } = CipherSeed.fromMnemonic(mnemonic.join(" "));
+  const {entropy} = CipherSeed.fromMnemonic(mnemonic.join(' '));
   const generatedSeed = crypto
-    .createHmac("sha256", entropy)
-    .update("umbrel-seed")
-    .digest("hex");
+    .createHmac('sha256', entropy)
+    .update('umbrel-seed')
+    .digest('hex');
   return diskLogic.writeSeedFile(generatedSeed);
 }
 
 // Log the user into the device. Caches the password if login is successful. Then returns jwt.
 export async function login(user: userInfo): Promise<string> {
   try {
-    const jwt = await generateJWT(<string>user.username);
+    const jwt = await generateJWT(user.username!);
+    cachePassword(user.password!);
 
-    cachePassword(<string>user.password);
-
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     deriveSeed(user);
 
     // This is only needed temporarily to update hardcoded passwords
     // on existing users without requiring them to change their password
-    setSystemPassword(<string>user.password);
+    await setSystemPassword(user.password!);
 
     return jwt;
   } catch {
-    throw new NodeError("Unable to generate JWT");
+    throw new NodeError('Unable to generate JWT');
   }
 }
 
@@ -180,34 +186,42 @@ export async function getInfo(): Promise<userFile> {
 
     return user;
   } catch {
-    throw new NodeError("Unable to get account info");
+    throw new NodeError('Unable to get account info');
   }
 }
 
 export async function seed(user: userInfo): Promise<string[]> {
   // Decrypt mnemonic seed
   try {
-    const { seed } = await diskLogic.readUserFile();
+    let {seed} = await diskLogic.readUserFile();
+
+    if (seed instanceof ArrayBuffer) {
+      seed = Buffer.from(seed);
+    }
+
+    if (seed instanceof Buffer) {
+      seed = seed.toString('utf-8');
+    }
 
     const decryptedSeed = (await iocane
       .createAdapter()
-      .decrypt(<string>seed, <string>user.plainTextPassword)) as string;
+      .decrypt(seed as string, user.plainTextPassword!)) as string;
 
-    return decryptedSeed.split(",");
+    return decryptedSeed.split(',');
   } catch {
-    throw new NodeError("Unable to decrypt mnemonic seed");
+    throw new NodeError('Unable to decrypt mnemonic seed');
   }
 }
 
 // Registers the the user to the device. Returns an error if a user already exists.
 export async function register(
   user: userInfo,
-  seed: string[]
+  seed: string[],
 ): Promise<{
   jwt: string;
 }> {
   if (await isRegistered()) {
-    throw new NodeError("User already exists", 400); // eslint-disable-line no-magic-numbers
+    throw new NodeError('User already exists', 400);
   }
 
   // Encrypt mnemonic seed for storage
@@ -215,9 +229,9 @@ export async function register(
   try {
     encryptedSeed = await iocane
       .createAdapter()
-      .encrypt(seed.join(), <string>user.plainTextPassword);
+      .encrypt(seed.join(','), user.plainTextPassword!);
   } catch {
-    throw new NodeError("Unable to encrypt mnemonic seed");
+    throw new NodeError('Unable to encrypt mnemonic seed');
   }
 
   // Save user
@@ -228,52 +242,52 @@ export async function register(
       seed: encryptedSeed,
     });
   } catch {
-    throw new NodeError("Unable to register user");
+    throw new NodeError('Unable to register user');
   }
 
   // Update system password
   try {
-    await setSystemPassword(<string>user.plainTextPassword);
+    await setSystemPassword(user.plainTextPassword!);
   } catch {
-    throw new NodeError("Unable to set system password");
+    throw new NodeError('Unable to set system password');
   }
 
   // Derive seed
   try {
     await deriveUmbrelSeed(seed);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(error);
-    throw new NodeError("Unable to create seed");
+    throw new NodeError('Unable to create seed');
   }
 
   // Generate JWt
   let jwt;
   try {
-    jwt = await generateJWT(<string>user.username);
+    jwt = await generateJWT(user.username!);
   } catch {
     await diskLogic.deleteUserFile();
-    throw new NodeError("Unable to generate JWT");
+    throw new NodeError('Unable to generate JWT');
   }
 
   // Initialize lnd wallet
   try {
     await lndApiService.initializeWallet(seed, jwt);
-  } catch (error) {
+  } catch (error: unknown) {
     await diskLogic.deleteUserFile();
-    throw new NodeError((<{ response: { data: string } }>error).response.data);
+    throw new NodeError((error as {response: {data: string}}).response.data);
   }
 
   // Return token
-  return { jwt };
+  return {jwt};
 }
 
 // Generate and return a new jwt token.
 export async function refresh(user: userInfo): Promise<string> {
   try {
-    const jwt = await generateJWT(<string>user.username);
+    const jwt = await generateJWT(user.username!);
 
     return jwt;
   } catch {
-    throw new NodeError("Unable to generate JWT");
+    throw new NodeError('Unable to generate JWT');
   }
 }

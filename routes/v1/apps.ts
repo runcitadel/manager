@@ -1,46 +1,50 @@
-import { Router } from "express";
+import {Router} from 'express';
+
+import {safeHandler} from '@runcitadel/utils';
+import * as appsLogic from '../../logic/apps.js';
+
+import * as auth from '../../middlewares/auth.js';
+
+import constants from '../../utils/const.js';
+
+// eslint-disable-next-line new-cap
 const router = Router();
 
-import * as appsLogic from "../../logic/apps.js";
-
-import * as auth from "../../middlewares/auth.js";
-
-import constants from "../../utils/const.js";
-import { safeHandler } from "@runcitadel/utils";
-
 router.get(
-  "/",
+  '/',
   auth.jwt,
-  safeHandler(async (req, res) => {
+  safeHandler(async (request, response) => {
     const query = {
-      installed: req.query.installed === "1",
+      installed: request.query.installed === '1',
     };
     const apps = await appsLogic.get(query);
 
-    return res.status(constants.STATUS_CODES.OK).json(apps);
-  })
+    response.status(constants.STATUS_CODES.OK).json(apps);
+  }),
 );
 
 router.post(
-  "/:id/install",
+  '/:id/install',
   auth.jwt,
-  safeHandler(async (req, res) => {
-    const { id } = req.params;
+  safeHandler(async (request, response) => {
+    const {id} = request.params;
+    // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
     const result = await appsLogic.install(id);
 
-    return res.status(constants.STATUS_CODES.OK).json(result);
-  })
+    response.status(constants.STATUS_CODES.OK).json(result);
+  }),
 );
 
 router.post(
-  "/:id/uninstall",
+  '/:id/uninstall',
   auth.jwt,
-  safeHandler(async (req, res) => {
-    const { id } = req.params;
+  safeHandler(async (request, response) => {
+    const {id} = request.params;
+    // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
     const result = await appsLogic.uninstall(id);
 
-    return res.status(constants.STATUS_CODES.OK).json(result);
-  })
+    response.status(constants.STATUS_CODES.OK).json(result);
+  }),
 );
 
 export default router;

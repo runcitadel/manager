@@ -1,11 +1,37 @@
-import jwt, { VerifyErrors } from "jsonwebtoken";
-const { sign, verify } = jwt;
-import * as diskLogic from "../logic/disk.js";
+import * as process from 'node:process';
+import jwt from 'jsonwebtoken';
+import type {
+  Secret,
+  GetPublicKeyOrSecret,
+  VerifyCallback,
+  VerifyErrors,
+} from 'jsonwebtoken';
+import * as diskLogic from '../logic/disk.js';
 
-// Environmental variables are Strings, the expiry will be interpreted as milliseconds if not converted to int.
-// eslint-disable-next-line no-magic-numbers
+const {sign, verify} = jwt;
+
+const typedVerify = verify as (
+  token: string,
+  secretOrPublicKey: Secret | GetPublicKeyOrSecret,
+  callback?: VerifyCallback,
+) => void;
+
+async function isValidJWT(payload: string, pubkey: string): Promise<boolean> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  return new Promise((resolve, reject) => {
+    typedVerify(payload, pubkey, (error: VerifyErrors | null) => {
+      if (error) {
+        resolve(false);
+      } else {
+        resolve(true);
+      }
+    });
+  });
+}
+
+// Environmental variables are strings, the expiry will be interpreted as milliseconds if not converted to int.
 const expiresIn = process.env.JWT_EXPIRATION
-  ? Number.parseInt(process.env.JWT_EXPIRATION)
+  ? Number.parseInt(process.env.JWT_EXPIRATION, 10)
   : 3600;
 
 export async function generateJWT(account: string): Promise<string> {
@@ -13,17 +39,14 @@ export async function generateJWT(account: string): Promise<string> {
 
   const jwtPubKey = await diskLogic.readJWTPublicKeyFile();
 
-  // eslint-disable-next-line object-shorthand
-  const token = await sign({ id: account }, jwtPrivateKey, {
-    expiresIn: expiresIn,
-    algorithm: "RS256",
+  const token = sign({id: account}, jwtPrivateKey, {
+    expiresIn,
+    algorithm: 'RS256',
   });
 
-  await verify(token, jwtPubKey, (error: VerifyErrors | null) => {
-    if (error) {
-      return Promise.reject(new Error("Error generating JWT token."));
-    }
-  });
+  if (!(await isValidJWT(token, jwtPubKey))) {
+    return Promise.reject(new Error('Error generating JWT token.'));
+  }
 
   return token;
 }

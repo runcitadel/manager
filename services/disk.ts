@@ -2,7 +2,8 @@
  * Generic disk functions.
  */
 
-import * as fs from "fs";
+import * as fs from "fs/promises";
+import { existsSync as fileExists } from "fs";
 import { fs_utils } from "@runcitadel/utils";
 import copy from "recursive-copy";
 
@@ -23,52 +24,50 @@ export async function copyFolder(
 
 // Delete all items in a directory.
 export async function deleteItemsInDir(path: string): Promise<void> {
-  const contents = fs.readdirSync(path);
+  const contents = await fs.readdir(path);
 
   for (const item of contents) {
     const curPath = path + "/" + item;
-    if (fs.statSync(curPath).isDirectory()) {
-      deleteFolderRecursive(curPath);
+    if ((await fs.stat(curPath)).isDirectory()) {
+      await deleteFolderRecursive(curPath);
     } else {
-      fs.unlinkSync(curPath);
+      await fs.unlink(curPath);
     }
   }
 }
 
 export async function deleteFoldersInDir(path: string): Promise<void> {
-  const contents = fs.readdirSync(path);
+  const directories = await listDirsInDir(path);
 
-  for (const item of contents) {
-    if (fs.statSync(path + "/" + item).isDirectory()) {
-      deleteFolderRecursive(path + "/" + item);
-    }
+  for (const item of directories) {
+    await deleteFolderRecursive(path + "/" + item);
   }
 }
 
-export function deleteFolderRecursive(path: string): void {
-  if (fs.existsSync(path)) {
-    const contents = fs.readdirSync(path);
+export async function deleteFolderRecursive(path: string): Promise<void> {
+  if (fileExists(path)) {
+    const contents = await fs.readdir(path);
 
     for (const file of contents) {
       const curPath = path + "/" + file;
-      if (fs.statSync(curPath).isDirectory()) {
-        deleteFolderRecursive(curPath);
+      if ((await fs.stat(curPath)).isDirectory()) {
+        await deleteFolderRecursive(curPath);
       } else {
-        fs.unlinkSync(curPath);
+        await fs.unlink(curPath);
       }
     }
 
-    fs.rmdirSync(path);
+    await fs.rmdir(path);
   }
 }
 
 export async function listDirsInDir(dir: string): Promise<string[]> {
-  const contents = fs.readdirSync(dir);
+  const contents = await fs.readdir(dir);
 
-  const dirs = [];
+  const dirs: string[] = [];
 
   for (const item of contents) {
-    if (fs.statSync(dir + "/" + item).isDirectory()) {
+    if ((await fs.stat(dir + "/" + item)).isDirectory()) {
       dirs.push(item);
     }
   }
@@ -80,10 +79,13 @@ export async function moveFoldersToDir(
   fromDir: string,
   toDir: string
 ): Promise<void> {
-  const contents = fs.readdirSync(fromDir);
+  const contents = await fs.readdir(fromDir);
 
   for (const item of contents) {
-    if (item !== ".git" && fs.statSync(fromDir + "/" + item).isDirectory()) {
+    if (
+      item !== ".git" &&
+      (await fs.stat(fromDir + "/" + item)).isDirectory()
+    ) {
       await copyFolder(fromDir + "/" + item, toDir + "/" + item);
     }
   }
@@ -96,9 +98,9 @@ export async function ensureWriteFile(
 ): Promise<NodeJS.ErrnoException | void> {
   const time = new Date();
   try {
-    fs.utimesSync(filePath, time, time);
+    await fs.utimes(filePath, time, time);
   } catch (err) {
-    fs.closeSync(fs.openSync(filePath, "w"));
+    await (await fs.open(filePath, "w")).close();
   }
   return await fs_utils.safeWriteFile(filePath, data);
 }

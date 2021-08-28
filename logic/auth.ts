@@ -241,7 +241,8 @@ export async function register(
   // Derive seed
   try {
     await deriveUmbrelSeed(seed);
-  } catch {
+  } catch (error) {
+    console.error(error);
     throw new NodeError("Unable to create seed");
   }
 

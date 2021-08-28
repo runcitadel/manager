@@ -16,7 +16,7 @@ export async function initializeWallet(
     seed,
   });
 
-  const data = await fetch(lnapiUrl + ":" + lnapiPort + "/v1/lnd/wallet/init", {
+  const data = await fetch(`${lnapiUrl}:${lnapiPort}/v1/lnd/wallet/init`, {
     body,
     headers,
     method: "POST",
@@ -27,6 +27,6 @@ export async function initializeWallet(
 
 export async function getStatus(): Promise<unknown> {
   return await (
-    await fetch(lnapiUrl + ":" + lnapiPort + "/v1/lnd/info/status")
+    await fetch(`${lnapiUrl}:${lnapiPort}/v1/lnd/info/status`)
   ).json();
 }

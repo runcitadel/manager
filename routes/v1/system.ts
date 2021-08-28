@@ -2,6 +2,7 @@ import { Router } from "express";
 const router = Router();
 
 import * as systemLogic from "../../logic/system.js";
+import * as diskLogic from "../../logic/disk.js";
 
 import * as auth from "../../middlewares/auth.js";
 
@@ -165,6 +166,49 @@ router.post(
     const result = await systemLogic.requestReboot();
 
     return res.status(constants.STATUS_CODES.OK).json(result);
+  })
+);
+
+router.get(
+  "/storage",
+  safeHandler(async (req, res) => {
+    const update = await diskLogic.readJsonStatusFile("storage");
+
+    return res.status(constants.STATUS_CODES.OK).json(update);
+  })
+);
+
+router.get(
+  "/memory",
+  safeHandler(async (req, res) => {
+    const update = await diskLogic.readJsonStatusFile("memory");
+
+    return res.status(constants.STATUS_CODES.OK).json(update);
+  })
+);
+
+router.get(
+  "/temperature",
+  safeHandler(async (req, res) => {
+    const update = await diskLogic.readJsonStatusFile("temperature");
+
+    return res.status(constants.STATUS_CODES.OK).json(update);
+  })
+);
+
+router.get(
+  "/uptime",
+  safeHandler(async (req, res) => {
+    const update = await diskLogic.readJsonStatusFile("uptime");
+
+    return res.status(constants.STATUS_CODES.OK).json(update);
+  })
+);
+
+router.get(
+  "/is-umbrel-os",
+  safeHandler(async (req, res) => {
+    return res.status(constants.STATUS_CODES.OK).json(constants.IS_UMBREL_OS);
   })
 );
 

@@ -109,7 +109,7 @@ export async function readVersionFile(): Promise<versionFile> {
 }
 
 export async function readUpdateStatusFile(): Promise<updateStatus> {
-  return (await readStatusFile("update-status.json")) as updateStatus;
+  return (await readJsonStatusFile("update")) as updateStatus;
 }
 
 export async function writeUpdateStatusFile(json: updateStatus): Promise<void> {
@@ -136,7 +136,7 @@ export async function writeUpdateSignalFile(): Promise<void> {
 }
 
 export async function readBackupStatusFile(): Promise<backupStatus> {
-  return (await readStatusFile("backup-status.json")) as backupStatus;
+  return (await readJsonStatusFile("backup")) as backupStatus;
 }
 
 export function readJWTPrivateKeyFile(): Promise<string> {
@@ -174,7 +174,7 @@ export async function readJsonFile(path: string): Promise<unknown> {
 }
 
 export async function readDebugStatusFile(): Promise<debugStatus> {
-  return (await readStatusFile("debug-status.json")) as debugStatus;
+  return (await readJsonStatusFile("debug")) as debugStatus;
 }
 
 export function writeSignalFile(signalFile: string): Promise<void> {
@@ -251,4 +251,12 @@ export function memoryWarningStatusFileExists(): Promise<boolean> {
 
 export function deleteMemoryWarningStatusFile(): Promise<void | NodeJS.ErrnoException> {
   return deleteStatusFile("memory-warning");
+}
+
+export function readJsonStatusFile(resource: string): Promise<unknown> {
+  const statusFilePath = path.join(
+    constants.STATUS_DIR,
+    `${resource}-status.json`
+  );
+  return fs_utils.readJsonFile(statusFilePath).catch(() => null);
 }

@@ -10,7 +10,7 @@ WORKDIR /app
 COPY yarn.lock package.json ./
 
 # Install dependencies
-RUN yarn install --production
+RUN yarn workspaces focus -A --production
 
 # TS Build Stage
 FROM build-dependencies-helper as manager-builder

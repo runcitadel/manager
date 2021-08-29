@@ -665,10 +665,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^16.7.4":
-  version: 16.7.4
-  resolution: "@types/node@npm:16.7.4"
-  checksum: da7813e6c37e7813645a9d40de6d9f803fbadb2975748d307ec31d8e4f9baabccf49b667a39e4b1288d477ec7d34a339e8a41d8703a1d7ab0ec8eb2516073f27
+"@types/node@npm:*, @types/node@npm:^16.7.5":
+  version: 16.7.5
+  resolution: "@types/node@npm:16.7.5"
+  checksum: 19765a6e2fea3269f627045a4e07a33f57dc567b5437c7bb18e585944a6c76a23e4b43969e586eac7d92247f424000992c1c8cbfd33faeae4676095aad4a2b61
   languageName: node
   linkType: hard
 
@@ -3888,7 +3888,7 @@ __metadata:
     "@types/express": ^4.17.13
     "@types/jsonwebtoken": ^8.5.5
     "@types/morgan": ^1.9.3
-    "@types/node": ^16.7.4
+    "@types/node": ^16.7.5
     "@types/node-fetch": ^2.5.12
     "@types/node-rsa": ^1.1.1
     "@types/passport": ^1.0.7

@@ -2,7 +2,7 @@ import {Buffer} from 'node:buffer';
 import passport from 'passport';
 import * as passportJWT from 'passport-jwt';
 import * as passportHTTP from 'passport-http';
-import * as bcrypt from '@node-rs/bcrypt';
+import bcrypt from '@node-rs/bcrypt';
 import {NodeError} from '@runcitadel/utils';
 import rsa from 'node-rsa';
 import {NextFunction, Request, Response} from 'express';

@@ -19,10 +19,8 @@ router.get(
   '/price',
   auth.jwt,
   safeHandler(async (request, response) => {
-    if (typeof request.query.currency !== 'string')
-      throw new NodeError('Currency is not a string');
     // Default to USD
-    const currency = request.query.currency || 'USD';
+    const currency = request.query.currency as string || 'USD';
     const apiResponse = await fetch(
       `https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=${currency}`,
       {

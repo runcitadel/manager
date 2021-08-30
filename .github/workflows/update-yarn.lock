@@ -1,0 +1,26 @@
+name: Update yarn  lockfile for dependabot PRs
+
+on:
+  push:
+    branches:
+      - "dependabot/**"
+      
+jobs:
+  build:
+    name: Build image
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v2
+ 
+      - name: Update lockfile
+        run: yarn install
+
+      - name: Push changes
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          message: "Update yarn.lock"
+          branch: ${{ github.ref }}
+ 

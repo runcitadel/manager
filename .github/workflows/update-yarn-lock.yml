@@ -17,10 +17,6 @@ jobs:
       - name: Update lockfile
         run:  rm yarn.lock && YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install
 
-      - name: Push changes
-        uses: actions-js/push@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          message: "Update yarn.lock"
-          branch: ${{ github.ref }}
+      - name: Commit & push changes
+        run:  git commit -a -m "Update yarn.lock" && git push
  

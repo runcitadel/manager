@@ -17,6 +17,9 @@ jobs:
       - name: Update lockfile
         run:  rm yarn.lock && YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install
 
+      - name: Configure git user
+        uses: fregante/setup-git-user@v1
+
       - name: Commit & push changes
         run:  git commit -a -m "Update yarn.lock" && git push
  

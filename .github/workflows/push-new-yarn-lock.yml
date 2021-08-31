@@ -1,0 +1,61 @@
+name: Comment on the pull request
+
+# read-write repo token
+# access to secrets
+on:
+  workflow_run:
+    workflows: ["Update yarn lockfile for dependabot PRs"]
+    types:
+      - completed
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    if: >
+      ${{ github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: 'Download artifact'
+        uses: actions/github-script@v3.1.0
+        with:
+          script: |
+            var artifacts = await github.actions.listWorkflowRunArtifacts({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               run_id: ${{github.event.workflow_run.id }},
+            });
+            var matchArtifact = artifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "yarn.lock"
+            })[0];
+            var matchArtifact2 = artifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "gh-pr-ref"
+            })[0];
+            var download = github.actions.downloadArtifact({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               artifact_id: matchArtifact.id
+            });
+            var download2 = github.actions.downloadArtifact({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               artifact_id: matchArtifact2.id
+            });
+            var fs = require('fs');
+            fs.writeFileSync('${{github.workspace}}/yarn.lock', Buffer.from((await download).data));
+            fs.writeFileSync('${{github.workspace}}/gh-pr-ref', Buffer.from((await download2).data));
+
+      - name: Read PR ref file
+        id: getref
+        run: echo "::set-output name=pr_ref::$(cat gh-pr-ref)"
+       
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ steps.getref.outputs.pr_ref }}
+          
+      - name: Commit & push
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add yarn.lock
+          git commit -m "Update yarn lockfile"
+          git push

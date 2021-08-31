@@ -16,7 +16,15 @@ jobs:
       - name: Update lockfile
         run:  rm yarn.lock && YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install
 
+      - name: Save PR number
+        run:  echo ${{ github.event.number }} > ./gh-event-number
+
       - uses: actions/upload-artifact@v2
         with:
           name: yarn.lock
           path: yarn.lock
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: gh-event-number
+          path: gh-event-number

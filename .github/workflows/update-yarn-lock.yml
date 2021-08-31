@@ -1,10 +1,10 @@
-name: Update yarn  lockfile for dependabot PRs
+name: Update yarn lockfile for dependabot PRs
 
 on:
-  pull_request_target
+  pull_request
 
 jobs:
-  build:
+  update:
     if: ${{ github.actor == 'dependabot[bot]' }}
     name: Update lockfile
     runs-on: ubuntu-20.04
@@ -16,9 +16,7 @@ jobs:
       - name: Update lockfile
         run:  rm yarn.lock && YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install
 
-      - name: Configure git user
-        uses: fregante/setup-git-user@v1
-
-      - name: Commit & push changes
-        run:  git commit -a -m "Update yarn.lock" && git push
- 
+      - uses: actions/upload-artifact@v2
+        with:
+          name: yarn.lock
+          path: yarn.lock

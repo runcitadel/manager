@@ -1,13 +1,12 @@
 name: Update yarn  lockfile for dependabot PRs
 
 on:
-  push:
-    branches:
-      - "dependabot/**"
-      
+  pull_request_target
+
 jobs:
   build:
-    name: Build image
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    name: Update lockfile
     runs-on: ubuntu-20.04
 
     steps:

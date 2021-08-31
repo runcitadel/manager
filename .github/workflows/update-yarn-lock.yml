@@ -17,7 +17,7 @@ jobs:
         run:  rm yarn.lock && YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install
 
       - name: Save PR number
-        run:  echo ${{ github.event.number }} > ./gh-event-number
+        run:  echo ${{ github.payload.pull_request.head.ref }} > ./gh-pr-ref
 
       - uses: actions/upload-artifact@v2
         with:
@@ -26,5 +26,5 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: gh-event-number
-          path: gh-event-number
+          name: gh-pr-ref
+          path: gh-pr-ref

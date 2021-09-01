@@ -23,7 +23,7 @@
     "lndconnect": "^0.2.10",
     "logform": "^2.2.0",
     "morgan": "^1.10.0",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^3.0.0",
     "node-rsa": "^1.1.1",
     "passport": "^0.4.1",
     "passport-http": "^0.3.0",

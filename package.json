@@ -23,7 +23,7 @@
     "lndconnect": "^0.2.10",
     "logform": "^2.2.0",
     "morgan": "^1.10.0",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^3.0.0",
     "node-rsa": "^1.1.1",
     "passport": "^0.4.1",
     "passport-http": "^0.3.0",
@@ -35,13 +35,12 @@
     "winston-daily-rotate-file": "^4.5.5"
   },
   "devDependencies": {
-    "@types/big.js": "^6.1.1",
+    "@types/big.js": "^6.1.2",
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
     "@types/jsonwebtoken": "^8.5.5",
     "@types/morgan": "^1.9.3",
-    "@types/node": "^16.7.5",
-    "@types/node-fetch": "^2.5.12",
+    "@types/node": "^16.7.10",
     "@types/node-rsa": "^1.1.1",
     "@types/passport": "^1.0.7",
     "@types/passport-http": "^0.3.9",
@@ -52,5 +51,5 @@
     "xo": "^0.44.0"
   },
   "type": "module",
-  "packageManager": "yarn@3.0.1"
+  "packageManager": "yarn@3.0.2"
 }

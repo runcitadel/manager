@@ -1,6 +1,6 @@
 import {Router} from 'express';
 
-import {NodeError, safeHandler} from '@runcitadel/utils';
+import {safeHandler} from '@runcitadel/utils';
 
 import socksProxyAgentPkg from 'socks-proxy-agent';
 import fetch from 'node-fetch';
@@ -20,7 +20,7 @@ router.get(
   auth.jwt,
   safeHandler(async (request, response) => {
     // Default to USD
-    const currency = request.query.currency as string || 'USD';
+    const currency = (request.query.currency as string) || 'USD';
     const apiResponse = await fetch(
       `https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=${currency}`,
       {

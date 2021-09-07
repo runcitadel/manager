@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import * as semver from 'semver';
-import lndconnect from 'lndconnect';
+import { encode } from '@runcitadel/lndconnect';
 
 import {NodeError} from '@runcitadel/utils';
 
@@ -13,7 +13,6 @@ import type {
 import constants from '../utils/const.js';
 import * as diskLogic from './disk.js';
 
-const {encode} = lndconnect;
 
 export type connectionDetails = {
   address: string;

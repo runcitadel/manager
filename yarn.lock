@@ -513,6 +513,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@runcitadel/lndconnect@npm:^0.0.2":
+  version: 0.0.2
+  resolution: "@runcitadel/lndconnect@npm:0.0.2"
+  dependencies:
+    base64url: ^3.0.1
+    decode-uri-component: ^0.2.0
+    strict-uri-encode: ^2.0.0
+    untildify: ^4.0.0
+  checksum: 8072f16b20ed92fd0c93b886d6f46aa915b74108302cd4666e70fc4138c0e3b4f8a90759727a7e99866b07e6e106bd0449ea73a4498751dd7c950a4f751c6b72
+  languageName: node
+  linkType: hard
+
 "@runcitadel/utils@npm:^0.4.2":
   version: 0.4.2
   resolution: "@runcitadel/utils@npm:0.4.2"
@@ -655,10 +667,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^16.7.10":
-  version: 16.7.10
-  resolution: "@types/node@npm:16.7.10"
-  checksum: 0518803caa1a14f4070e770a280eda1c4b4581a425cbda481cdd54b1f34a7ea497ff067fd23b90e3d4f4fdcfba15c1316182875e9cf9f5b2e880de1e595de053
+"@types/node@npm:*, @types/node@npm:^16.7.13":
+  version: 16.7.13
+  resolution: "@types/node@npm:16.7.13"
+  checksum: 15dc28aa44674d3f49dcca4a6523b6ab1ef9bbea5c659057bec13153e1873718d6b62ab0ea57a3d57ee37f0f1136ae30e3ea503df43b0afa3ae437c8750be7f5
   languageName: node
   linkType: hard
 
@@ -3419,18 +3431,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lndconnect@npm:^0.2.10":
-  version: 0.2.10
-  resolution: "lndconnect@npm:0.2.10"
-  dependencies:
-    base64url: ^3.0.1
-    decode-uri-component: ^0.2.0
-    strict-uri-encode: ^2.0.0
-    untildify: ^4.0.0
-  checksum: 6770a8778c81d6f4e120c88806aee93792af1748116d58807782831d11b0cbb75af000812edd2ef0257b3cdbacdf3fb9dac2d1c1bcb0dc8f193400656d16e281
-  languageName: node
-  linkType: hard
-
 "load-json-file@npm:^4.0.0":
   version: 4.0.0
   resolution: "load-json-file@npm:4.0.0"
@@ -3857,13 +3857,14 @@ __metadata:
   resolution: "node-manager@workspace:."
   dependencies:
     "@node-rs/bcrypt": ^1.4.1
+    "@runcitadel/lndconnect": ^0.0.2
     "@runcitadel/utils": ^0.4.2
     "@types/big.js": ^6.1.2
     "@types/cors": ^2.8.12
     "@types/express": ^4.17.13
     "@types/jsonwebtoken": ^8.5.5
     "@types/morgan": ^1.9.3
-    "@types/node": ^16.7.10
+    "@types/node": ^16.7.13
     "@types/node-rsa": ^1.1.1
     "@types/passport": ^1.0.7
     "@types/passport-http": ^0.3.9
@@ -3878,7 +3879,6 @@ __metadata:
     express: ^4.17.1
     iocane: ^5.1.1
     jsonwebtoken: ^8.5.1
-    lndconnect: ^0.2.10
     logform: ^2.2.0
     morgan: ^1.10.0
     node-fetch: ^3.0.0

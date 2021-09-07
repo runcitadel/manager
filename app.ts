@@ -10,8 +10,6 @@ import cors from 'cors';
 import {camelCaseMiddleware, errorHandlerMiddleware} from '@runcitadel/utils';
 import {corsOptions} from './middlewares/cors.js';
 
-import * as logger from './utils/logger.js';
-
 import ping from './routes/ping.js';
 import account from './routes/v1/account.js';
 import system from './routes/v1/system.js';
@@ -34,7 +32,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(camelCaseMiddleware);
-app.use(morgan('combined', logger.morganConfiguration));
+app.use(morgan('combined'));
 
 app.use('/ping', ping);
 app.use('/v1/account', account);

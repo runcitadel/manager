@@ -158,7 +158,7 @@ export async function readDebugStatusFile(): Promise<debugStatus> {
 }
 
 export async function writeSignalFile(
-  signalFile: string
+  signalFile: string,
 ): Promise<void | NodeJS.ErrnoException> {
   if (!/^[\w-]+$/.test(signalFile)) {
     throw new Error('Invalid signal file characters');

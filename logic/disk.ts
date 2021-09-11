@@ -157,13 +157,15 @@ export async function readDebugStatusFile(): Promise<debugStatus> {
   return (await readJsonStatusFile('debug')) as debugStatus;
 }
 
-export async function writeSignalFile(signalFile: string): Promise<void> {
+export async function writeSignalFile(
+  signalFile: string
+): Promise<void | NodeJS.ErrnoException> {
   if (!/^[\w-]+$/.test(signalFile)) {
     throw new Error('Invalid signal file characters');
   }
 
   const signalFilePath = path.join(constants.SIGNAL_DIR, signalFile);
-  return fs_utils.safeWriteFile(signalFilePath, 'true');
+  return ensureWriteFile(signalFilePath, 'true');
 }
 
 export async function writeStatusFile(

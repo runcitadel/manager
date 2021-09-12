@@ -126,12 +126,12 @@ export async function reboot(): Promise<void> {
 
 // Read the contends of a file.
 export async function readUtf8File(path: string): Promise<string> {
-  return await fs.readUtf8File(path);
+  return fs.readUtf8File(path);
 }
 
 // Read the contents of a file and return a json object.
 export async function readJsonFile(path: string): Promise<unknown> {
-  return await fs.readJsonFile(path);
+  return fs.readJsonFile(path);
 }
 
 export async function readDebugStatusFile(): Promise<debugStatus> {
@@ -146,7 +146,7 @@ export async function writeSignalFile(
   }
 
   const signalFilePath = path.join(constants.SIGNAL_DIR, signalFile);
-  return await fs.touch(signalFilePath);
+  return fs.touch(signalFilePath);
 }
 
 export async function writeStatusFile(
@@ -158,7 +158,7 @@ export async function writeStatusFile(
   }
 
   const statusFilePath = path.join(constants.STATUS_DIR, statusFile);
-  return await fs.ensureWriteFile(statusFilePath, contents);
+  return fs.ensureWriteFile(statusFilePath, contents);
 }
 
 export async function readStatusFile(statusFile: string): Promise<unknown> {

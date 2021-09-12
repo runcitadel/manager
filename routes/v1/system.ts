@@ -6,7 +6,8 @@ import * as diskLogic from '../../logic/disk.js';
 
 import * as auth from '../../middlewares/auth.js';
 
-import constants, {STATUS_CODES} from '../../utils/const.js';
+import * as constants from '../../utils/const.js';
+import {STATUS_CODES} from '../../utils/const.js';
 
 const router = expressRouter();
 

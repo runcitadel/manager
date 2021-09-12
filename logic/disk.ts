@@ -10,7 +10,7 @@ import type {
   versionFile,
   debugStatus,
 } from '@runcitadel/utils';
-import constants from '../utils/const.js';
+import * as constants from '../utils/const.js';
 import {app} from './apps.js';
 
 export async function deleteUserFile(): Promise<void> {

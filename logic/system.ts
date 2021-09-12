@@ -10,7 +10,7 @@ import type {
   debugStatus,
   backupStatus,
 } from '@runcitadel/utils';
-import constants from '../utils/const.js';
+import * as constants from '../utils/const.js';
 import * as diskLogic from './disk.js';
 
 export type connectionDetails = {

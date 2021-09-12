@@ -95,16 +95,11 @@ export async function readUpdateStatusFile(): Promise<updateStatus> {
 }
 
 export async function writeUpdateStatusFile(json: updateStatus): Promise<void> {
-  await writeStatusFile('update-status.json', JSON.stringify(json));
+  await writeJsonStatusFile('update', json);
 }
 
 export async function updateSignalFileExists(): Promise<boolean> {
-  try {
-    await statusFileExists('update-status.json');
-    return true;
-  } catch {
-    return false;
-  }
+  return statusFileExists('update-status.json');
 }
 
 export async function updateLockFileExists(): Promise<boolean> {
@@ -165,19 +160,19 @@ export async function writeSignalFile(
   }
 
   const signalFilePath = path.join(constants.SIGNAL_DIR, signalFile);
-  return ensureWriteFile(signalFilePath, 'true');
+  return touch(signalFilePath);
 }
 
 export async function writeStatusFile(
   statusFile: string,
   contents: string,
-): Promise<void> {
+): Promise<void | NodeJS.ErrnoException> {
   if (!/^[\w-]+$/.test(statusFile)) {
     throw new Error('Invalid signal file characters');
   }
 
   const statusFilePath = path.join(constants.STATUS_DIR, statusFile);
-  return fs_utils.safeWriteFile(statusFilePath, contents);
+  return ensureWriteFile(statusFilePath, contents);
 }
 
 export async function readStatusFile(statusFile: string): Promise<unknown> {
@@ -241,9 +236,20 @@ export async function readJsonStatusFile(resource: string): Promise<unknown> {
   return fs_utils.readJsonFile(statusFilePath).catch(() => null);
 }
 
-export async function ensureWriteFile(
+export async function writeJsonStatusFile(
+  resource: string,
+  data: unknown,
+): Promise<void | NodeJS.ErrnoException> {
+  const statusFilePath = path.join(
+    constants.STATUS_DIR,
+    `${resource}-status.json`,
+  );
+  await touch(statusFilePath);
+  return fs_utils.writeJsonFile(statusFilePath, data);
+}
+
+export async function touch(
   filePath: string,
-  data: string,
 ): Promise<NodeJS.ErrnoException | void> {
   const time = new Date();
   try {
@@ -251,6 +257,12 @@ export async function ensureWriteFile(
   } catch {
     await (await fs.open(filePath, 'w')).close();
   }
+}
 
+export async function ensureWriteFile(
+  filePath: string,
+  data: string,
+): Promise<NodeJS.ErrnoException | void> {
+  await touch(filePath);
   await fs_utils.safeWriteFile(filePath, data);
 }

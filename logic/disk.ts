@@ -1,6 +1,7 @@
 import * as path from 'node:path';
 
 import * as fs from 'node:fs/promises';
+import {existsSync} from 'node:fs';
 import {Buffer} from 'node:buffer';
 import {fs_utils} from '@runcitadel/utils';
 
@@ -16,15 +17,6 @@ import {app} from './apps.js';
 
 export async function deleteUserFile(): Promise<void> {
   await fs.unlink(constants.USER_FILE);
-}
-
-export async function fileExists(path: string): Promise<boolean> {
-  try {
-    await fs.readFile(path);
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 export async function readUserFile(): Promise<userFile> {
@@ -50,12 +42,8 @@ export async function writeSeedFile(
   return ensureWriteFile(constants.SEED_FILE, seed);
 }
 
-export async function seedFileExists(): Promise<boolean> {
-  return fileExists(constants.SEED_FILE);
-}
-
-export async function hiddenServiceFileExists(): Promise<boolean> {
-  return fileExists(constants.DASHBOARD_HIDDEN_SERVICE_FILE);
+export function seedFileExists(): boolean {
+  return existsSync(constants.SEED_FILE);
 }
 
 export async function readElectrumHiddenService(): Promise<string> {
@@ -184,13 +172,13 @@ export async function readStatusFile(statusFile: string): Promise<unknown> {
   return fs_utils.readJsonFile(statusFilePath);
 }
 
-export async function statusFileExists(statusFile: string): Promise<boolean> {
+export function statusFileExists(statusFile: string): boolean {
   if (!/^[\w-]+$/.test(statusFile)) {
     throw new Error('Invalid signal file characters');
   }
 
   const statusFilePath = path.join(constants.STATUS_DIR, statusFile);
-  return fileExists(statusFilePath);
+  return existsSync(statusFilePath);
 }
 
 export async function deleteStatusFile(statusFile: string): Promise<void> {

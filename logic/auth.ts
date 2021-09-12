@@ -9,8 +9,6 @@ import * as lndApiService from '../services/lnd-api.js';
 import {generateJWT} from '../utils/jwt.js';
 import * as diskLogic from './disk.js';
 
-const saltRounds = 10;
-
 export type userInfo = {
   username?: string;
   name: string;
@@ -20,11 +18,14 @@ export type userInfo = {
   installedApps?: string[];
 };
 
-let devicePassword = '';
-type changePasswordStatusType = {
+export type changePasswordStatusType = {
   percent: number;
   error?: boolean;
 };
+
+const saltRounds = 10;
+
+let devicePassword = '';
 let changePasswordStatus: changePasswordStatusType = {percent: 0};
 
 resetChangePasswordStatus();
@@ -127,7 +128,7 @@ export async function isRegistered(): Promise<boolean> {
 export async function deriveSeed(
   user: userInfo,
 ): Promise<void | NodeJS.ErrnoException> {
-  if (await diskLogic.seedFileExists()) {
+  if (diskLogic.seedFileExists()) {
     return;
   }
 
@@ -145,7 +146,7 @@ export async function deriveSeed(
 export async function deriveUmbrelSeed(
   mnemonic: string[],
 ): Promise<void | NodeJS.ErrnoException> {
-  if (await diskLogic.seedFileExists()) {
+  if (diskLogic.seedFileExists()) {
     return;
   }
 

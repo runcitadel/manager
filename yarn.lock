@@ -656,10 +656,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^16.7.13":
-  version: 16.7.13
-  resolution: "@types/node@npm:16.7.13"
-  checksum: 15dc28aa44674d3f49dcca4a6523b6ab1ef9bbea5c659057bec13153e1873718d6b62ab0ea57a3d57ee37f0f1136ae30e3ea503df43b0afa3ae437c8750be7f5
+"@types/node@npm:*, @types/node@npm:^16.9.1":
+  version: 16.9.1
+  resolution: "@types/node@npm:16.9.1"
+  checksum: 41afcf183a22d59323a0199dd7e0f46591247f45fc08a4434edb26d56dc279ae4fdb80f37989ddd7a0f45e3857c4933e6e82057ede09c5a829f77e373e680375
   languageName: node
   linkType: hard
 
@@ -3724,7 +3724,7 @@ __metadata:
     "@types/express": ^4.17.13
     "@types/jsonwebtoken": ^8.5.5
     "@types/morgan": ^1.9.3
-    "@types/node": ^16.7.13
+    "@types/node": ^16.9.1
     "@types/node-rsa": ^1.1.1
     "@types/passport": ^1.0.7
     "@types/passport-http": ^0.3.9
@@ -3747,7 +3747,7 @@ __metadata:
     passport-jwt: ^4.0.0
     semver: ^7.3.5
     socks-proxy-agent: ^6.0.0
-    typescript: ^4.4.2
+    typescript: ^4.4.3
     uuid: ^8.3.2
     xo: ^0.44.0
   languageName: unknown
@@ -5055,23 +5055,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@>=4.3, typescript@^4.3.5, typescript@^4.4.2":
-  version: 4.4.2
-  resolution: "typescript@npm:4.4.2"
+"typescript@>=4.3, typescript@^4.3.5, typescript@^4.4.3":
+  version: 4.4.3
+  resolution: "typescript@npm:4.4.3"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 194e08e9d1971d667d6fd1a0554616b7022312a2319d70e81a64e502a265992061ee7817ed9a69b52bbabe7a9b85e7938cb8c11c433e40a516b277f8c4dacd51
+  checksum: 05823f21796d450531a7e4ab299715d38fd9ded0e4ce7400876053f4b5166ca3dde7a68cecfe72d9086039f03c0b6edba36516fb10ed83c5837d9600532ea4c2
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@>=4.3#~builtin<compat/typescript>, typescript@patch:typescript@^4.3.5#~builtin<compat/typescript>, typescript@patch:typescript@^4.4.2#~builtin<compat/typescript>":
-  version: 4.4.2
-  resolution: "typescript@patch:typescript@npm%3A4.4.2#~builtin<compat/typescript>::version=4.4.2&hash=32657b"
+"typescript@patch:typescript@>=4.3#~builtin<compat/typescript>, typescript@patch:typescript@^4.3.5#~builtin<compat/typescript>, typescript@patch:typescript@^4.4.3#~builtin<compat/typescript>":
+  version: 4.4.3
+  resolution: "typescript@patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=32657b"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 3109ae25705746996007161cdd3271857db4f40356b894e34d4cabc216bf9e251f53e0bb6e48df2450b5e3fd948dcbee716a616a4ad4cf7251292025e6163cb1
+  checksum: 28ab98313afab46788ff41014fdb5932430ada6e03cf9e92ac47f406526a2cac1ae2894834e7da61e46b7429318e9c47f45ba8de323332f0cb9af99b72ebae74
   languageName: node
   linkType: hard
 

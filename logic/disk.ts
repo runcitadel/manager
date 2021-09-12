@@ -37,7 +37,7 @@ export async function writeUserFile(json: userFile): Promise<void> {
 export async function writeSeedFile(
   seed: string,
 ): Promise<void | NodeJS.ErrnoException> {
-  return ensureWriteFile(constants.SEED_FILE, seed);
+  return fs.ensureWriteFile(constants.SEED_FILE, seed);
 }
 
 export function seedFileExists(): boolean {
@@ -126,12 +126,12 @@ export async function reboot(): Promise<void> {
 
 // Read the contends of a file.
 export async function readUtf8File(path: string): Promise<string> {
-  return fs.readUtf8File(path);
+  return await fs.readUtf8File(path);
 }
 
 // Read the contents of a file and return a json object.
 export async function readJsonFile(path: string): Promise<unknown> {
-  return fs.readJsonFile(path);
+  return await fs.readJsonFile(path);
 }
 
 export async function readDebugStatusFile(): Promise<debugStatus> {
@@ -146,7 +146,7 @@ export async function writeSignalFile(
   }
 
   const signalFilePath = path.join(constants.SIGNAL_DIR, signalFile);
-  return touch(signalFilePath);
+  return await fs.touch(signalFilePath);
 }
 
 export async function writeStatusFile(
@@ -158,7 +158,7 @@ export async function writeStatusFile(
   }
 
   const statusFilePath = path.join(constants.STATUS_DIR, statusFile);
-  return ensureWriteFile(statusFilePath, contents);
+  return await fs.ensureWriteFile(statusFilePath, contents);
 }
 
 export async function readStatusFile(statusFile: string): Promise<unknown> {
@@ -230,25 +230,6 @@ export async function writeJsonStatusFile(
     constants.STATUS_DIR,
     `${resource}-status.json`,
   );
-  await touch(statusFilePath);
+  await fs.touch(statusFilePath);
   return fs.writeJsonFile(statusFilePath, data);
-}
-
-export async function touch(
-  filePath: string,
-): Promise<NodeJS.ErrnoException | void> {
-  const time = new Date();
-  try {
-    await fs.utimes(filePath, time, time);
-  } catch {
-    await (await fs.open(filePath, 'w')).close();
-  }
-}
-
-export async function ensureWriteFile(
-  filePath: string,
-  data: string,
-): Promise<NodeJS.ErrnoException | void> {
-  await touch(filePath);
-  await fs.safeWriteFile(filePath, data);
 }

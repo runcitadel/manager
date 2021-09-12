@@ -12,7 +12,7 @@
   "dependencies": {
     "@node-rs/bcrypt": "^1.4.1",
     "@runcitadel/lndconnect": "^0.0.2",
-    "@runcitadel/utils": "^0.4.2",
+    "@runcitadel/utils": "^0.5.0",
     "aezeed": "^0.0.4",
     "big.js": "^6.1.1",
     "cors": "^2.8.5",

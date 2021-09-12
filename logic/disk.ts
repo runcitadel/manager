@@ -1,9 +1,7 @@
 import * as path from 'node:path';
 
-import * as fs from 'node:fs/promises';
-import {existsSync} from 'node:fs';
 import {Buffer} from 'node:buffer';
-import {fs_utils} from '@runcitadel/utils';
+import {fs} from '@runcitadel/utils';
 
 import type {
   user as userFile,
@@ -26,14 +24,14 @@ export async function readUserFile(): Promise<userFile> {
     seed: '',
     installedApps: [],
   };
-  const userFile: userFile = (await fs_utils.readJsonFile(
+  const userFile: userFile = (await fs.readJsonFile(
     constants.USER_FILE,
   )) as userFile;
   return {...defaultProperties, ...userFile};
 }
 
 export async function writeUserFile(json: userFile): Promise<void> {
-  return fs_utils.writeJsonFile(constants.USER_FILE, json);
+  return fs.writeJsonFile(constants.USER_FILE, json);
 }
 
 export async function writeSeedFile(
@@ -43,31 +41,31 @@ export async function writeSeedFile(
 }
 
 export function seedFileExists(): boolean {
-  return existsSync(constants.SEED_FILE);
+  return fs.existsSync(constants.SEED_FILE);
 }
 
 export async function readElectrumHiddenService(): Promise<string> {
-  return fs_utils.readUtf8File(constants.ELECTRUM_HIDDEN_SERVICE_FILE);
+  return fs.readUtf8File(constants.ELECTRUM_HIDDEN_SERVICE_FILE);
 }
 
 export async function readBitcoinP2PHiddenService(): Promise<string> {
-  return fs_utils.readUtf8File(constants.BITCOIN_P2P_HIDDEN_SERVICE_FILE);
+  return fs.readUtf8File(constants.BITCOIN_P2P_HIDDEN_SERVICE_FILE);
 }
 
 export async function readBitcoinRPCHiddenService(): Promise<string> {
-  return fs_utils.readUtf8File(constants.BITCOIN_RPC_HIDDEN_SERVICE_FILE);
+  return fs.readUtf8File(constants.BITCOIN_RPC_HIDDEN_SERVICE_FILE);
 }
 
 export async function readLndRestHiddenService(): Promise<string> {
-  return fs_utils.readUtf8File(constants.LND_REST_HIDDEN_SERVICE_FILE);
+  return fs.readUtf8File(constants.LND_REST_HIDDEN_SERVICE_FILE);
 }
 
 export async function readLndGrpcHiddenService(): Promise<string> {
-  return fs_utils.readUtf8File(constants.LND_GRPC_HIDDEN_SERVICE_FILE);
+  return fs.readUtf8File(constants.LND_GRPC_HIDDEN_SERVICE_FILE);
 }
 
 export async function readLndCert(): Promise<string> {
-  return fs_utils.readUtf8File(constants.LND_CERT_FILE);
+  return fs.readUtf8File(constants.LND_CERT_FILE);
 }
 
 export async function readLndAdminMacaroon(): Promise<Buffer> {
@@ -75,7 +73,7 @@ export async function readLndAdminMacaroon(): Promise<Buffer> {
 }
 
 export async function readVersionFile(): Promise<versionFile> {
-  return (await fs_utils.readJsonFile(constants.VERSION_FILE)) as versionFile;
+  return (await fs.readJsonFile(constants.VERSION_FILE)) as versionFile;
 }
 
 export async function readUpdateStatusFile(): Promise<updateStatus> {
@@ -103,19 +101,19 @@ export async function readBackupStatusFile(): Promise<backupStatus> {
 }
 
 export async function readJWTPrivateKeyFile(): Promise<string> {
-  return fs_utils.readUtf8File(constants.JWT_PRIVATE_KEY_FILE);
+  return fs.readUtf8File(constants.JWT_PRIVATE_KEY_FILE);
 }
 
 export async function readJWTPublicKeyFile(): Promise<string> {
-  return fs_utils.readUtf8File(constants.JWT_PUBLIC_KEY_FILE);
+  return fs.readUtf8File(constants.JWT_PUBLIC_KEY_FILE);
 }
 
 export async function writeJWTPrivateKeyFile(data: string): Promise<void> {
-  return fs_utils.safeWriteFile(constants.JWT_PRIVATE_KEY_FILE, data);
+  return fs.safeWriteFile(constants.JWT_PRIVATE_KEY_FILE, data);
 }
 
 export async function writeJWTPublicKeyFile(data: string): Promise<void> {
-  return fs_utils.safeWriteFile(constants.JWT_PUBLIC_KEY_FILE, data);
+  return fs.safeWriteFile(constants.JWT_PUBLIC_KEY_FILE, data);
 }
 
 export async function shutdown(): Promise<void> {
@@ -128,12 +126,12 @@ export async function reboot(): Promise<void> {
 
 // Read the contends of a file.
 export async function readUtf8File(path: string): Promise<string> {
-  return fs_utils.readUtf8File(path);
+  return fs.readUtf8File(path);
 }
 
 // Read the contents of a file and return a json object.
 export async function readJsonFile(path: string): Promise<unknown> {
-  return fs_utils.readJsonFile(path);
+  return fs.readJsonFile(path);
 }
 
 export async function readDebugStatusFile(): Promise<debugStatus> {
@@ -169,7 +167,7 @@ export async function readStatusFile(statusFile: string): Promise<unknown> {
   }
 
   const statusFilePath = path.join(constants.STATUS_DIR, statusFile);
-  return fs_utils.readJsonFile(statusFilePath);
+  return fs.readJsonFile(statusFilePath);
 }
 
 export function statusFileExists(statusFile: string): boolean {
@@ -178,7 +176,7 @@ export function statusFileExists(statusFile: string): boolean {
   }
 
   const statusFilePath = path.join(constants.STATUS_DIR, statusFile);
-  return existsSync(statusFilePath);
+  return fs.existsSync(statusFilePath);
 }
 
 export async function deleteStatusFile(statusFile: string): Promise<void> {
@@ -192,7 +190,7 @@ export async function deleteStatusFile(statusFile: string): Promise<void> {
 
 export async function readAppRegistry(): Promise<app[]> {
   const appRegistryFile = path.join(constants.APPS_DIR, 'registry.json');
-  return (await fs_utils.readJsonFile(appRegistryFile)) as app[];
+  return (await fs.readJsonFile(appRegistryFile)) as app[];
 }
 
 export async function readHiddenService(id: string): Promise<string> {
@@ -205,7 +203,7 @@ export async function readHiddenService(id: string): Promise<string> {
     id,
     'hostname',
   );
-  return fs_utils.readUtf8File(hiddenServiceFile);
+  return fs.readUtf8File(hiddenServiceFile);
 }
 
 export async function memoryWarningStatusFileExists(): Promise<boolean> {
@@ -221,7 +219,7 @@ export async function readJsonStatusFile(resource: string): Promise<unknown> {
     constants.STATUS_DIR,
     `${resource}-status.json`,
   );
-  return fs_utils.readJsonFile(statusFilePath).catch(() => null);
+  return fs.readJsonFile(statusFilePath).catch(() => null);
 }
 
 export async function writeJsonStatusFile(
@@ -233,7 +231,7 @@ export async function writeJsonStatusFile(
     `${resource}-status.json`,
   );
   await touch(statusFilePath);
-  return fs_utils.writeJsonFile(statusFilePath, data);
+  return fs.writeJsonFile(statusFilePath, data);
 }
 
 export async function touch(
@@ -252,5 +250,5 @@ export async function ensureWriteFile(
   data: string,
 ): Promise<NodeJS.ErrnoException | void> {
   await touch(filePath);
-  await fs_utils.safeWriteFile(filePath, data);
+  await fs.safeWriteFile(filePath, data);
 }

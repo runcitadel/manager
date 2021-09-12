@@ -514,21 +514,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@runcitadel/utils@npm:^0.4.2":
-  version: 0.4.2
-  resolution: "@runcitadel/utils@npm:0.4.2"
+"@runcitadel/utils@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "@runcitadel/utils@npm:0.5.0"
   dependencies:
-    "@types/big.js": ^6.1.1
+    "@types/big.js": ^6.1.2
     "@types/express": ^4.17.13
     "@types/validator": ^13.6.3
     big.js: ^6.1.1
     validator: ^13.6.0
     yaml: ^1.10.2
-  checksum: 4ff0428206c08bac3e0ae3c393d46057d75ed81198e8c5b0ce6764946fffb1d199b2353abb0e155862f15551fe74156ecb951b13c97b9da5e21b2528b84f4983
+  checksum: ae199ccef3deafcf0886d9b2326ea2d83fd55ec4d91f37d02f6e0748f9723a355b7a1a592ed4fd9869695de426ce8cca60062f1f7191188ef27b8c7b7abfbf7d
   languageName: node
   linkType: hard
 
-"@types/big.js@npm:^6.1.1, @types/big.js@npm:^6.1.2":
+"@types/big.js@npm:^6.1.2":
   version: 6.1.2
   resolution: "@types/big.js@npm:6.1.2"
   checksum: fb0daa4b23e1cb9d0d1c847722ae3764978d0290875d91687c6ecc7566860129ce86b190b732294484077d45f9b82ef3e97784ee32c83aef05e8c8433c4fde6a
@@ -3718,7 +3718,7 @@ __metadata:
   dependencies:
     "@node-rs/bcrypt": ^1.4.1
     "@runcitadel/lndconnect": ^0.0.2
-    "@runcitadel/utils": ^0.4.2
+    "@runcitadel/utils": ^0.5.0
     "@types/big.js": ^6.1.2
     "@types/cors": ^2.8.12
     "@types/express": ^4.17.13

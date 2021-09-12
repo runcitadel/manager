@@ -1,10 +1,8 @@
 import * as process from 'node:process';
 import fetch from 'node-fetch';
 
-// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-const lnapiUrl = process.env.MIDDLEWARE_API_URL || 'http://localhost';
-// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-const lnapiPort = process.env.MIDDLEWARE_API_PORT || 3005;
+const lnapiUrl = process.env.MIDDLEWARE_API_URL ?? 'http://localhost';
+const lnapiPort = process.env.MIDDLEWARE_API_PORT ?? 3005;
 
 export async function initializeWallet(
   seed: string[],
@@ -26,8 +24,4 @@ export async function initializeWallet(
   });
 
   return data;
-}
-
-export async function getStatus(): Promise<unknown> {
-  return (await fetch(`${lnapiUrl}:${lnapiPort}/v1/lnd/info/status`)).json();
 }

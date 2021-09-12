@@ -5,7 +5,7 @@ import * as appsLogic from '../../logic/apps.js';
 
 import * as auth from '../../middlewares/auth.js';
 
-import constants from '../../utils/const.js';
+import {STATUS_CODES} from '../../utils/const.js';
 
 // eslint-disable-next-line new-cap
 const router = Router();
@@ -19,7 +19,7 @@ router.get(
     };
     const apps = await appsLogic.get(query);
 
-    response.status(constants.STATUS_CODES.OK).json(apps);
+    response.status(STATUS_CODES.OK).json(apps);
   }),
 );
 
@@ -31,7 +31,7 @@ router.post(
     // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
     const result = await appsLogic.install(id);
 
-    response.status(constants.STATUS_CODES.OK).json(result);
+    response.status(STATUS_CODES.OK).json(result);
   }),
 );
 
@@ -43,7 +43,7 @@ router.post(
     // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
     const result = await appsLogic.uninstall(id);
 
-    response.status(constants.STATUS_CODES.OK).json(result);
+    response.status(STATUS_CODES.OK).json(result);
   }),
 );
 

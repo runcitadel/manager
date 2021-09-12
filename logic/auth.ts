@@ -5,7 +5,7 @@ import {CipherSeed} from 'aezeed';
 import * as iocane from 'iocane';
 import {NodeError} from '@runcitadel/utils';
 import type {user as userFile} from '@runcitadel/utils';
-import * as lndApiService from '../services/lnd-api.js';
+import * as lightningApiService from '../services/lightning-api.js';
 import {generateJWT} from '../utils/jwt.js';
 import * as diskLogic from './disk.js';
 
@@ -164,8 +164,7 @@ export async function login(user: userInfo): Promise<string> {
     const jwt = await generateJWT(user.username!);
     cachePassword(user.password!);
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    deriveSeed(user);
+    await deriveSeed(user);
 
     // This is only needed temporarily to update hardcoded passwords
     // on existing users without requiring them to change their password
@@ -272,7 +271,7 @@ export async function register(
 
   // Initialize lnd wallet
   try {
-    await lndApiService.initializeWallet(seed, jwt);
+    await lightningApiService.initializeWallet(seed, jwt);
   } catch (error: unknown) {
     await diskLogic.deleteUserFile();
     throw new NodeError((error as {response: {data: string}}).response.data);

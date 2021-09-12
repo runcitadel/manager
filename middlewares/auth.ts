@@ -4,11 +4,12 @@ import * as passportJWT from 'passport-jwt';
 import * as passportHTTP from 'passport-http';
 import bcrypt from '@node-rs/bcrypt';
 import {NodeError} from '@runcitadel/utils';
-import rsa from 'node-rsa';
+import Rsa from 'node-rsa';
 import {NextFunction, Request, Response} from 'express';
 import type {user as userFile} from '@runcitadel/utils';
 import * as authLogic from '../logic/auth.js';
 import * as diskLogic from '../logic/disk.js';
+import {STATUS_CODES} from '../utils/const.js';
 
 const JwtStrategy = passportJWT.Strategy;
 const BasicStrategy = passportHTTP.BasicStrategy;
@@ -25,8 +26,7 @@ const b64encode = (string: string) =>
 const b64decode = (b64: string) => Buffer.from(b64, 'base64').toString('utf-8');
 
 export async function generateJWTKeys(): Promise<void> {
-  // eslint-disable-next-line new-cap
-  const key = new rsa({b: 512});
+  const key = new Rsa({b: 512});
 
   const privateKey = key.exportKey('private');
   const publicKey = key.exportKey('public');
@@ -112,13 +112,15 @@ export function basic(
   passport.authenticate(BASIC_AUTH, {session: false}, (error, user) => {
     function handleCompare(equal: boolean) {
       if (!equal) {
-        next(new NodeError('Incorrect password', 401));
+        next(new NodeError('Incorrect password', STATUS_CODES.UNAUTHORIZED));
         return;
       }
 
       request.logIn(user, (error_) => {
         if (error_) {
-          next(new NodeError('Unable to authenticate', 401));
+          next(
+            new NodeError('Unable to authenticate', STATUS_CODES.UNAUTHORIZED),
+          );
           return;
         }
 
@@ -127,7 +129,7 @@ export function basic(
     }
 
     if (error || user === false) {
-      next(new NodeError('Invalid state', 401));
+      next(new NodeError('Invalid state', STATUS_CODES.UNAUTHORIZED));
       return;
     }
 
@@ -145,7 +147,7 @@ export function basic(
           .catch(next);
       })
       .catch(() => {
-        next(new NodeError('No user registered', 401));
+        next(new NodeError('No user registered', STATUS_CODES.UNAUTHORIZED));
       });
   })(request, response, next);
 }
@@ -158,13 +160,15 @@ export function jwt(
 ): void {
   passport.authenticate(JWT_AUTH, {session: false}, (error, user) => {
     if (error || user === false) {
-      next(new NodeError('Invalid JWT', 401));
+      next(new NodeError('Invalid JWT', STATUS_CODES.UNAUTHORIZED));
       return;
     }
 
     request.logIn(user, (error_) => {
       if (error_) {
-        next(new NodeError('Unable to authenticate', 401));
+        next(
+          new NodeError('Unable to authenticate', STATUS_CODES.UNAUTHORIZED),
+        );
         return;
       }
 
@@ -182,13 +186,15 @@ export async function accountJWTProtected(
   if (isRegistered) {
     passport.authenticate(JWT_AUTH, {session: false}, (error, user) => {
       if (error || user === false) {
-        next(new NodeError('Invalid JWT', 401));
+        next(new NodeError('Invalid JWT', STATUS_CODES.UNAUTHORIZED));
         return;
       }
 
       request.logIn(user, (error_: Error) => {
         if (error_) {
-          next(new NodeError('Unable to authenticate', 401));
+          next(
+            new NodeError('Unable to authenticate', STATUS_CODES.UNAUTHORIZED),
+          );
           return;
         }
 
@@ -207,13 +213,15 @@ export function register(
 ): void {
   passport.authenticate(REGISTRATION_AUTH, {session: false}, (error, user) => {
     if (error || user === false) {
-      next(new NodeError('Invalid state', 401));
+      next(new NodeError('Invalid state', STATUS_CODES.UNAUTHORIZED));
       return;
     }
 
     request.logIn(user, (error_) => {
       if (error_) {
-        next(new NodeError('Unable to authenticate', 401));
+        next(
+          new NodeError('Unable to authenticate', STATUS_CODES.UNAUTHORIZED),
+        );
         return;
       }
 

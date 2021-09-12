@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import {Router, Request, Response} from 'express';
+import {Router as expressRouter, Request, Response} from 'express';
 
 import {NodeError, safeHandler, validator} from '@runcitadel/utils';
 import type {user as userFile} from '@runcitadel/utils';
@@ -8,10 +8,9 @@ import * as authLogic from '../../logic/auth.js';
 import * as auth from '../../middlewares/auth.js';
 import incorrectPasswordAuthHandler from '../../middlewares/incorrect-password-auth-handler.js';
 
-import constants from '../../utils/const.js';
+import {STATUS_CODES} from '../../utils/const.js';
 
-// eslint-disable-next-line new-cap
-const router = Router();
+const router = expressRouter();
 
 const COMPLETE = 100;
 
@@ -50,13 +49,13 @@ router.post(
 
     // Return a conflict if a change password process is already running
     if (status.percent > 0 && status.percent !== COMPLETE) {
-      return response.status(constants.STATUS_CODES.CONFLICT).json();
+      return response.status(STATUS_CODES.CONFLICT).json();
     }
 
     try {
       // Start change password process in the background and immediately return
       await authLogic.changePassword(currentPassword, newPassword);
-      return response.status(constants.STATUS_CODES.OK).json();
+      return response.status(STATUS_CODES.OK).json();
     } catch (error: unknown) {
       next(error);
     }
@@ -70,7 +69,7 @@ router.get(
   safeHandler(async (request, response) => {
     const status = authLogic.getChangePasswordStatus();
 
-    return response.status(constants.STATUS_CODES.OK).json(status);
+    return response.status(STATUS_CODES.OK).json(status);
   }),
 );
 
@@ -132,7 +131,7 @@ router.get(
   safeHandler(async (request, response) => {
     const info = await authLogic.getInfo();
 
-    return response.status(constants.STATUS_CODES.OK).json(info);
+    return response.status(STATUS_CODES.OK).json(info);
   }),
 );
 

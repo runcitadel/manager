@@ -15,6 +15,7 @@ import account from './routes/v1/account.js';
 import system from './routes/v1/system.js';
 import external from './routes/v1/external.js';
 import apps from './routes/v1/apps.js';
+import {STATUS_CODES} from './utils/const.js';
 
 config();
 
@@ -42,7 +43,7 @@ app.use('/v1/apps', apps);
 
 app.use(errorHandlerMiddleware);
 app.use((request: Request, response: Response) => {
-  response.status(404).json();
+  response.status(STATUS_CODES.NOT_FOUND).json();
 });
 
 export default app;

@@ -1,14 +1,13 @@
-import {Router} from 'express';
+import {Router as expressRouter} from 'express';
 
 import {safeHandler} from '@runcitadel/utils';
 
 import socksProxyAgentPkg from 'socks-proxy-agent';
 import fetch from 'node-fetch';
-import constants from '../../utils/const.js';
+import constants, {STATUS_CODES} from '../../utils/const.js';
 import * as auth from '../../middlewares/auth.js';
 
-// eslint-disable-next-line new-cap
-const router = Router();
+const router = expressRouter();
 const {SocksProxyAgent} = socksProxyAgentPkg;
 
 const agent = new SocksProxyAgent(
@@ -30,11 +29,9 @@ router.get(
     );
 
     try {
-      return response
-        .status(constants.STATUS_CODES.OK)
-        .json(apiResponse.json());
+      return response.status(STATUS_CODES.OK).json(apiResponse.json());
     } catch {
-      return response.status(constants.STATUS_CODES.BAD_GATEWAY).json();
+      return response.status(STATUS_CODES.BAD_GATEWAY).json();
     }
   }),
 );

@@ -1,4 +1,4 @@
-import {Router} from 'express';
+import {Router as expressRouter} from 'express';
 
 import {safeHandler} from '@runcitadel/utils';
 import * as systemLogic from '../../logic/system.js';
@@ -6,10 +6,9 @@ import * as diskLogic from '../../logic/disk.js';
 
 import * as auth from '../../middlewares/auth.js';
 
-import constants from '../../utils/const.js';
+import constants, {STATUS_CODES} from '../../utils/const.js';
 
-// eslint-disable-next-line new-cap
-const router = Router();
+const router = expressRouter();
 
 router.get(
   '/info',
@@ -17,7 +16,7 @@ router.get(
   safeHandler(async (request, response) => {
     const info = await systemLogic.getInfo();
 
-    return response.status(constants.STATUS_CODES.OK).json(info);
+    return response.status(STATUS_CODES.OK).json(info);
   }),
 );
 
@@ -27,7 +26,7 @@ router.get(
   safeHandler(async (request, response) => {
     const status = await systemLogic.status();
 
-    return response.status(constants.STATUS_CODES.OK).json(status);
+    return response.status(STATUS_CODES.OK).json(status);
   }),
 );
 
@@ -37,7 +36,7 @@ router.post(
   safeHandler(async (request, response) => {
     const result = await systemLogic.clearMemoryWarning();
 
-    return response.status(constants.STATUS_CODES.OK).json(result);
+    return response.status(STATUS_CODES.OK).json(result);
   }),
 );
 
@@ -47,7 +46,7 @@ router.get(
   safeHandler(async (request, response) => {
     const url = await systemLogic.getHiddenServiceUrl();
 
-    return response.status(constants.STATUS_CODES.OK).json(url);
+    return response.status(STATUS_CODES.OK).json(url);
   }),
 );
 
@@ -57,7 +56,7 @@ router.get(
   safeHandler(async (request, response) => {
     const connectionDetails = await systemLogic.getElectrumConnectionDetails();
 
-    return response.status(constants.STATUS_CODES.OK).json(connectionDetails);
+    return response.status(STATUS_CODES.OK).json(connectionDetails);
   }),
 );
 
@@ -68,7 +67,7 @@ router.get(
     const connectionDetails =
       await systemLogic.getBitcoinP2PConnectionDetails();
 
-    return response.status(constants.STATUS_CODES.OK).json(connectionDetails);
+    return response.status(STATUS_CODES.OK).json(connectionDetails);
   }),
 );
 
@@ -79,7 +78,7 @@ router.get(
     const connectionDetails =
       await systemLogic.getBitcoinRPCConnectionDetails();
 
-    return response.status(constants.STATUS_CODES.OK).json(connectionDetails);
+    return response.status(STATUS_CODES.OK).json(connectionDetails);
   }),
 );
 
@@ -89,7 +88,7 @@ router.get(
   safeHandler(async (request, response) => {
     const urls = await systemLogic.getLndConnectUrls();
 
-    return response.status(constants.STATUS_CODES.OK).json(urls);
+    return response.status(STATUS_CODES.OK).json(urls);
   }),
 );
 
@@ -99,7 +98,7 @@ router.get(
   safeHandler(async (request, response) => {
     const update = await systemLogic.getAvailableUpdate();
 
-    return response.status(constants.STATUS_CODES.OK).json(update);
+    return response.status(STATUS_CODES.OK).json(update);
   }),
 );
 
@@ -108,7 +107,7 @@ router.get(
   safeHandler(async (request, response) => {
     const update = await systemLogic.getUpdateStatus();
 
-    return response.status(constants.STATUS_CODES.OK).json(update);
+    return response.status(STATUS_CODES.OK).json(update);
   }),
 );
 
@@ -118,7 +117,7 @@ router.post(
   safeHandler(async (request, response) => {
     const status = await systemLogic.startUpdate();
 
-    return response.status(constants.STATUS_CODES.OK).json(status);
+    return response.status(STATUS_CODES.OK).json(status);
   }),
 );
 
@@ -127,7 +126,7 @@ router.get(
   safeHandler(async (request, response) => {
     const backup = await systemLogic.getBackupStatus();
 
-    return response.status(constants.STATUS_CODES.OK).json(backup);
+    return response.status(STATUS_CODES.OK).json(backup);
   }),
 );
 
@@ -137,7 +136,7 @@ router.get(
   safeHandler(async (request, response) => {
     const result = await systemLogic.getDebugResult();
 
-    return response.status(constants.STATUS_CODES.OK).json(result);
+    return response.status(STATUS_CODES.OK).json(result);
   }),
 );
 
@@ -147,7 +146,7 @@ router.post(
   safeHandler(async (request, response) => {
     const result = await systemLogic.requestDebug();
 
-    return response.status(constants.STATUS_CODES.OK).json(result);
+    return response.status(STATUS_CODES.OK).json(result);
   }),
 );
 
@@ -157,7 +156,7 @@ router.post(
   safeHandler(async (request, response) => {
     const result = await systemLogic.requestShutdown();
 
-    return response.status(constants.STATUS_CODES.OK).json(result);
+    return response.status(STATUS_CODES.OK).json(result);
   }),
 );
 
@@ -167,7 +166,7 @@ router.post(
   safeHandler(async (request, response) => {
     const result = await systemLogic.requestReboot();
 
-    return response.status(constants.STATUS_CODES.OK).json(result);
+    return response.status(STATUS_CODES.OK).json(result);
   }),
 );
 
@@ -176,7 +175,7 @@ router.get(
   safeHandler(async (request, response) => {
     const update = await diskLogic.readJsonStatusFile('storage');
 
-    return response.status(constants.STATUS_CODES.OK).json(update);
+    return response.status(STATUS_CODES.OK).json(update);
   }),
 );
 
@@ -185,7 +184,7 @@ router.get(
   safeHandler(async (request, response) => {
     const update = await diskLogic.readJsonStatusFile('memory');
 
-    return response.status(constants.STATUS_CODES.OK).json(update);
+    return response.status(STATUS_CODES.OK).json(update);
   }),
 );
 
@@ -194,7 +193,7 @@ router.get(
   safeHandler(async (request, response) => {
     const update = await diskLogic.readJsonStatusFile('temperature');
 
-    return response.status(constants.STATUS_CODES.OK).json(update);
+    return response.status(STATUS_CODES.OK).json(update);
   }),
 );
 
@@ -203,14 +202,14 @@ router.get(
   safeHandler(async (request, response) => {
     const update = await diskLogic.readJsonStatusFile('uptime');
 
-    return response.status(constants.STATUS_CODES.OK).json(update);
+    return response.status(STATUS_CODES.OK).json(update);
   }),
 );
 
 router.get(
   '/is-umbrel-os',
   safeHandler(async (request, response) =>
-    response.status(constants.STATUS_CODES.OK).json(constants.IS_UMBREL_OS),
+    response.status(STATUS_CODES.OK).json(constants.IS_UMBREL_OS),
   ),
 );
 

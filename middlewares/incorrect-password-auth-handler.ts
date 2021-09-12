@@ -1,5 +1,6 @@
 import {NodeError} from '@runcitadel/utils';
 import {Request, Response, NextFunction, ErrorRequestHandler} from 'express';
+import {STATUS_CODES} from '../utils/const.js';
 
 const handleError = (
   error: Error,
@@ -12,7 +13,7 @@ const handleError = (
   // change password with an incorrect password or enters an incorrect
   // password to view seed will log him out due to interceptor on front-end
   if (error.message && error.message === 'Incorrect password') {
-    next(new NodeError('Incorrect password', 403));
+    next(new NodeError('Incorrect password', STATUS_CODES.FORBIDDEN));
     return;
   }
 

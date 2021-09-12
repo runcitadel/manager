@@ -17,8 +17,7 @@ const typedVerify = verify as (
 ) => void;
 
 async function isValidJWT(payload: string, pubkey: string): Promise<boolean> {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     typedVerify(payload, pubkey, (error: VerifyErrors | null) => {
       if (error) {
         resolve(false);

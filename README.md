@@ -67,6 +67,13 @@ If you're looking for a bigger challenge, before opening a pull request please [
 
 Manager is inspired by and built upon the work done by [Umbrel](https://github.com/getumbrel) on its open-source [Node Manager API](https://github.com/getumbrel/umbrel-manager).
 
+The original code we forked is licensed under
+
+```
+Copyright (c) 2018-2019 Casa, Inc. https://keys.casa/
+Copyright (c) 2020 Umbrel. https://getumbrel.com/
+```
+
 ---
 
 [![License](https://img.shields.io/github/license/runcitadel/manager?color=%235351FB)](https://github.com/runcitadel/manager/blob/master/LICENSE)

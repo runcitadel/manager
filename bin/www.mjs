@@ -16,13 +16,12 @@ const debug = debugPkg('nodejs-regular-webapp2:server');
  */
 
 const port = normalizePort(process.env.PORT || '3005');
-app.set('port', port);
 
 /**
  * Create HTTP server.
  */
 
-const server = http.createServer(app);
+const server = http.createServer(app.callback());
 
 /**
  * Listen on provided port, on all network interfaces.

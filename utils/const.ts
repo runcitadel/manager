@@ -8,6 +8,7 @@ export enum STATUS_CODES {
   NOT_FOUND = 404,
   OK = 200,
   UNAUTHORIZED = 401,
+  INTERNAL_SERVER_ERROR = 500,
 }
 
 export const DEVICE_HOSTNAME = process.env.DEVICE_HOSTNAME ?? 'citadel.local';

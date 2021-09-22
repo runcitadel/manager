@@ -1,16 +1,13 @@
 import * as process from 'node:process';
-
-type StaticOrigin =
-  | boolean
-  | string
-  | RegExp
-  | Array<boolean | string | RegExp>;
+import {Context} from 'koa';
 
 export const corsOptions = {
-  origin: (
-    origin: string | undefined,
-    callback: (error: Error | null, origin?: StaticOrigin) => void,
-  ): void => {
+  origin: (ctx: Context): string => {
+    const origin =
+      ctx.origin ??
+      ctx.request?.origin ??
+      ctx.headers?.origin ??
+      ctx.request.headers?.origin;
     const allowList = [
       'http://localhost:3000',
       'http://localhost:8080',
@@ -19,11 +16,10 @@ export const corsOptions = {
       ...process.env.DEVICE_HOSTS!.split(','),
     ];
 
-    if (allowList.includes(origin || 'THISISNOTINTHEALLOWLIST') || !origin) {
-      callback(null, true);
-      return;
+    if (allowList.includes(origin) ?? !origin) {
+      return '';
     }
 
-    callback(new Error('Not allowed by CORS'));
+    throw new Error('Not allowed by CORS');
   },
 };

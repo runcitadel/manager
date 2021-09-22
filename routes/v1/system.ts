@@ -1,217 +1,159 @@
-import {Router as expressRouter} from 'express';
+import Router from '@koa/router';
 
-import {safeHandler} from '@runcitadel/utils';
 import * as systemLogic from '../../logic/system.js';
 import * as diskLogic from '../../logic/disk.js';
 
 import * as auth from '../../middlewares/auth.js';
 
 import * as constants from '../../utils/const.js';
-import {STATUS_CODES} from '../../utils/const.js';
 
-const router = expressRouter();
+const router = new Router({
+  prefix: '/v1/system',
+});
 
-router.get(
-  '/info',
-  auth.jwt,
-  safeHandler(async (request, response) => {
-    const info = await systemLogic.getInfo();
+router.get('/info', auth.jwt, async (ctx, next) => {
+  const info = await systemLogic.getInfo();
 
-    return response.status(STATUS_CODES.OK).json(info);
-  }),
-);
+  ctx.body = info;
+  await next();
+});
 
-router.get(
-  '/status',
-  auth.jwt,
-  safeHandler(async (request, response) => {
-    const status = await systemLogic.status();
+router.get('/status', auth.jwt, async (ctx, next) => {
+  const status = await systemLogic.status();
 
-    return response.status(STATUS_CODES.OK).json(status);
-  }),
-);
+  ctx.body = status;
+  await next();
+});
 
-router.post(
-  '/clear-memory-warning',
-  auth.jwt,
-  safeHandler(async (request, response) => {
-    const result = await systemLogic.clearMemoryWarning();
+router.post('/clear-memory-warning', auth.jwt, async (ctx, next) => {
+  const result = await systemLogic.clearMemoryWarning();
 
-    return response.status(STATUS_CODES.OK).json(result);
-  }),
-);
+  ctx.body = result;
+  await next();
+});
 
-router.get(
-  '/dashboard-hidden-service',
-  auth.jwt,
-  safeHandler(async (request, response) => {
-    const url = await systemLogic.getHiddenServiceUrl();
+router.get('/dashboard-hidden-service', auth.jwt, async (ctx, next) => {
+  const url = await systemLogic.getHiddenServiceUrl();
 
-    return response.status(STATUS_CODES.OK).json(url);
-  }),
-);
+  ctx.body = url;
+  await next();
+});
 
-router.get(
-  '/electrum-connection-details',
-  auth.jwt,
-  safeHandler(async (request, response) => {
-    const connectionDetails = await systemLogic.getElectrumConnectionDetails();
+router.get('/electrum-connection-details', auth.jwt, async (ctx, next) => {
+  const connectionDetails = await systemLogic.getElectrumConnectionDetails();
 
-    return response.status(STATUS_CODES.OK).json(connectionDetails);
-  }),
-);
+  ctx.body = connectionDetails;
+  await next();
+});
 
-router.get(
-  '/bitcoin-p2p-connection-details',
-  auth.jwt,
-  safeHandler(async (request, response) => {
-    const connectionDetails =
-      await systemLogic.getBitcoinP2PConnectionDetails();
+router.get('/bitcoin-p2p-connection-details', auth.jwt, async (ctx, next) => {
+  const connectionDetails = await systemLogic.getBitcoinP2PConnectionDetails();
 
-    return response.status(STATUS_CODES.OK).json(connectionDetails);
-  }),
-);
+  ctx.body = connectionDetails;
+  await next();
+});
 
-router.get(
-  '/bitcoin-rpc-connection-details',
-  auth.jwt,
-  safeHandler(async (request, response) => {
-    const connectionDetails =
-      await systemLogic.getBitcoinRPCConnectionDetails();
+router.get('/bitcoin-rpc-connection-details', auth.jwt, async (ctx, next) => {
+  const connectionDetails = await systemLogic.getBitcoinRPCConnectionDetails();
 
-    return response.status(STATUS_CODES.OK).json(connectionDetails);
-  }),
-);
+  ctx.body = connectionDetails;
+  await next();
+});
 
-router.get(
-  '/lndconnect-urls',
-  auth.jwt,
-  safeHandler(async (request, response) => {
-    const urls = await systemLogic.getLndConnectUrls();
+router.get('/lndconnect-urls', auth.jwt, async (ctx, next) => {
+  const urls = await systemLogic.getLndConnectUrls();
 
-    return response.status(STATUS_CODES.OK).json(urls);
-  }),
-);
+  ctx.body = urls;
+  await next();
+});
 
-router.get(
-  '/get-update',
-  auth.jwt,
-  safeHandler(async (request, response) => {
-    const update = await systemLogic.getAvailableUpdate();
+router.get('/get-update', auth.jwt, async (ctx, next) => {
+  const update = await systemLogic.getAvailableUpdate();
 
-    return response.status(STATUS_CODES.OK).json(update);
-  }),
-);
+  ctx.body = update;
+  await next();
+});
 
-router.get(
-  '/update-status',
-  safeHandler(async (request, response) => {
-    const update = await systemLogic.getUpdateStatus();
+router.get('/update-status', async (ctx, next) => {
+  const update = await systemLogic.getUpdateStatus();
 
-    return response.status(STATUS_CODES.OK).json(update);
-  }),
-);
+  ctx.body = update;
+  await next();
+});
 
-router.post(
-  '/update',
-  auth.jwt,
-  safeHandler(async (request, response) => {
-    const status = await systemLogic.startUpdate();
+router.post('/update', auth.jwt, async (ctx, next) => {
+  const status = await systemLogic.startUpdate();
 
-    return response.status(STATUS_CODES.OK).json(status);
-  }),
-);
+  ctx.body = status;
+  await next();
+});
 
-router.get(
-  '/backup-status',
-  safeHandler(async (request, response) => {
-    const backup = await systemLogic.getBackupStatus();
+router.get('/backup-status', async (ctx, next) => {
+  const backup = await systemLogic.getBackupStatus();
 
-    return response.status(STATUS_CODES.OK).json(backup);
-  }),
-);
+  ctx.body = backup;
+  await next();
+});
 
-router.get(
-  '/debug-result',
-  auth.jwt,
-  safeHandler(async (request, response) => {
-    const result = await systemLogic.getDebugResult();
+router.get('/debug-result', auth.jwt, async (ctx, next) => {
+  const result = await systemLogic.getDebugResult();
 
-    return response.status(STATUS_CODES.OK).json(result);
-  }),
-);
+  ctx.body = result;
+  await next();
+});
 
-router.post(
-  '/debug',
-  auth.jwt,
-  safeHandler(async (request, response) => {
-    const result = await systemLogic.requestDebug();
+router.post('/debug', auth.jwt, async (ctx, next) => {
+  const result = await systemLogic.requestDebug();
 
-    return response.status(STATUS_CODES.OK).json(result);
-  }),
-);
+  ctx.body = result;
+  await next();
+});
 
-router.post(
-  '/shutdown',
-  auth.jwt,
-  safeHandler(async (request, response) => {
-    const result = await systemLogic.requestShutdown();
+router.post('/shutdown', auth.jwt, async (ctx, next) => {
+  const result = await systemLogic.requestShutdown();
 
-    return response.status(STATUS_CODES.OK).json(result);
-  }),
-);
+  ctx.body = result;
+  await next();
+});
 
-router.post(
-  '/reboot',
-  auth.jwt,
-  safeHandler(async (request, response) => {
-    const result = await systemLogic.requestReboot();
+router.post('/reboot', auth.jwt, async (ctx, next) => {
+  const result = await systemLogic.requestReboot();
 
-    return response.status(STATUS_CODES.OK).json(result);
-  }),
-);
+  ctx.body = result;
+  await next();
+});
 
-router.get(
-  '/storage',
-  safeHandler(async (request, response) => {
-    const update = await diskLogic.readJsonStatusFile('storage');
+router.get('/storage', async (ctx, next) => {
+  const update = await diskLogic.readJsonStatusFile('storage');
 
-    return response.status(STATUS_CODES.OK).json(update);
-  }),
-);
+  ctx.body = update;
+  await next();
+});
 
-router.get(
-  '/memory',
-  safeHandler(async (request, response) => {
-    const update = await diskLogic.readJsonStatusFile('memory');
+router.get('/memory', async (ctx, next) => {
+  const update = await diskLogic.readJsonStatusFile('memory');
 
-    return response.status(STATUS_CODES.OK).json(update);
-  }),
-);
+  ctx.body = update;
+  await next();
+});
 
-router.get(
-  '/temperature',
-  safeHandler(async (request, response) => {
-    const update = await diskLogic.readJsonStatusFile('temperature');
+router.get('/temperature', async (ctx, next) => {
+  const update = await diskLogic.readJsonStatusFile('temperature');
 
-    return response.status(STATUS_CODES.OK).json(update);
-  }),
-);
+  ctx.body = update;
+  await next();
+});
 
-router.get(
-  '/uptime',
-  safeHandler(async (request, response) => {
-    const update = await diskLogic.readJsonStatusFile('uptime');
+router.get('/uptime', async (ctx, next) => {
+  const update = await diskLogic.readJsonStatusFile('uptime');
 
-    return response.status(STATUS_CODES.OK).json(update);
-  }),
-);
+  ctx.body = update;
+  await next();
+});
 
-router.get(
-  '/is-umbrel-os',
-  safeHandler(async (request, response) =>
-    response.status(STATUS_CODES.OK).json(constants.IS_UMBREL_OS),
-  ),
-);
+router.get('/is-umbrel-os', async (ctx, next) => {
+  ctx.body = constants.IS_UMBREL_OS;
+  await next();
+});
 
 export default router;

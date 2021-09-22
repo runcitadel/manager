@@ -1,11 +1,11 @@
-import {Router, Request, Response} from 'express';
+import Router from '@koa/router';
 import pjson from '../package.json';
 
-// eslint-disable-next-line new-cap
-const router = Router();
+const router = new Router();
 
-router.get('/', (request: Request, response: Response) => {
-  response.json({version: 'manager-' + pjson.version});
+router.get('/', async (ctx, next) => {
+  ctx.body = {version: 'manager-' + pjson.version};
+  await next();
 });
 
 export default router;

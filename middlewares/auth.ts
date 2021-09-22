@@ -1,12 +1,10 @@
 import {Buffer} from 'node:buffer';
-import passport from 'passport';
 import * as passportJWT from 'passport-jwt';
 import * as passportHTTP from 'passport-http';
 import bcrypt from '@node-rs/bcrypt';
-import {NodeError} from '@runcitadel/utils';
 import Rsa from 'node-rsa';
-import {NextFunction, Request, Response} from 'express';
-import type {user as userFile} from '@runcitadel/utils';
+import type {Next, Context} from 'koa';
+import passport from 'koa-passport';
 import * as authLogic from '../logic/auth.js';
 import * as diskLogic from '../logic/disk.js';
 import {STATUS_CODES} from '../utils/const.js';
@@ -87,145 +85,88 @@ passport.use(
 );
 
 // Override the authorization header with password that is in the body of the request if basic auth was not supplied.
-export function convertRequestBodyToBasicAuth(
-  request: Request,
-  _response: Response,
-  next: NextFunction,
-): void {
+export async function convertRequestBodyToBasicAuth(
+  ctx: Context,
+  next: Next,
+): Promise<void> {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  if (request.body.password && !request.headers.authorization) {
+  if (ctx.request.body.password && !ctx.request.headers.authorization) {
     // We need to Base64 encode because Passport breaks on ":" characters
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const password = b64encode(request.body.password);
-    request.headers.authorization =
+    const password = b64encode(ctx.request.body.password);
+    ctx.request.headers.authorization =
       'Basic ' + Buffer.from(SYSTEM_USER + ':' + password).toString('base64');
   }
 
-  next();
+  await next();
 }
 
-export function basic(
-  request: Request,
-  response: Response,
-  next: NextFunction,
-): void {
-  passport.authenticate(BASIC_AUTH, {session: false}, (error, user) => {
-    function handleCompare(equal: boolean) {
+export async function basic(ctx: Context, next: Next): Promise<void> {
+  passport.authenticate(BASIC_AUTH, {session: false}, async (error, user) => {
+    if (error || user === false) {
+      ctx.throw('Invalid state', STATUS_CODES.UNAUTHORIZED);
+    }
+
+    try {
+      const storedPassword = (await diskLogic.readUserFile()).password;
+      const equal = await bcrypt.compare(
+        (user as {[key: string]: unknown; password: string}).password,
+        storedPassword!,
+      );
       if (!equal) {
-        next(new NodeError('Incorrect password', STATUS_CODES.UNAUTHORIZED));
-        return;
+        ctx.throw('Incorrect password', STATUS_CODES.UNAUTHORIZED);
       }
 
-      request.logIn(user, (error_) => {
+      await ctx.logIn(user, (error_: unknown) => {
         if (error_) {
-          next(
-            new NodeError('Unable to authenticate', STATUS_CODES.UNAUTHORIZED),
-          );
-          return;
+          ctx.throw('Unable to authenticate', STATUS_CODES.UNAUTHORIZED);
         }
-
-        (next as (error: unknown, user: unknown) => void)(null, user);
       });
+    } catch {
+      ctx.throw('No user registered', STATUS_CODES.UNAUTHORIZED);
     }
 
-    if (error || user === false) {
-      next(new NodeError('Invalid state', STATUS_CODES.UNAUTHORIZED));
-      return;
-    }
-
-    diskLogic
-      .readUserFile()
-      .then((userData: userFile) => {
-        const storedPassword = userData.password;
-
-        bcrypt
-          .compare(
-            (user as {[key: string]: unknown; password: string}).password,
-            storedPassword!,
-          )
-          .then(handleCompare)
-          .catch(next);
-      })
-      .catch(() => {
-        next(new NodeError('No user registered', STATUS_CODES.UNAUTHORIZED));
-      });
-  })(request, response, next);
+    await next();
+  })(ctx, next);
 }
 
 // eslint-enable @typescript-eslint/no-unsafe-member-access
-export function jwt(
-  request: Request,
-  response: Response,
-  next: NextFunction,
-): void {
-  passport.authenticate(JWT_AUTH, {session: false}, (error, user) => {
-    if (error || user === false) {
-      next(new NodeError('Invalid JWT', STATUS_CODES.UNAUTHORIZED));
-      return;
-    }
-
-    request.logIn(user, (error_) => {
-      if (error_) {
-        next(
-          new NodeError('Unable to authenticate', STATUS_CODES.UNAUTHORIZED),
-        );
-        return;
-      }
-
-      (next as (error: unknown, user: unknown) => void)(null, user);
-    });
-  })(request, response, next);
-}
-
-export async function accountJWTProtected(
-  request: Request,
-  response: Response,
-  next: NextFunction,
-): Promise<void> {
-  const isRegistered = await authLogic.isRegistered();
-  if (isRegistered) {
-    passport.authenticate(JWT_AUTH, {session: false}, (error, user) => {
+export async function jwt(ctx: Context, next: Next): Promise<void> {
+  await passport.authenticate(
+    JWT_AUTH,
+    {session: false},
+    async (error, user) => {
       if (error || user === false) {
-        next(new NodeError('Invalid JWT', STATUS_CODES.UNAUTHORIZED));
-        return;
+        ctx.throw('Invalid JWT', STATUS_CODES.UNAUTHORIZED);
       }
 
-      request.logIn(user, (error_: Error) => {
+      await ctx.logIn(user, async (error_: unknown) => {
         if (error_) {
-          next(
-            new NodeError('Unable to authenticate', STATUS_CODES.UNAUTHORIZED),
-          );
-          return;
+          ctx.throw('Unable to authenticate', STATUS_CODES.UNAUTHORIZED);
         }
 
-        (next as (error: unknown, user: unknown) => void)(null, user);
+        await next();
       });
-    })(request, response, next);
-  } else {
-    (next as (error: unknown, user: unknown) => void)(null, 'not-registered');
-  }
+    },
+  )(ctx, next);
 }
 
-export function register(
-  request: Request,
-  response: Response,
-  next: NextFunction,
-): void {
-  passport.authenticate(REGISTRATION_AUTH, {session: false}, (error, user) => {
-    if (error || user === false) {
-      next(new NodeError('Invalid state', STATUS_CODES.UNAUTHORIZED));
-      return;
-    }
-
-    request.logIn(user, (error_) => {
-      if (error_) {
-        next(
-          new NodeError('Unable to authenticate', STATUS_CODES.UNAUTHORIZED),
-        );
-        return;
+export async function register(ctx: Context, next: Next): Promise<void> {
+  await passport.authenticate(
+    REGISTRATION_AUTH,
+    {session: false},
+    async (error, user) => {
+      if (error || user === false) {
+        ctx.throw('Invalid state', STATUS_CODES.UNAUTHORIZED);
       }
 
-      (next as (error: unknown, user: unknown) => void)(null, user);
-    });
-  })(request, response, next);
+      await ctx.logIn(user, async (error_: unknown) => {
+        if (error_) {
+          ctx.throw('Unable to authenticate', STATUS_CODES.UNAUTHORIZED);
+        }
+
+        await next();
+      });
+    },
+  )(ctx, next);
 }

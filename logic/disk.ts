@@ -24,7 +24,7 @@ export async function readUserFile(): Promise<userFile> {
     seed: '',
     installedApps: [],
   };
-  const userFile: userFile = (await fs.readJsonFile(
+  const userFile: userFile = (await fs.readJSONFile(
     constants.USER_FILE,
   )) as userFile;
   return {...defaultProperties, ...userFile};
@@ -73,7 +73,7 @@ export async function readLndAdminMacaroon(): Promise<Buffer> {
 }
 
 export async function readVersionFile(): Promise<versionFile> {
-  return (await fs.readJsonFile(constants.VERSION_FILE)) as versionFile;
+  return (await fs.readJSONFile(constants.VERSION_FILE)) as versionFile;
 }
 
 export async function readUpdateStatusFile(): Promise<updateStatus> {
@@ -130,8 +130,8 @@ export async function readUtf8File(path: string): Promise<string> {
 }
 
 // Read the contents of a file and return a json object.
-export async function readJsonFile(path: string): Promise<unknown> {
-  return fs.readJsonFile(path);
+export async function readJSONFile(path: string): Promise<unknown> {
+  return fs.readJSONFile(path);
 }
 
 export async function readDebugStatusFile(): Promise<debugStatus> {
@@ -167,7 +167,7 @@ export async function readStatusFile(statusFile: string): Promise<unknown> {
   }
 
   const statusFilePath = path.join(constants.STATUS_DIR, statusFile);
-  return fs.readJsonFile(statusFilePath);
+  return fs.readJSONFile(statusFilePath);
 }
 
 export function statusFileExists(statusFile: string): boolean {
@@ -190,7 +190,7 @@ export async function deleteStatusFile(statusFile: string): Promise<void> {
 
 export async function readAppRegistry(): Promise<app[]> {
   const appRegistryFile = path.join(constants.APPS_DIR, 'registry.json');
-  return (await fs.readJsonFile(appRegistryFile)) as app[];
+  return (await fs.readJSONFile(appRegistryFile)) as app[];
 }
 
 export async function readHiddenService(id: string): Promise<string> {
@@ -219,7 +219,7 @@ export async function readJsonStatusFile(resource: string): Promise<unknown> {
     constants.STATUS_DIR,
     `${resource}-status.json`,
   );
-  return fs.readJsonFile(statusFilePath).catch(() => null);
+  return fs.readJSONFile(statusFilePath).catch(() => null);
 }
 
 export async function writeJsonStatusFile(

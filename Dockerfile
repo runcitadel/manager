@@ -40,4 +40,4 @@ COPY --from=build-dependencies-helper /app/node_modules /app/node_modules
 WORKDIR /app
 
 EXPOSE 3006
-CMD [ "node", "--experimental-json-modules", "bin/www.mjs" ]
+CMD [ "node", "bin/www.mjs" ]

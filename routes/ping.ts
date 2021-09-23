@@ -1,10 +1,13 @@
 import Router from '@koa/router';
-import pjson from '../package.json';
 
-const router = new Router();
+const router = new Router({
+  prefix: '/ping',
+});
 
 router.get('/', async (ctx, next) => {
-  ctx.body = {version: 'manager-' + pjson.version};
+  ctx.body = {
+    version: 'Citadel Manager',
+  };
   await next();
 });
 

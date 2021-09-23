@@ -7,7 +7,7 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "lint": "xo --fix .",
-    "start": "node --experimental-json-modules ./bin/www.mjs"
+    "start": "node ./bin/www.mjs"
   },
   "dependencies": {
     "@koa/cors": "^3.1.0",

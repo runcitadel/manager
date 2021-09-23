@@ -892,13 +892,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/uuid@npm:^8.3.1":
-  version: 8.3.1
-  resolution: "@types/uuid@npm:8.3.1"
-  checksum: b41bdc5e86c6f0f1899306be10455636da0f2168c9489b869edd6837ddeb7c0e501b1ff7d857402462986bada2a379125743dd895fa801d03437cd632116a373
-  languageName: node
-  linkType: hard
-
 "@types/validator@npm:^13.6.3":
   version: 13.6.3
   resolution: "@types/validator@npm:13.6.3"
@@ -3919,7 +3912,6 @@ __metadata:
     "@node-rs/bcrypt": ^1.4.1
     "@runcitadel/lndconnect": ^0.0.2
     "@runcitadel/utils": ^0.7.0
-    "@types/big.js": ^6.1.2
     "@types/cors": ^2.8.12
     "@types/jsonwebtoken": ^8.5.5
     "@types/koa": ^2.13.4
@@ -3932,9 +3924,7 @@ __metadata:
     "@types/passport-http": ^0.3.9
     "@types/passport-jwt": ^3.0.6
     "@types/semver": ^7.3.8
-    "@types/uuid": ^8.3.1
     aezeed: ^0.0.4
-    big.js: ^6.1.1
     cors: ^2.8.5
     debug: ^4.3.2
     dotenv: ^10.0.0
@@ -3946,13 +3936,11 @@ __metadata:
     koa-passport: ^4.1.4
     node-fetch: ^3.0.0
     node-rsa: ^1.1.1
-    passport: ^0.4.1
     passport-http: ^0.3.0
     passport-jwt: ^4.0.0
     semver: ^7.3.5
     socks-proxy-agent: ^6.1.0
     typescript: ^4.4.3
-    uuid: ^8.3.2
     xo: ^0.44.0
   languageName: unknown
   linkType: soft
@@ -4266,7 +4254,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"passport@npm:^0.4.0, passport@npm:^0.4.1":
+"passport@npm:^0.4.0":
   version: 0.4.1
   resolution: "passport@npm:0.4.1"
   dependencies:
@@ -5305,15 +5293,6 @@ __metadata:
   version: 1.0.2
   resolution: "util-deprecate@npm:1.0.2"
   checksum: 474acf1146cb2701fe3b074892217553dfcf9a031280919ba1b8d651a068c9b15d863b7303cb15bd00a862b498e6cf4ad7b4a08fb134edd5a6f7641681cb54a2
-  languageName: node
-  linkType: hard
-
-"uuid@npm:^8.3.2":
-  version: 8.3.2
-  resolution: "uuid@npm:8.3.2"
-  bin:
-    uuid: dist/bin/uuid
-  checksum: 5575a8a75c13120e2f10e6ddc801b2c7ed7d8f3c8ac22c7ed0c7b2ba6383ec0abda88c905085d630e251719e0777045ae3236f04c812184b7c765f63a70e58df
   languageName: node
   linkType: hard
 

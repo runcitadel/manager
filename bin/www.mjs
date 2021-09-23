@@ -9,7 +9,7 @@ import * as process from 'node:process';
 import debugPkg from 'debug';
 import app from '../app.js';
 
-const debug = debugPkg('nodejs-regular-webapp2:server');
+const debug = debugPkg('citadel-manager:server');
 
 /**
  * Get port from environment and store in Express.

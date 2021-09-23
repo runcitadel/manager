@@ -16,7 +16,7 @@ export const corsOptions = {
       ...process.env.DEVICE_HOSTS!.split(','),
     ];
 
-    if (allowList.includes(origin) ?? !origin) {
+    if (allowList.includes(origin) || !origin) {
       return '';
     }
 

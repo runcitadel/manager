@@ -1,24 +1,13 @@
 import * as process from 'node:process';
 import jwt from 'jsonwebtoken';
-import type {
-  Secret,
-  GetPublicKeyOrSecret,
-  VerifyCallback,
-  VerifyErrors,
-} from 'jsonwebtoken';
+import type {VerifyErrors} from 'jsonwebtoken';
 import * as diskLogic from '../logic/disk.js';
 
 const {sign, verify} = jwt;
 
-const typedVerify = verify as (
-  token: string,
-  secretOrPublicKey: Secret | GetPublicKeyOrSecret,
-  callback?: VerifyCallback,
-) => void;
-
 async function isValidJWT(payload: string, pubkey: string): Promise<boolean> {
   return new Promise((resolve) => {
-    typedVerify(payload, pubkey, (error: VerifyErrors | null) => {
+    verify(payload, pubkey, (error: VerifyErrors | null) => {
       if (error) {
         resolve(false);
       } else {

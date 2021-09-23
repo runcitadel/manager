@@ -4,10 +4,7 @@ import {Context} from 'koa';
 export const corsOptions = {
   origin: (ctx: Context): string => {
     const origin =
-      ctx.origin ??
-      ctx.request?.origin ??
-      ctx.headers?.origin ??
-      ctx.request.headers?.origin;
+      ctx.headers.origin ?? ctx.request.headers.origin ?? ctx.origin;
     const allowList = [
       'http://localhost:3000',
       'http://localhost:8080',

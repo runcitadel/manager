@@ -11,6 +11,16 @@ const router = new Router({
   prefix: '/v1/system',
 });
 
+router.use(async (ctx, next) => {
+  try {
+    await next();
+  } catch (error: unknown | Error) {
+    ctx.status = (error as {status: number}).status || 500;
+    ctx.body = (error as {message: string}).message || 'An error occurred';
+    ctx.app.emit('error', error, ctx);
+  }
+});
+
 router.get('/info', auth.jwt, async (ctx, next) => {
   const info = await systemLogic.getInfo();
 

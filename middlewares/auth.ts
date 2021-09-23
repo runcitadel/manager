@@ -104,7 +104,7 @@ export async function convertRequestBodyToBasicAuth(
 export async function basic(ctx: Context, next: Next): Promise<void> {
   passport.authenticate(BASIC_AUTH, {session: false}, async (error, user) => {
     if (error || user === false) {
-      ctx.throw('Invalid state', STATUS_CODES.UNAUTHORIZED);
+      ctx.throw(STATUS_CODES.UNAUTHORIZED, 'Invalid state');
     }
 
     try {
@@ -114,16 +114,16 @@ export async function basic(ctx: Context, next: Next): Promise<void> {
         storedPassword!,
       );
       if (!equal) {
-        ctx.throw('Incorrect password', STATUS_CODES.UNAUTHORIZED);
+        ctx.throw(STATUS_CODES.UNAUTHORIZED, 'Incorrect password');
       }
 
       await ctx.logIn(user, (error_: unknown) => {
         if (error_) {
-          ctx.throw('Unable to authenticate', STATUS_CODES.UNAUTHORIZED);
+          ctx.throw(STATUS_CODES.FORBIDDEN, 'Unable to authenticate');
         }
       });
     } catch {
-      ctx.throw('No user registered', STATUS_CODES.UNAUTHORIZED);
+      ctx.throw(STATUS_CODES.UNAUTHORIZED, 'No user registered');
     }
 
     await next();
@@ -137,12 +137,12 @@ export async function jwt(ctx: Context, next: Next): Promise<void> {
     {session: false},
     async (error, user) => {
       if (error || user === false) {
-        ctx.throw('Invalid JWT', STATUS_CODES.UNAUTHORIZED);
+        ctx.throw(STATUS_CODES.UNAUTHORIZED, 'Invalid JWT');
       }
 
       await ctx.logIn(user, async (error_: unknown) => {
         if (error_) {
-          ctx.throw('Unable to authenticate', STATUS_CODES.UNAUTHORIZED);
+          ctx.throw(STATUS_CODES.UNAUTHORIZED, 'Unable to authenticate');
         }
 
         await next();
@@ -157,12 +157,12 @@ export async function register(ctx: Context, next: Next): Promise<void> {
     {session: false},
     async (error, user) => {
       if (error || user === false) {
-        ctx.throw('Invalid state', STATUS_CODES.UNAUTHORIZED);
+        ctx.throw(STATUS_CODES.UNAUTHORIZED, 'Invalid state');
       }
 
       await ctx.logIn(user, async (error_: unknown) => {
         if (error_) {
-          ctx.throw('Unable to authenticate', STATUS_CODES.UNAUTHORIZED);
+          ctx.throw(STATUS_CODES.UNAUTHORIZED, 'Unable to authenticate');
         }
 
         await next();

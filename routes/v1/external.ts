@@ -15,6 +15,16 @@ const agent = new SocksProxyAgent(
   `socks5h://${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`,
 );
 
+router.use(async (ctx, next) => {
+  try {
+    await next();
+  } catch (error: unknown | Error) {
+    ctx.status = (error as {status: number}).status || 500;
+    ctx.body = (error as {message: string}).message || 'An error occurred';
+    ctx.app.emit('error', error, ctx);
+  }
+});
+
 router.get('/price', auth.jwt, async (ctx, next) => {
   // Default to USD
   const currency = (ctx.request.query.currency as string) || 'USD';

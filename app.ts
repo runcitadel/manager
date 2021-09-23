@@ -22,7 +22,7 @@ app.use(async (ctx: Context, next) => {
     await next();
   } catch (error: unknown | Error) {
     ctx.status = (error as {status: number}).status || 500;
-    ctx.body = (error as {message: string}).message || "An error occurred";
+    ctx.body = (error as {message: string}).message || 'An error occurred';
     ctx.app.emit('error', error, ctx);
   }
 });

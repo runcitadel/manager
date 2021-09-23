@@ -15,6 +15,16 @@ const router = new Router({
 
 const COMPLETE = 100;
 
+router.use(async (ctx, next) => {
+  try {
+    await next();
+  } catch (error: unknown | Error) {
+    ctx.status = (error as {status: number}).status || 500;
+    ctx.body = (error as {message: string}).message || 'An error occurred';
+    ctx.app.emit('error', error, ctx);
+  }
+});
+
 // Endpoint to change your password.
 router.post(
   '/change-password',
@@ -95,7 +105,8 @@ router.post(
     typeHelper.isMinPasswordLength(user.plainTextPassword!, ctx);
 
     // Add name to user obj
-    user.name = ctx.request.body.name; // eslint-disable-line @typescript-eslint/no-unsafe-assignment
+    /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
+    user.name = ctx.request.body.name;
 
     const jwt = await authLogic.register(user, seed);
 

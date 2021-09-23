@@ -29,7 +29,23 @@ router.get('/price', auth.jwt, async (ctx, next) => {
   try {
     ctx.body = await apiResponse.json();
   } catch {
-    ctx.status = STATUS_CODES.BAD_GATEWAY;
+    try {
+      const coinBaseApiResponse = await fetch(
+        `https://api.coinbase.com/v2/prices/spot?currency=${currency}`,
+        {
+          agent,
+          method: 'GET',
+        },
+      );
+      ctx.body = {};
+      (ctx.body as Record<string, unknown>)[currency] = (
+        (await coinBaseApiResponse.json()) as {
+          data: {base: string; currency: string; amount: number};
+        }
+      ).data.amount;
+    } catch {
+      ctx.status = STATUS_CODES.BAD_GATEWAY;
+    }
   }
 
   await next();

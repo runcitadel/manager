@@ -17,6 +17,23 @@ config();
 
 const app = new Koa();
 
+app.use(async (ctx: Context, next) => {
+  try {
+    await next();
+  } catch (error: unknown | Error) {
+    ctx.status = (error as {status: number}).status || 500;
+    ctx.body = (error as {message: string}).message || "An error occurred";
+    ctx.app.emit('error', error, ctx);
+  }
+});
+
+app.on('error', (error: Error, ctx: Context) => {
+  const route = ctx.request.URL.pathname ?? '';
+  const message = error.message ?? JSON.stringify(error);
+  console.warn(`[WARNING] ${message} on ${route}.`);
+  console.warn(error.stack);
+});
+
 // Handles CORS
 app.use(cors(corsOptions));
 
@@ -31,20 +48,5 @@ app.use(account.routes());
 app.use(system.routes());
 app.use(external.routes());
 app.use(apps.routes());
-
-app.use(async (ctx: Context, next) => {
-  try {
-    await next();
-  } catch (error: unknown | Error) {
-    ctx.app.emit('error', error, ctx);
-  }
-});
-
-app.on('error', (error: Error, ctx: Context) => {
-  const route = ctx.request.URL.pathname ?? '';
-  const message = error.message ?? JSON.stringify(error);
-  console.warn(`[WARNING] ${message} on ${route}.`);
-  console.warn(error.stack);
-});
 
 export default app;

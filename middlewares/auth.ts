@@ -131,6 +131,8 @@ export async function basic(ctx: Context, next: Next): Promise<void> {
       } catch {
         ctx.throw(STATUS_CODES.UNAUTHORIZED, 'No user registered');
       }
+
+      await next();
     },
   )(ctx, next);
 }

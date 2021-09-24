@@ -144,7 +144,7 @@ router.post(
 );
 
 router.post('/refresh', auth.jwt, async (ctx, next) => {
-  const jwt = authLogic.refresh(ctx.state.user as userFile);
+  const jwt = await authLogic.refresh(ctx.state.user as userFile);
   ctx.body = {jwt};
   await next();
 });

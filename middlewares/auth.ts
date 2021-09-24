@@ -102,32 +102,37 @@ export async function convertRequestBodyToBasicAuth(
 }
 
 export async function basic(ctx: Context, next: Next): Promise<void> {
-  passport.authenticate(BASIC_AUTH, {session: false}, async (error, user) => {
-    if (error || user === false) {
-      ctx.throw(STATUS_CODES.UNAUTHORIZED, 'Invalid state');
-    }
-
-    try {
-      const storedPassword = (await diskLogic.readUserFile()).password;
-      const equal = await bcrypt.compare(
-        (user as {[key: string]: unknown; password: string}).password,
-        storedPassword!,
-      );
-      if (!equal) {
-        ctx.throw(STATUS_CODES.UNAUTHORIZED, 'Incorrect password');
+  await passport.authenticate(
+    BASIC_AUTH,
+    {session: false},
+    async (error, user) => {
+      if (error || user === false) {
+        ctx.throw(STATUS_CODES.UNAUTHORIZED, 'Invalid state');
       }
 
-      await ctx.logIn(user, (error_: unknown) => {
-        if (error_) {
-          ctx.throw(STATUS_CODES.FORBIDDEN, 'Unable to authenticate');
+      try {
+        const storedPassword = (await diskLogic.readUserFile()).password;
+        const equal = await bcrypt.compare(
+          (user as {[key: string]: unknown; password: string}).password,
+          storedPassword!,
+        );
+        if (!equal) {
+          ctx.throw(STATUS_CODES.UNAUTHORIZED, 'Incorrect password');
         }
-      });
-    } catch {
-      ctx.throw(STATUS_CODES.UNAUTHORIZED, 'No user registered');
-    }
 
-    await next();
-  })(ctx, next);
+        try {
+          await ctx.logIn(user);
+        } catch {
+          ctx.throw(
+            STATUS_CODES.INTERNAL_SERVER_ERROR,
+            'Failed to log in. Your password seemed to be correct though. Please contact the Citadel support team.',
+          );
+        }
+      } catch {
+        ctx.throw(STATUS_CODES.UNAUTHORIZED, 'No user registered');
+      }
+    },
+  )(ctx, next);
 }
 
 // eslint-enable @typescript-eslint/no-unsafe-member-access
@@ -140,13 +145,16 @@ export async function jwt(ctx: Context, next: Next): Promise<void> {
         ctx.throw(STATUS_CODES.UNAUTHORIZED, 'Invalid JWT');
       }
 
-      await ctx.logIn(user, async (error_: unknown) => {
-        if (error_) {
-          ctx.throw(STATUS_CODES.UNAUTHORIZED, 'Unable to authenticate');
-        }
+      try {
+        await ctx.logIn(user);
+      } catch {
+        ctx.throw(
+          STATUS_CODES.INTERNAL_SERVER_ERROR,
+          'An internal error occured. Please contact the Citadel support team.',
+        );
+      }
 
-        await next();
-      });
+      await next();
     },
   )(ctx, next);
 }
@@ -160,13 +168,16 @@ export async function register(ctx: Context, next: Next): Promise<void> {
         ctx.throw(STATUS_CODES.UNAUTHORIZED, 'Invalid state');
       }
 
-      await ctx.logIn(user, async (error_: unknown) => {
-        if (error_) {
-          ctx.throw(STATUS_CODES.UNAUTHORIZED, 'Unable to authenticate');
-        }
+      try {
+        await ctx.logIn(user);
+      } catch {
+        ctx.throw(
+          STATUS_CODES.INTERNAL_SERVER_ERROR,
+          'An internal error occured. Please contact the Citadel support team.',
+        );
+      }
 
-        await next();
-      });
+      await next();
     },
   )(ctx, next);
 }

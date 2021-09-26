@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import Router from '@koa/router';
 
-import {typeHelper} from '@runcitadel/utils';
+import {typeHelper, errorHandler} from '@runcitadel/utils';
 import type {user as userFile} from '@runcitadel/utils';
 import * as authLogic from '../../logic/auth.js';
 
 import * as auth from '../../middlewares/auth.js';
-import errorHandler from '../../middlewares/error-handler.js';
 
 import {STATUS_CODES} from '../../utils/const.js';
 

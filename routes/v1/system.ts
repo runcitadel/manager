@@ -1,10 +1,10 @@
 import Router from '@koa/router';
+import {errorHandler} from '@runcitadel/utils';
 
 import * as systemLogic from '../../logic/system.js';
 import * as diskLogic from '../../logic/disk.js';
 
 import * as auth from '../../middlewares/auth.js';
-import errorHandler from '../../middlewares/error-handler.js';
 
 import * as constants from '../../utils/const.js';
 

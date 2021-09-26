@@ -1,11 +1,11 @@
 import Router from '@koa/router';
+import {errorHandler} from '@runcitadel/utils';
 
 import socksProxyAgentPkg from 'socks-proxy-agent';
 import fetch from 'node-fetch';
 import * as constants from '../../utils/const.js';
 import {STATUS_CODES} from '../../utils/const.js';
 import * as auth from '../../middlewares/auth.js';
-import errorHandler from '../../middlewares/error-handler.js';
 
 const router = new Router({
   prefix: '/v1/external',

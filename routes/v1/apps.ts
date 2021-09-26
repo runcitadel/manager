@@ -1,9 +1,9 @@
 import Router from '@koa/router';
+import {errorHandler} from '@runcitadel/utils';
 
 import * as appsLogic from '../../logic/apps.js';
 
 import * as auth from '../../middlewares/auth.js';
-import errorHandler from '../../middlewares/error-handler.js';
 
 import {STATUS_CODES} from '../../utils/const.js';
 

@@ -33,7 +33,6 @@
     "socks-proxy-agent": "^6.1.0"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.12",
     "@types/jsonwebtoken": "^8.5.5",
     "@types/koa": "^2.13.4",
     "@types/koa-morgan": "^1.0.5",

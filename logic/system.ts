@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import * as semver from 'semver';
+import semver from 'semver';
 import {encode} from '@runcitadel/lndconnect';
 
 import {NodeError} from '@runcitadel/utils';

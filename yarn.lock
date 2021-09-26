@@ -606,13 +606,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cors@npm:^2.8.12":
-  version: 2.8.12
-  resolution: "@types/cors@npm:2.8.12"
-  checksum: 8c45f112c7d1d2d831b4b266f2e6ed33a1887a35dcbfe2a18b28370751fababb7cd045e745ef84a523c33a25932678097bf79afaa367c6cb3fa0daa7a6438257
-  languageName: node
-  linkType: hard
-
 "@types/eslint@npm:^7.2.13":
   version: 7.28.0
   resolution: "@types/eslint@npm:7.28.0"
@@ -3901,7 +3894,6 @@ __metadata:
     "@node-rs/bcrypt": ^1.4.1
     "@runcitadel/lndconnect": ^0.0.2
     "@runcitadel/utils": ^0.8.0
-    "@types/cors": ^2.8.12
     "@types/jsonwebtoken": ^8.5.5
     "@types/koa": ^2.13.4
     "@types/koa-morgan": ^1.0.5

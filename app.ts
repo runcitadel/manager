@@ -6,6 +6,7 @@ import passport from 'koa-passport';
 import cors from '@koa/cors';
 
 import {corsOptions} from './middlewares/cors.js';
+import errorHandler from './middlewares/error-handler.js';
 
 import ping from './routes/ping.js';
 import account from './routes/v1/account.js';
@@ -17,17 +18,7 @@ config();
 
 const app = new Koa();
 
-app.use(async (ctx: Context, next) => {
-  try {
-    await next();
-  } catch (error: unknown | Error) {
-    ctx.status = (error as {status: number}).status || 500;
-    ctx.body = JSON.stringify(
-      (error as {message: string}).message || 'An error occurred',
-    );
-    ctx.app.emit('error', error, ctx);
-  }
-});
+app.use(errorHandler);
 
 app.on('error', (error: Error, ctx: Context) => {
   const route = ctx.request.URL.pathname ?? '';

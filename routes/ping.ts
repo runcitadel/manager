@@ -6,7 +6,10 @@ const router = new Router({
 
 router.get('/', async (ctx, next) => {
   ctx.body = {
-    version: 'Citadel Manager',
+    version: 'Manager by Citadel',
+    // TODO: This will later be used to check for features
+    features: [],
+    isCitadel: true,
   };
   await next();
 });

@@ -146,7 +146,7 @@ export async function writeSignalFile(
   }
 
   const signalFilePath = path.join(constants.SIGNAL_DIR, signalFile);
-  return fs.touch(signalFilePath);
+  return await fs.touch(signalFilePath);
 }
 
 export async function writeStatusFile(

@@ -9,22 +9,18 @@ import * as auth from '../../middlewares/auth.js';
 import * as constants from '../../utils/const.js';
 
 const router = new Router({
-  prefix: '/v1/system',
+  prefix: '/v2/system',
 });
 
 router.use(errorHandler);
 
 router.get('/info', auth.jwt, async (ctx, next) => {
-  const info = await systemLogic.getInfo();
-
-  ctx.body = info;
+  ctx.body = await systemLogic.getInfo();
   await next();
 });
 
 router.get('/status', auth.jwt, async (ctx, next) => {
-  const status = await systemLogic.status();
-
-  ctx.body = status;
+  ctx.body = await systemLogic.status();
   await next();
 });
 
@@ -36,42 +32,32 @@ router.post('/clear-memory-warning', auth.jwt, async (ctx, next) => {
 router.get('/dashboard-hidden-service', auth.jwt, async (ctx, next) => {
   const url = await systemLogic.getHiddenServiceUrl();
 
-  ctx.body = url;
+  ctx.body = {url};
   await next();
 });
 
 router.get('/electrum-connection-details', auth.jwt, async (ctx, next) => {
-  const connectionDetails = await systemLogic.getElectrumConnectionDetails();
-
-  ctx.body = connectionDetails;
+  ctx.body = await systemLogic.getElectrumConnectionDetails();
   await next();
 });
 
 router.get('/bitcoin-p2p-connection-details', auth.jwt, async (ctx, next) => {
-  const connectionDetails = await systemLogic.getBitcoinP2PConnectionDetails();
-
-  ctx.body = connectionDetails;
+  ctx.body = await systemLogic.getBitcoinP2PConnectionDetails();
   await next();
 });
 
 router.get('/bitcoin-rpc-connection-details', auth.jwt, async (ctx, next) => {
-  const connectionDetails = await systemLogic.getBitcoinRPCConnectionDetails();
-
-  ctx.body = connectionDetails;
+  ctx.body = await systemLogic.getBitcoinRPCConnectionDetails();
   await next();
 });
 
 router.get('/lndconnect-urls', auth.jwt, async (ctx, next) => {
-  const urls = await systemLogic.getLndConnectUrls();
-
-  ctx.body = urls;
+  ctx.body = await systemLogic.getLndConnectUrls();
   await next();
 });
 
 router.get('/get-update', auth.jwt, async (ctx, next) => {
-  const update = await systemLogic.getAvailableUpdate();
-
-  ctx.body = update;
+  ctx.body = await systemLogic.getAvailableUpdate();
   await next();
 });
 
@@ -83,23 +69,17 @@ router.get('/get-update-details', auth.jwt, async (ctx, next) => {
 });
 
 router.get('/update-status', async (ctx, next) => {
-  const update = await systemLogic.getUpdateStatus();
-
-  ctx.body = update;
+  ctx.body = await systemLogic.getUpdateStatus();
   await next();
 });
 
 router.post('/update', auth.jwt, async (ctx, next) => {
-  const status = await systemLogic.startUpdate();
-
-  ctx.body = status;
+  ctx.body = await systemLogic.startUpdate();
   await next();
 });
 
 router.get('/backup-status', async (ctx, next) => {
-  const backup = await systemLogic.getBackupStatus();
-
-  ctx.body = backup;
+  ctx.body = await systemLogic.getBackupStatus();
   await next();
 });
 
@@ -124,35 +104,31 @@ router.post('/reboot', auth.jwt, async (ctx, next) => {
 });
 
 router.get('/storage', async (ctx, next) => {
-  const update = await diskLogic.readJsonStatusFile('storage');
-
-  ctx.body = update;
+  ctx.body = await diskLogic.readJsonStatusFile('storage');
   await next();
 });
 
 router.get('/memory', async (ctx, next) => {
-  const update = await diskLogic.readJsonStatusFile('memory');
-
-  ctx.body = update;
+  ctx.body = await diskLogic.readJsonStatusFile('memory');
   await next();
 });
 
 router.get('/temperature', async (ctx, next) => {
-  const update = await diskLogic.readJsonStatusFile('temperature');
-
-  ctx.body = update;
+  ctx.body = {
+    temperature: await diskLogic.readJsonStatusFile('temperature'),
+  };
   await next();
 });
 
 router.get('/uptime', async (ctx, next) => {
-  const update = await diskLogic.readJsonStatusFile('uptime');
-
-  ctx.body = update;
+  ctx.body = {
+    uptime: await diskLogic.readJsonStatusFile('uptime'),
+  };
   await next();
 });
 
-router.get('/is-umbrel-os', async (ctx, next) => {
-  ctx.body = constants.IS_UMBREL_OS;
+router.get('/is-os', async (ctx, next) => {
+  ctx.body = {os: constants.IS_UMBREL_OS};
   await next();
 });
 

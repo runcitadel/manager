@@ -13,6 +13,7 @@ import {corsOptions} from './middlewares/cors.js';
 import ping from './routes/ping.js';
 import account from './routes/v1/account.js';
 import system from './routes/v1/system.js';
+import system2 from './routes/v2/system.js';
 import external from './routes/v1/external.js';
 import apps from './routes/v1/apps.js';
 
@@ -43,5 +44,6 @@ app.use(account.routes());
 app.use(system.routes());
 app.use(external.routes());
 app.use(apps.routes());
+app.use(system2.routes());
 
 export default app;

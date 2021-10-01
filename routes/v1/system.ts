@@ -163,4 +163,9 @@ router.get('/is-umbrel-os', async (ctx, next) => {
   await next();
 });
 
+router.get('/is-os', async (ctx, next) => {
+  ctx.body = {os: constants.IS_UMBREL_OS};
+  await next();
+});
+
 export default router;

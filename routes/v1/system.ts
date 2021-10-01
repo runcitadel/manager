@@ -29,9 +29,7 @@ router.get('/status', auth.jwt, async (ctx, next) => {
 });
 
 router.post('/clear-memory-warning', auth.jwt, async (ctx, next) => {
-  const result = await systemLogic.clearMemoryWarning();
-
-  ctx.body = result;
+  ctx.body = await systemLogic.clearMemoryWarning();
   await next();
 });
 
@@ -113,30 +111,22 @@ router.get('/backup-status', async (ctx, next) => {
 });
 
 router.get('/debug-result', auth.jwt, async (ctx, next) => {
-  const result = await systemLogic.getDebugResult();
-
-  ctx.body = result;
+  ctx.body = await systemLogic.getDebugResult();
   await next();
 });
 
 router.post('/debug', auth.jwt, async (ctx, next) => {
-  const result = await systemLogic.requestDebug();
-
-  ctx.body = result;
+  ctx.body = await systemLogic.requestDebug();
   await next();
 });
 
 router.post('/shutdown', auth.jwt, async (ctx, next) => {
-  const result = await systemLogic.requestShutdown();
-
-  ctx.body = result;
+  ctx.body = await systemLogic.requestShutdown();
   await next();
 });
 
 router.post('/reboot', auth.jwt, async (ctx, next) => {
-  const result = await systemLogic.requestReboot();
-
-  ctx.body = result;
+  ctx.body = await systemLogic.requestReboot();
   await next();
 });
 

@@ -84,6 +84,13 @@ router.get('/get-update', auth.jwt, async (ctx, next) => {
   await next();
 });
 
+router.get('/get-update-details', auth.jwt, async (ctx, next) => {
+  const update = await systemLogic.getAvailableUpdate();
+
+  ctx.body = {update};
+  await next();
+});
+
 router.get('/update-status', async (ctx, next) => {
   const update = await systemLogic.getUpdateStatus();
 

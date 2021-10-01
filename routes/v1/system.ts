@@ -42,6 +42,13 @@ router.get('/dashboard-hidden-service', auth.jwt, async (ctx, next) => {
   await next();
 });
 
+router.get('/hidden-service', auth.jwt, async (ctx, next) => {
+  const url = await systemLogic.getHiddenServiceUrl();
+
+  ctx.body = {url};
+  await next();
+});
+
 router.get('/electrum-connection-details', auth.jwt, async (ctx, next) => {
   const connectionDetails = await systemLogic.getElectrumConnectionDetails();
 

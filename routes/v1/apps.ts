@@ -1,11 +1,9 @@
 import Router from '@koa/router';
-import {errorHandler} from '@runcitadel/utils';
+import {errorHandler, STATUS_CODES} from '@runcitadel/utils';
 
 import * as appsLogic from '../../logic/apps.js';
 
 import * as auth from '../../middlewares/auth.js';
-
-import {STATUS_CODES} from '../../utils/const.js';
 
 const router = new Router({
   prefix: '/v1/apps',

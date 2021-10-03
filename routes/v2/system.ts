@@ -42,12 +42,12 @@ router.get('/electrum-connection-details', auth.jwt, async (ctx, next) => {
 });
 
 router.get('/bitcoin-p2p-connection-details', auth.jwt, async (ctx, next) => {
-  ctx.body = await systemLogic.getBitcoinP2PConnectionDetails();
+  ctx.body = await systemLogic.getBitcoinP2pConnectionDetails();
   await next();
 });
 
 router.get('/bitcoin-rpc-connection-details', auth.jwt, async (ctx, next) => {
-  ctx.body = await systemLogic.getBitcoinRPCConnectionDetails();
+  ctx.body = await systemLogic.getBitcoinRpcConnectionDetails();
   await next();
 });
 

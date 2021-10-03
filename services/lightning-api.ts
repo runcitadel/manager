@@ -9,6 +9,7 @@ export async function initializeWallet(
   jwt: string,
 ): Promise<unknown> {
   const headers = {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     Authorization: 'JWT ' + jwt,
     'Content-Type': 'application/json',
   };

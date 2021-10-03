@@ -5,7 +5,7 @@ import * as diskLogic from '../logic/disk.js';
 
 const {sign, verify} = jwt;
 
-async function isValidJWT(payload: string, pubkey: string): Promise<boolean> {
+async function isValidJwt(payload: string, pubkey: string): Promise<boolean> {
   return new Promise((resolve) => {
     verify(payload, pubkey, (error: VerifyErrors | null) => {
       if (error) {
@@ -22,17 +22,17 @@ const expiresIn = process.env.JWT_EXPIRATION
   ? Number.parseInt(process.env.JWT_EXPIRATION, 10)
   : 3600;
 
-export async function generateJWT(account: string): Promise<string> {
-  const jwtPrivateKey = await diskLogic.readJWTPrivateKeyFile();
+export async function generateJwt(account: string): Promise<string> {
+  const jwtPrivateKey = await diskLogic.readJwtPrivateKeyFile();
 
-  const jwtPubKey = await diskLogic.readJWTPublicKeyFile();
+  const jwtPubKey = await diskLogic.readJwtPublicKeyFile();
 
   const token = sign({id: account}, jwtPrivateKey, {
     expiresIn,
     algorithm: 'RS256',
   });
 
-  if (!(await isValidJWT(token, jwtPubKey))) {
+  if (!(await isValidJwt(token, jwtPubKey))) {
     return Promise.reject(new Error('Error generating JWT token.'));
   }
 

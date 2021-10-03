@@ -1,15 +1,6 @@
 import * as process from 'node:process';
 
-export enum STATUS_CODES {
-  ACCEPTED = 202,
-  BAD_GATEWAY = 502,
-  CONFLICT = 409,
-  FORBIDDEN = 403,
-  NOT_FOUND = 404,
-  OK = 200,
-  UNAUTHORIZED = 401,
-  INTERNAL_SERVER_ERROR = 500,
-}
+/* eslint-disable @typescript-eslint/naming-convention */
 
 export const DEVICE_HOSTNAME = process.env.DEVICE_HOSTNAME ?? 'citadel.local';
 export const USER_FILE = process.env.USER_FILE ?? '/db/user.json';
@@ -63,3 +54,4 @@ export const TOR_PROXY_IP = process.env.TOR_PROXY_IP ?? '192.168.0.1';
 export const TOR_PROXY_PORT =
   Number.parseInt(process.env.TOR_PROXY_PORT ?? '9050', 10) ?? 9050;
 export const IS_UMBREL_OS = process.env.IS_UMBREL_OS === 'true';
+/* eslint-enable @typescript-eslint/naming-convention */

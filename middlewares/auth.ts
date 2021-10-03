@@ -1,4 +1,5 @@
 import {Buffer} from 'node:buffer';
+import {STATUS_CODES} from '@runcitadel/utils';
 import * as passportJWT from 'passport-jwt';
 import * as passportHTTP from 'passport-http';
 import bcrypt from '@node-rs/bcrypt';
@@ -7,8 +8,8 @@ import type {Next, Context} from 'koa';
 import passport from 'koa-passport';
 import * as authLogic from '../logic/auth.js';
 import * as diskLogic from '../logic/disk.js';
-import {STATUS_CODES} from '../utils/const.js';
 
+/* eslint-disable @typescript-eslint/naming-convention */
 const JwtStrategy = passportJWT.Strategy;
 const BasicStrategy = passportHTTP.BasicStrategy;
 const ExtractJwt = passportJWT.ExtractJwt;
@@ -18,19 +19,20 @@ const REGISTRATION_AUTH = 'register';
 const BASIC_AUTH = 'basic';
 
 const SYSTEM_USER = 'admin';
+/* eslint-enable @typescript-eslint/naming-convention */
 
 const b64encode = (string: string) =>
   Buffer.from(string, 'utf-8').toString('base64');
 const b64decode = (b64: string) => Buffer.from(b64, 'base64').toString('utf-8');
 
-export async function generateJWTKeys(): Promise<void> {
+export async function generateJwtKeys(): Promise<void> {
   const key = new Rsa({b: 512});
 
   const privateKey = key.exportKey('private');
   const publicKey = key.exportKey('public');
 
-  await diskLogic.writeJWTPrivateKeyFile(privateKey);
-  await diskLogic.writeJWTPublicKeyFile(publicKey);
+  await diskLogic.writeJwtPrivateKeyFile(privateKey);
+  await diskLogic.writeJwtPublicKeyFile(publicKey);
 }
 
 export async function createJwtOptions(): Promise<{
@@ -38,8 +40,8 @@ export async function createJwtOptions(): Promise<{
   secretOrKey: string;
   algorithm: string;
 }> {
-  await generateJWTKeys();
-  const pubKey = await diskLogic.readJWTPublicKeyFile();
+  await generateJwtKeys();
+  const pubKey = await diskLogic.readJwtPublicKeyFile();
 
   return {
     jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('jwt'),
@@ -89,10 +91,8 @@ export async function convertRequestBodyToBasicAuth(
   ctx: Context,
   next: Next,
 ): Promise<void> {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   if (ctx.request.body.password && !ctx.request.headers.authorization) {
     // We need to Base64 encode because Passport breaks on ":" characters
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const password = b64encode(ctx.request.body.password);
     ctx.request.headers.authorization =
       'Basic ' + Buffer.from(SYSTEM_USER + ':' + password).toString('base64');

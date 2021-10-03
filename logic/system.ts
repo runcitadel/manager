@@ -13,13 +13,13 @@ import type {
 import * as constants from '../utils/const.js';
 import * as diskLogic from './disk.js';
 
-export type connectionDetails = {
+export type ConnectionDetails = {
   address: string;
   port: number;
   connectionString: string;
 };
 
-export type RpcConnectionDetails = connectionDetails & {
+export type RpcConnectionDetails = ConnectionDetails & {
   rpcuser: string;
   rpcpassword: string;
 };
@@ -31,7 +31,7 @@ export type LndConnectionDetails = {
   grpcLocal: string;
 };
 
-export type systemStatus = {
+export type SystemStatus = {
   highMemoryUsage: boolean;
 };
 
@@ -53,7 +53,7 @@ export async function getHiddenServiceUrl(): Promise<string> {
   }
 }
 
-export async function getElectrumConnectionDetails(): Promise<connectionDetails> {
+export async function getElectrumConnectionDetails(): Promise<ConnectionDetails> {
   try {
     const address = await diskLogic.readElectrumHiddenService();
     const port = constants.ELECTRUM_PORT;
@@ -68,9 +68,9 @@ export async function getElectrumConnectionDetails(): Promise<connectionDetails>
   }
 }
 
-export async function getBitcoinP2PConnectionDetails(): Promise<connectionDetails> {
+export async function getBitcoinP2pConnectionDetails(): Promise<ConnectionDetails> {
   try {
-    const address = await diskLogic.readBitcoinP2PHiddenService();
+    const address = await diskLogic.readBitcoinP2pHiddenService();
     const port = constants.BITCOIN_P2P_PORT;
     const connectionString = `${address}:${port}`;
     return {
@@ -83,11 +83,11 @@ export async function getBitcoinP2PConnectionDetails(): Promise<connectionDetail
   }
 }
 
-export async function getBitcoinRPCConnectionDetails(): Promise<RpcConnectionDetails> {
+export async function getBitcoinRpcConnectionDetails(): Promise<RpcConnectionDetails> {
   try {
     const [user, hiddenService] = await Promise.all([
       diskLogic.readUserFile(),
-      diskLogic.readBitcoinRPCHiddenService(),
+      diskLogic.readBitcoinRpcHiddenService(),
     ]);
     const label = encodeURIComponent(`${user.name}'s Citadel`);
     const rpcuser = constants.BITCOIN_RPC_USER;
@@ -320,7 +320,7 @@ export async function requestReboot(): Promise<string> {
   }
 }
 
-export async function status(): Promise<systemStatus> {
+export async function status(): Promise<SystemStatus> {
   try {
     const highMemoryUsage = await diskLogic.memoryWarningStatusFileExists();
     return {

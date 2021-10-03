@@ -1,18 +1,16 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import Router from '@koa/router';
 
-import {typeHelper, errorHandler} from '@runcitadel/utils';
+import {typeHelper, errorHandler, STATUS_CODES} from '@runcitadel/utils';
 import type {user as userFile} from '@runcitadel/utils';
 import * as authLogic from '../../logic/auth.js';
 
 import * as auth from '../../middlewares/auth.js';
 
-import {STATUS_CODES} from '../../utils/const.js';
-
 const router = new Router({
   prefix: '/v1/account',
 });
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const COMPLETE = 100;
 
 router.use(errorHandler);

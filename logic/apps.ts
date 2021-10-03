@@ -1,7 +1,7 @@
 import {NodeError} from '@runcitadel/utils';
 import * as diskLogic from './disk.js';
 
-export type app = {
+export type App = {
   id: string;
   category: string;
   name: string;
@@ -21,16 +21,16 @@ export type app = {
   installed?: boolean;
 };
 
-export type appQuery = {
+export type AppQuery = {
   installed?: boolean;
 };
 
-export async function get(query: appQuery): Promise<app[]> {
+export async function get(query: AppQuery): Promise<App[]> {
   let apps = await diskLogic.readAppRegistry();
 
   // Do all hidden service lookups concurrently
   await Promise.all(
-    apps.map(async (app: app) => {
+    apps.map(async (app: App) => {
       try {
         app.hiddenService = await diskLogic.readHiddenService(`app-${app.id}`);
       } catch {
@@ -41,7 +41,7 @@ export async function get(query: appQuery): Promise<app[]> {
 
   if (query.installed === true) {
     const installedApps = (await diskLogic.readUserFile()).installedApps ?? [];
-    apps = apps.filter((app: app) => installedApps.includes(app.id));
+    apps = apps.filter((app: App) => installedApps.includes(app.id));
   }
 
   return apps;

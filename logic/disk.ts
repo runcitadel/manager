@@ -1,7 +1,8 @@
+/* eslint-disable import/namespace */
 import * as path from 'node:path';
 
 import {Buffer} from 'node:buffer';
-import {fs} from '@runcitadel/utils';
+import * as fs from '@runcitadel/fs';
 
 import type {
   user as userFile,
@@ -11,7 +12,7 @@ import type {
   debugStatus,
 } from '@runcitadel/utils';
 import * as constants from '../utils/const.js';
-import {app} from './apps.js';
+import type {App} from './apps.js';
 
 export async function deleteUserFile(): Promise<void> {
   await fs.unlink(constants.USER_FILE);
@@ -48,11 +49,11 @@ export async function readElectrumHiddenService(): Promise<string> {
   return fs.readUtf8File(constants.ELECTRUM_HIDDEN_SERVICE_FILE);
 }
 
-export async function readBitcoinP2PHiddenService(): Promise<string> {
+export async function readBitcoinP2pHiddenService(): Promise<string> {
   return fs.readUtf8File(constants.BITCOIN_P2P_HIDDEN_SERVICE_FILE);
 }
 
-export async function readBitcoinRPCHiddenService(): Promise<string> {
+export async function readBitcoinRpcHiddenService(): Promise<string> {
   return fs.readUtf8File(constants.BITCOIN_RPC_HIDDEN_SERVICE_FILE);
 }
 
@@ -100,19 +101,19 @@ export async function readBackupStatusFile(): Promise<backupStatus> {
   return (await readJsonStatusFile('backup')) as backupStatus;
 }
 
-export async function readJWTPrivateKeyFile(): Promise<string> {
+export async function readJwtPrivateKeyFile(): Promise<string> {
   return fs.readUtf8File(constants.JWT_PRIVATE_KEY_FILE);
 }
 
-export async function readJWTPublicKeyFile(): Promise<string> {
+export async function readJwtPublicKeyFile(): Promise<string> {
   return fs.readUtf8File(constants.JWT_PUBLIC_KEY_FILE);
 }
 
-export async function writeJWTPrivateKeyFile(data: string): Promise<void> {
+export async function writeJwtPrivateKeyFile(data: string): Promise<void> {
   return fs.safeWriteFile(constants.JWT_PRIVATE_KEY_FILE, data);
 }
 
-export async function writeJWTPublicKeyFile(data: string): Promise<void> {
+export async function writeJwtPublicKeyFile(data: string): Promise<void> {
   return fs.safeWriteFile(constants.JWT_PUBLIC_KEY_FILE, data);
 }
 
@@ -122,16 +123,6 @@ export async function shutdown(): Promise<void> {
 
 export async function reboot(): Promise<void> {
   await writeSignalFile('reboot');
-}
-
-// Read the contends of a file.
-export async function readUtf8File(path: string): Promise<string> {
-  return fs.readUtf8File(path);
-}
-
-// Read the contents of a file and return a json object.
-export async function readJSONFile(path: string): Promise<unknown> {
-  return fs.readJSONFile(path);
 }
 
 export async function readDebugStatusFile(): Promise<debugStatus> {
@@ -146,7 +137,7 @@ export async function writeSignalFile(
   }
 
   const signalFilePath = path.join(constants.SIGNAL_DIR, signalFile);
-  return await fs.touch(signalFilePath);
+  return fs.touch(signalFilePath);
 }
 
 export async function writeStatusFile(
@@ -188,9 +179,9 @@ export async function deleteStatusFile(statusFile: string): Promise<void> {
   await fs.unlink(statusFilePath);
 }
 
-export async function readAppRegistry(): Promise<app[]> {
+export async function readAppRegistry(): Promise<App[]> {
   const appRegistryFile = path.join(constants.APPS_DIR, 'registry.json');
-  return (await fs.readJSONFile(appRegistryFile)) as app[];
+  return (await fs.readJSONFile(appRegistryFile)) as App[];
 }
 
 export async function readHiddenService(id: string): Promise<string> {
@@ -233,3 +224,4 @@ export async function writeJsonStatusFile(
   await fs.touch(statusFilePath);
   return fs.writeJsonFile(statusFilePath, data);
 }
+/* eslint-enable import/namespace */

@@ -1,15 +1,15 @@
 import Router from '@koa/router';
-import {errorHandler} from '@runcitadel/utils';
+import {errorHandler, STATUS_CODES} from '@runcitadel/utils';
 
 import socksProxyAgentPkg from 'socks-proxy-agent';
 import fetch from 'node-fetch';
 import * as constants from '../../utils/const.js';
-import {STATUS_CODES} from '../../utils/const.js';
 import * as auth from '../../middlewares/auth.js';
 
 const router = new Router({
   prefix: '/v1/external',
 });
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const {SocksProxyAgent} = socksProxyAgentPkg;
 
 const agent = new SocksProxyAgent(

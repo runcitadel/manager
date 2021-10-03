@@ -13,8 +13,9 @@
     "@koa/cors": "^3.1.0",
     "@koa/router": "^10.1.1",
     "@node-rs/bcrypt": "^1.4.1",
+    "@runcitadel/fs": "^1.0.0",
     "@runcitadel/lndconnect": "^0.0.2",
-    "@runcitadel/utils": "^0.8.0",
+    "@runcitadel/utils": "^0.9.0",
     "aezeed": "^0.0.4",
     "cors": "^2.8.5",
     "debug": "^4.3.2",
@@ -39,13 +40,13 @@
     "@types/koa-passport": "^4.0.2",
     "@types/koa__cors": "^3.0.3",
     "@types/koa__router": "^8.0.8",
-    "@types/node": "^16.10.1",
+    "@types/node": "^16.10.2",
     "@types/node-rsa": "^1.1.1",
     "@types/passport-http": "^0.3.9",
     "@types/passport-jwt": "^3.0.6",
     "@types/semver": "^7.3.8",
     "typescript": "^4.4.3",
-    "xo": "^0.44.0"
+    "xo": "^0.45.0"
   },
   "type": "module",
   "packageManager": "yarn@3.0.2"

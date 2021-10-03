@@ -6,10 +6,10 @@ import * as iocane from 'iocane';
 import {NodeError} from '@runcitadel/utils';
 import type {user as userFile} from '@runcitadel/utils';
 import * as lightningApiService from '../services/lightning-api.js';
-import {generateJWT} from '../utils/jwt.js';
+import {generateJwt} from '../utils/jwt.js';
 import * as diskLogic from './disk.js';
 
-export type userInfo = {
+export type UserInfo = {
   username?: string;
   name: string;
   password?: string;
@@ -18,7 +18,7 @@ export type userInfo = {
   installedApps?: string[];
 };
 
-export type changePasswordStatusType = {
+export type ChangePasswordStatusType = {
   percent: number;
   error?: boolean;
 };
@@ -26,7 +26,7 @@ export type changePasswordStatusType = {
 const saltRounds = 10;
 
 let devicePassword = '';
-let changePasswordStatus: changePasswordStatusType = {percent: 0};
+let changePasswordStatus: ChangePasswordStatusType = {percent: 0};
 
 resetChangePasswordStatus();
 
@@ -98,7 +98,7 @@ export async function changePassword(
   }
 }
 
-export function getChangePasswordStatus(): changePasswordStatusType {
+export function getChangePasswordStatus(): ChangePasswordStatusType {
   return changePasswordStatus;
 }
 
@@ -126,7 +126,7 @@ export async function isRegistered(): Promise<boolean> {
 // Derives the root seed and persists it to disk to be used for
 // determinstically deriving further entropy for any other service.
 export async function deriveSeed(
-  user: userInfo,
+  user: UserInfo,
 ): Promise<void | NodeJS.ErrnoException> {
   if (diskLogic.seedFileExists()) {
     return;
@@ -159,9 +159,9 @@ export async function deriveUmbrelSeed(
 }
 
 // Log the user into the device. Caches the password if login is successful. Then returns jwt.
-export async function login(user: userInfo): Promise<string> {
+export async function login(user: UserInfo): Promise<string> {
   try {
-    const jwt = await generateJWT(user.username!);
+    const jwt = await generateJwt(user.username!);
     cachePassword(user.password!);
 
     await deriveSeed(user);
@@ -190,7 +190,7 @@ export async function getInfo(): Promise<userFile> {
   }
 }
 
-export async function seed(user: userInfo): Promise<string[]> {
+export async function seed(user: UserInfo): Promise<string[]> {
   // Decrypt mnemonic seed
   try {
     let {seed} = await diskLogic.readUserFile();
@@ -215,7 +215,7 @@ export async function seed(user: userInfo): Promise<string[]> {
 
 // Registers the the user to the device. Returns an error if a user already exists.
 export async function register(
-  user: userInfo,
+  user: UserInfo,
   seed: string[],
 ): Promise<{
   jwt: string;
@@ -263,7 +263,7 @@ export async function register(
   // Generate JWt
   let jwt;
   try {
-    jwt = await generateJWT(user.username!);
+    jwt = await generateJwt(user.username!);
   } catch {
     await diskLogic.deleteUserFile();
     throw new NodeError('Unable to generate JWT');
@@ -282,9 +282,9 @@ export async function register(
 }
 
 // Generate and return a new jwt token.
-export async function refresh(user: userInfo): Promise<string> {
+export async function refresh(user: UserInfo): Promise<string> {
   try {
-    const jwt = await generateJWT(user.username!);
+    const jwt = await generateJwt(user.username!);
 
     return jwt;
   } catch {

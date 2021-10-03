@@ -6,9 +6,7 @@ import bodyParser from 'koa-body';
 import passport from 'koa-passport';
 import cors from '@koa/cors';
 
-import {errorHandler} from '@runcitadel/utils';
-
-import {corsOptions} from './middlewares/cors.js';
+import {errorHandler, corsOptions} from '@runcitadel/utils';
 
 import ping from './routes/ping.js';
 import account from './routes/v1/account.js';

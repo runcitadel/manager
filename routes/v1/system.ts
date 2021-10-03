@@ -48,14 +48,14 @@ router.get('/electrum-connection-details', auth.jwt, async (ctx, next) => {
 });
 
 router.get('/bitcoin-p2p-connection-details', auth.jwt, async (ctx, next) => {
-  const connectionDetails = await systemLogic.getBitcoinP2PConnectionDetails();
+  const connectionDetails = await systemLogic.getBitcoinP2pConnectionDetails();
 
   ctx.body = connectionDetails;
   await next();
 });
 
 router.get('/bitcoin-rpc-connection-details', auth.jwt, async (ctx, next) => {
-  const connectionDetails = await systemLogic.getBitcoinRPCConnectionDetails();
+  const connectionDetails = await systemLogic.getBitcoinRpcConnectionDetails();
 
   ctx.body = connectionDetails;
   await next();

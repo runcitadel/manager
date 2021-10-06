@@ -48,6 +48,9 @@ jobs:
 
       - name: Commit & push
         run: |
+          mv yarn.lock/yarn.lock ./yarn.lock.old
+          rmdir yarn.lock
+          mv yarn.lock.old yarn.lock
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add yarn.lock

@@ -34,6 +34,18 @@ jobs:
         with:
           ref: ${{ steps.getref.outputs.pr_ref }}
           
+      
+      - name: Delete old lockfile
+        run: |
+          rm -rf yarn.lock
+  
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: update-yarn-lock.yml
+          run_id: ${{ github.event.workflow_run.id }}
+
       - name: Commit & push
         run: |
           git config user.name github-actions

@@ -14,37 +14,18 @@ jobs:
     if: >
       ${{ github.event.workflow_run.event == 'pull_request' &&
       github.event.workflow_run.conclusion == 'success' }}
-    steps:
-      - name: 'Download artifact'
-        uses: actions/github-script@v5
+    steps: 
+      - name: Delete old lockfile
+        run: |
+          rm -rf yarn.lock
+  
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
         with:
-          github-token: ${{ secrets.AARONDEWES_PAT }}
-          script: |
-            var artifacts = await github.rest.actions.listWorkflowRunArtifacts({
-               owner: context.repo.owner,
-               repo: context.repo.repo,
-               run_id: ${{github.event.workflow_run.id }},
-            });
-            var matchArtifact = artifacts.data.artifacts.filter((artifact) => {
-              return artifact.name == "yarn.lock"
-            })[0];
-            var matchArtifact2 = artifacts.data.artifacts.filter((artifact) => {
-              return artifact.name == "gh-pr-ref"
-            })[0];
-            var download = await github.rest.actions.downloadArtifact({
-               owner: context.repo.owner,
-               repo: context.repo.repo,
-               artifact_id: matchArtifact.id
-            });
-            var download2 = await github.rest.actions.downloadArtifact({
-               owner: context.repo.owner,
-               repo: context.repo.repo,
-               artifact_id: matchArtifact2.id
-            });
-            var fs = require('fs');
-            fs.writeFileSync('${{github.workspace}}/yarn.lock', Buffer.from((download).data));
-            fs.writeFileSync('${{github.workspace}}/gh-pr-ref', Buffer.from((download2).data));
-
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: update-yarn-lock.yml
+          run_id: ${{ github.event.workflow_run.id }}
+    
       - name: Read PR ref file
         id: getref
         run: echo "::set-output name=pr_ref::$(cat gh-pr-ref)"

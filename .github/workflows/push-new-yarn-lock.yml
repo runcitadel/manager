@@ -52,4 +52,4 @@ jobs:
           git config user.email github-actions@github.com
           git add yarn.lock
           git commit -m "Update yarn lockfile"
-          git push
+          git push origin HEAD:${{ steps.getref.outputs.pr_ref }}

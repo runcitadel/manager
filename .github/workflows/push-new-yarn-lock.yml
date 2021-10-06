@@ -31,19 +31,19 @@ jobs:
             var matchArtifact2 = artifacts.data.artifacts.filter((artifact) => {
               return artifact.name == "gh-pr-ref"
             })[0];
-            var download = github.rest.actions.downloadArtifact({
+            var download = await github.rest.actions.downloadArtifact({
                owner: context.repo.owner,
                repo: context.repo.repo,
                artifact_id: matchArtifact.id
             });
-            var download2 = github.rest.actions.downloadArtifact({
+            var download2 = await github.rest.actions.downloadArtifact({
                owner: context.repo.owner,
                repo: context.repo.repo,
                artifact_id: matchArtifact2.id
             });
             var fs = require('fs');
-            fs.writeFileSync('${{github.workspace}}/yarn.lock', Buffer.from((await download).data));
-            fs.writeFileSync('${{github.workspace}}/gh-pr-ref', Buffer.from((await download2).data));
+            fs.writeFileSync('${{github.workspace}}/yarn.lock', Buffer.from((download).data));
+            fs.writeFileSync('${{github.workspace}}/gh-pr-ref', Buffer.from((download2).data));
 
       - name: Read PR ref file
         id: getref

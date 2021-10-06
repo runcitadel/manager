@@ -31,12 +31,12 @@ jobs:
             var matchArtifact2 = artifacts.data.artifacts.filter((artifact) => {
               return artifact.name == "gh-pr-ref"
             })[0];
-            var download = github.actions.downloadArtifact({
+            var download = github.rest.actions.downloadArtifact({
                owner: context.repo.owner,
                repo: context.repo.repo,
                artifact_id: matchArtifact.id
             });
-            var download2 = github.actions.downloadArtifact({
+            var download2 = github.rest.actions.downloadArtifact({
                owner: context.repo.owner,
                repo: context.repo.repo,
                artifact_id: matchArtifact2.id

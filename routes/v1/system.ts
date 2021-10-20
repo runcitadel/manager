@@ -152,7 +152,7 @@ router.get('/uptime', async (ctx, next) => {
 });
 
 router.get('/is-umbrel-os', async (ctx, next) => {
-  ctx.body = constants.IS_UMBREL_OS;
+  ctx.body = constants.IS_CITADEL_OS;
   await next();
 });
 

@@ -128,7 +128,7 @@ router.get('/uptime', async (ctx, next) => {
 });
 
 router.get('/is-os', async (ctx, next) => {
-  ctx.body = {os: constants.IS_UMBREL_OS};
+  ctx.body = {os: constants.IS_CITADEL_OS};
   await next();
 });
 

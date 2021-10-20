@@ -230,7 +230,7 @@ export async function getLndConnectUrls(): Promise<LndConnectionDetails> {
 
   let macaroon: string;
   try {
-    macaroon = (await diskLogic.readLndAdminMacaroon()).toString('utf-8');
+    macaroon = (await diskLogic.readLndAdminMacaroon()).toString('hex');
   } catch {
     throw new NodeError('Unable to read lnd macaroon file');
   }

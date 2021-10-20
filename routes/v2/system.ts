@@ -127,8 +127,8 @@ router.get('/uptime', async (ctx, next) => {
   await next();
 });
 
-router.get('/is-os', async (ctx, next) => {
-  ctx.body = {os: constants.IS_CITADEL_OS};
+router.get('/', async (ctx, next) => {
+  ctx.body = {os: constants.IS_CITADEL_OS ? "Citadel OS" : "unknown"};
   await next();
 });
 

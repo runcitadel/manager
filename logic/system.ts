@@ -205,7 +205,7 @@ export async function startUpdate(): Promise<{message: string} | string> {
   // Write update signal file
   try {
     await diskLogic.writeUpdateSignalFile();
-    return {message: 'Updating to Umbrel v' + availableUpdate.version};
+    return {message: 'Updating to Citadel v' + availableUpdate.version};
   } catch {
     throw new NodeError('Unable to write update signal file');
   }

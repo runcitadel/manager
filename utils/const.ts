@@ -13,7 +13,7 @@ export const JWT_PUBLIC_KEY_FILE =
   process.env.JWT_PUBLIC_KEY_FILE ?? "/db/jwt-public-key/jwt.pem";
 export const JWT_PRIVATE_KEY_FILE =
   process.env.JWT_PRIVATE_KEY_FILE ?? "/db/jwt-private-key/jwt.key";
-export const SEED_FILE = process.env.SEED_FILE ?? "/db/umbrel-seed/seed";
+export const SEED_FILE = process.env.SEED_FILE ?? "/db/citadel-seed/seed";
 export const DASHBOARD_HIDDEN_SERVICE_FILE =
   process.env.DASHBOARD_HIDDEN_SERVICE_FILE ?? "/var/lib/tor/web/hostname";
 export const ELECTRUM_HIDDEN_SERVICE_FILE =

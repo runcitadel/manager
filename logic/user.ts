@@ -92,6 +92,12 @@ export default class User {
     return user;
   }
 
+  async delete() {
+    // Remove the user from the users key
+    await keyv.set("users", (await keyv.get("users") || "").split(",").filter((id) => id !== this.id).join(","));
+    // Delete the user's data
+    await keyv.delete(this.id);
+  }
 
   async #setProperty(property: string, value: string | number) {
     const data = { ...(await this.#getData()), [property]: value };

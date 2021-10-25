@@ -5,8 +5,7 @@ export type Permission =
   | "openChannel"
   | "closeChannels"
   | "installApps"
-  | "manageUsers"
-  | "manageFunds";
+  | "manageUsers";
 
 export type UserData = {
   name: string;

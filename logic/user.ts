@@ -1,5 +1,6 @@
 import KeyvRedis from "@keyv/redis";
 import Keyv from "keyv";
+import bcrypt from '@node-rs/bcrypt';
 
 export type Permission =
   | "openChannel"
@@ -12,6 +13,8 @@ export type UserData = {
   permissions: Permission[];
   onChainBalance: string;
   lightningBalance: string;
+  password: string;
+  installedApps: string[];
 };
 
 const keyvRedis = new KeyvRedis({
@@ -55,7 +58,9 @@ export default class User {
     return new User(id);
   }
 
-  static async create(id: string, name: string, permissions: Permission[]) {
+  static async create(id: string, name: string, permissions: Permission[], password: string) {
+    // Fail if the id is users or admin
+    if (id === "users" || id === "admin") throw new Error("Id is not allowed");
     // Fail if the user already exists
     if (await keyv.get(id)) throw new Error("User already exists");
     // Create a new instance of the user object
@@ -68,9 +73,25 @@ export default class User {
       permissions,
       onChainBalance: "0",
       lightningBalance: "0",
+      password: await bcrypt.hash(password, 10),
+      installedApps: [],
     });
+    // Store the users in the users key
+    await keyv.set("users", (await keyv.get("users") || "").split(",").concat(id).join(","));
     return user;
   }
+
+  static async listUsers(): Promise<string[]> {
+    return (await keyv.get("users") || "").split(",");
+  }
+
+  static async login(id: string, password: string): Promise<User> {
+    const user = await User.get(id);
+    const data = await user.#getData();
+    if (!(await bcrypt.compare(password, data.password))) throw new Error("Invalid password");
+    return user;
+  }
+
 
   async #setProperty(property: string, value: string | number) {
     const data = { ...(await this.#getData()), [property]: value };

@@ -25,23 +25,12 @@ export type ChangePasswordStatusType = {
 
 const saltRounds = 10;
 
-let devicePassword = '';
 let changePasswordStatus: ChangePasswordStatusType = {percent: 0};
 
 resetChangePasswordStatus();
 
 export function resetChangePasswordStatus(): void {
   changePasswordStatus = {percent: 0};
-}
-
-// Caches the password.
-export function cachePassword(password: string): void {
-  devicePassword = password;
-}
-
-// Gets the cached the password.
-export function getCachedPassword(): string {
-  return devicePassword;
 }
 
 // Sets system password
@@ -87,9 +76,6 @@ export async function changePassword(
     await setSystemPassword(newPassword);
 
     changePasswordStatus.percent = 100;
-
-    // Cache the password for later use
-    cachePassword(newPassword);
   } catch {
     changePasswordStatus.percent = 100;
     changePasswordStatus.error = true;
@@ -162,7 +148,6 @@ export async function deriveUmbrelSeed(
 export async function login(user: UserInfo): Promise<string> {
   try {
     const jwt = await generateJwt(user.username!);
-    cachePassword(user.password!);
 
     await deriveSeed(user);
 

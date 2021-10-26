@@ -5,6 +5,24 @@ import * as diskLogic from '../logic/disk.js';
 
 const {sign, verify} = jwt;
 
+export async function getIDFromJwt(payload: string): Promise<string> {
+  const pubkey = await diskLogic.readJwtPublicKeyFile();
+  return new Promise((resolve, reject) => {
+    verify(payload, pubkey, (error: VerifyErrors | null, decoded: unknown) => {
+      if (error) {
+        reject(`Invalid JWT: ${error}`);
+      } else {
+        // Make sure decoded exists and is an object and id is defined and is a string
+        if (typeof decoded === 'object' && decoded !== null && (decoded as {id: unknown}).id && typeof (decoded as {id: unknown}).id === 'string') {
+          resolve((decoded as {id: string}).id);
+        } else {
+          reject('Invalid JWT');
+        }
+      }
+    });
+  });
+}
+
 async function isValidJwt(payload: string, pubkey: string): Promise<boolean> {
   return new Promise((resolve) => {
     verify(payload, pubkey, (error: VerifyErrors | null) => {

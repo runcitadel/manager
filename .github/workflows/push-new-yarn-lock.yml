@@ -19,7 +19,7 @@ jobs:
         run: |
           rm -rf yarn.lock
   
-      - name: Download artifact
+      - name: Download artifacts
         uses: dawidd6/action-download-artifact@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -28,7 +28,7 @@ jobs:
     
       - name: Read PR ref file
         id: getref
-        run: echo "::set-output name=pr_ref::$(cat gh-pr-ref)"
+        run: echo "::set-output name=pr_ref::$(cat gh-pr-ref/gh-pr-ref)"
        
       - uses: actions/checkout@v2
         with:
@@ -39,7 +39,7 @@ jobs:
         run: |
           rm -rf yarn.lock
   
-      - name: Download artifact
+      - name: Download artifacts
         uses: dawidd6/action-download-artifact@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

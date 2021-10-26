@@ -19,6 +19,7 @@ const agent = new SocksProxyAgent(
 router.use(errorHandler);
 
 router.get('/price', auth.jwt, async (ctx, next) => {
+  // This requires authentication, so don't remove that, then there's no SSRF
   // Default to USD
   const currency = (ctx.request.query.currency as string) || 'USD';
   const apiResponse = await fetch(

@@ -128,7 +128,7 @@ router.get('/uptime', async (ctx, next) => {
 });
 
 router.get('/', async (ctx, next) => {
-  ctx.body = {os: constants.IS_CITADEL_OS ? "Citadel OS" : "unknown"};
+  ctx.body = {os: constants.IS_CITADEL_OS ? 'Citadel OS' : 'unknown'};
   await next();
 });
 

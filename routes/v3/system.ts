@@ -9,7 +9,7 @@ import * as auth from '../../middlewares/auth.js';
 import * as constants from '../../utils/const.js';
 
 const router = new Router({
-  prefix: '/v2/system',
+  prefix: '/v3/system',
 });
 
 router.use(errorHandler);
@@ -128,7 +128,7 @@ router.get('/uptime', async (ctx, next) => {
 });
 
 router.get('/', async (ctx, next) => {
-  ctx.body = {os: constants.IS_CITADEL_OS ? "Citadel OS" : "unknown"};
+  ctx.body = {os: constants.IS_CITADEL_OS ? 'Citadel OS' : 'unknown'};
   await next();
 });
 

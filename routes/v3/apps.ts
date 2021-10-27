@@ -6,7 +6,7 @@ import * as appsLogic from '../../logic/apps.js';
 import * as auth from '../../middlewares/auth.js';
 
 const router = new Router({
-  prefix: '/v1/apps',
+  prefix: '/v3/apps',
 });
 
 router.use(errorHandler);

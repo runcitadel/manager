@@ -109,11 +109,7 @@ export default class User {
     }
   }
 
-  id: string;
-
-  constructor(id: string) {
-    this.id = id;
-  }
+  constructor(public id: string) {}
 
   async hasPermission(permission: Permission): Promise<boolean> {
     return (await this.getData()).permissions.includes(permission);

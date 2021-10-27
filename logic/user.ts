@@ -28,11 +28,7 @@ const keyvRedis = new KeyvRedis({
 const keyv = new Keyv({ store: keyvRedis });
 
 export default class User {
-  id: string;
-
-  constructor(id: string) {
-    this.id = id;
-  }
+  constructor(public id: string) {}
 
   async hasPermission(permission: PERMISSION): Promise<boolean> {
     return (await this.getData()).permissions.includes(permission);

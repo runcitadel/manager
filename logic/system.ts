@@ -2,8 +2,6 @@ import fetch from 'node-fetch';
 import semver from 'semver';
 import {encode} from '@runcitadel/lndconnect';
 
-import {NodeError} from '@runcitadel/utils';
-
 import type {
   versionFile,
   updateStatus,
@@ -40,7 +38,7 @@ export async function getInfo(): Promise<versionFile> {
     const info = await diskLogic.readVersionFile();
     return info;
   } catch {
-    throw new NodeError('Unable to get system information');
+    throw new Error('Unable to get system information');
   }
 }
 
@@ -49,7 +47,7 @@ export async function getHiddenServiceUrl(): Promise<string> {
     const url = await diskLogic.readHiddenService('web');
     return url;
   } catch {
-    throw new NodeError('Unable to get hidden service url');
+    throw new Error('Unable to get hidden service url');
   }
 }
 
@@ -64,7 +62,7 @@ export async function getElectrumConnectionDetails(): Promise<ConnectionDetails>
       connectionString,
     };
   } catch {
-    throw new NodeError('Unable to get Electrum hidden service url');
+    throw new Error('Unable to get Electrum hidden service url');
   }
 }
 
@@ -79,7 +77,7 @@ export async function getBitcoinP2pConnectionDetails(): Promise<ConnectionDetail
       connectionString,
     };
   } catch {
-    throw new NodeError('Unable to get Bitcoin P2P hidden service url');
+    throw new Error('Unable to get Bitcoin P2P hidden service url');
   }
 }
 
@@ -103,7 +101,7 @@ export async function getBitcoinRpcConnectionDetails(): Promise<RpcConnectionDet
       connectionString,
     };
   } catch {
-    throw new NodeError('Unable to get Bitcoin RPC connection details');
+    throw new Error('Unable to get Bitcoin RPC connection details');
   }
 }
 
@@ -163,7 +161,7 @@ export async function getAvailableUpdate(): Promise<versionFile | string> {
 
     return 'Your Citadel is up-to-date';
   } catch {
-    throw new NodeError('Unable to check for update');
+    throw new Error('Unable to check for update');
   }
 }
 
@@ -172,7 +170,7 @@ export async function getUpdateStatus(): Promise<updateStatus> {
     const status = await diskLogic.readUpdateStatusFile();
     return status;
   } catch {
-    throw new NodeError('Unable to get update status');
+    throw new Error('Unable to get update status');
   }
 }
 
@@ -184,13 +182,13 @@ export async function startUpdate(): Promise<{message: string} | string> {
     availableUpdate = await getAvailableUpdate();
     if (typeof availableUpdate === 'string') return availableUpdate;
   } catch {
-    throw new NodeError('Unable to fetch latest release');
+    throw new Error('Unable to fetch latest release');
   }
 
   // Make sure an update is not already in progress
   const updateInProgress = await diskLogic.updateLockFileExists();
   if (updateInProgress) {
-    throw new NodeError('An update is already in progress');
+    throw new Error('An update is already in progress');
   }
 
   // Update status file with update version
@@ -199,7 +197,7 @@ export async function startUpdate(): Promise<{message: string} | string> {
     updateStatus.updateTo = `v${availableUpdate.version}`;
     await diskLogic.writeUpdateStatusFile(updateStatus);
   } catch {
-    throw new NodeError('Could not update the update-status file');
+    throw new Error('Could not update the update-status file');
   }
 
   // Write update signal file
@@ -207,7 +205,7 @@ export async function startUpdate(): Promise<{message: string} | string> {
     await diskLogic.writeUpdateSignalFile();
     return {message: 'Updating to Citadel v' + availableUpdate.version};
   } catch {
-    throw new NodeError('Unable to write update signal file');
+    throw new Error('Unable to write update signal file');
   }
 }
 
@@ -216,7 +214,7 @@ export async function getBackupStatus(): Promise<backupStatus> {
     const status = await diskLogic.readBackupStatusFile();
     return status;
   } catch {
-    throw new NodeError('Unable to get backup status');
+    throw new Error('Unable to get backup status');
   }
 }
 
@@ -225,14 +223,14 @@ export async function getLndConnectUrls(): Promise<LndConnectionDetails> {
   try {
     cert = await diskLogic.readLndCert();
   } catch {
-    throw new NodeError('Unable to read lnd cert file');
+    throw new Error('Unable to read lnd cert file');
   }
 
   let macaroon: string;
   try {
     macaroon = (await diskLogic.readLndAdminMacaroon()).toString('hex');
   } catch {
-    throw new NodeError('Unable to read lnd macaroon file');
+    throw new Error('Unable to read lnd macaroon file');
   }
 
   let restTorHost;
@@ -240,7 +238,7 @@ export async function getLndConnectUrls(): Promise<LndConnectionDetails> {
     restTorHost = await diskLogic.readLndRestHiddenService();
     restTorHost += ':8080';
   } catch {
-    throw new NodeError('Unable to read lnd REST hostname file');
+    throw new Error('Unable to read lnd REST hostname file');
   }
 
   const restTor = encode({
@@ -254,7 +252,7 @@ export async function getLndConnectUrls(): Promise<LndConnectionDetails> {
     grpcTorHost = await diskLogic.readLndGrpcHiddenService();
     grpcTorHost += ':10009';
   } catch {
-    throw new NodeError('Unable to read lnd gRPC hostname file');
+    throw new Error('Unable to read lnd gRPC hostname file');
   }
 
   const grpcTor = encode({
@@ -290,7 +288,7 @@ export async function requestDebug(): Promise<string> {
     await diskLogic.writeSignalFile('debug');
     return 'Debug requested';
   } catch {
-    throw new NodeError('Could not write the signal file');
+    throw new Error('Could not write the signal file');
   }
 }
 
@@ -298,7 +296,7 @@ export async function getDebugResult(): Promise<debugStatus> {
   try {
     return await diskLogic.readDebugStatusFile();
   } catch {
-    throw new NodeError('Unable to get debug results');
+    throw new Error('Unable to get debug results');
   }
 }
 
@@ -307,7 +305,7 @@ export async function requestShutdown(): Promise<string> {
     await diskLogic.shutdown();
     return 'Shutdown requested';
   } catch {
-    throw new NodeError('Unable to request shutdown');
+    throw new Error('Unable to request shutdown');
   }
 }
 
@@ -316,7 +314,7 @@ export async function requestReboot(): Promise<string> {
     await diskLogic.reboot();
     return 'Reboot requested';
   } catch {
-    throw new NodeError('Unable to request reboot');
+    throw new Error('Unable to request reboot');
   }
 }
 
@@ -327,7 +325,7 @@ export async function status(): Promise<SystemStatus> {
       highMemoryUsage,
     };
   } catch {
-    throw new NodeError('Unable check system status');
+    throw new Error('Unable check system status');
   }
 }
 
@@ -336,6 +334,6 @@ export async function clearMemoryWarning(): Promise<string> {
     await diskLogic.deleteMemoryWarningStatusFile();
     return 'High memory warning dismissed';
   } catch {
-    throw new NodeError('Unable to dismiss high memory warning');
+    throw new Error('Unable to dismiss high memory warning');
   }
 }

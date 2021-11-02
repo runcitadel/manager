@@ -1,4 +1,3 @@
-import {NodeError} from '@runcitadel/utils';
 import * as diskLogic from './disk.js';
 
 export type App = {
@@ -58,24 +57,24 @@ async function isValidAppId(id: string): Promise<boolean> {
 
 export async function install(id: string): Promise<void> {
   if (!(await isValidAppId(id))) {
-    throw new NodeError('Invalid app id');
+    throw new Error('Invalid app id');
   }
 
   try {
     await diskLogic.writeSignalFile(`app-install-${id}`);
   } catch {
-    throw new NodeError('Could not write the signal file');
+    throw new Error('Could not write the signal file');
   }
 }
 
 export async function uninstall(id: string): Promise<void> {
   if (!(await isValidAppId(id))) {
-    throw new NodeError('Invalid app id');
+    throw new Error('Invalid app id');
   }
 
   try {
     await diskLogic.writeSignalFile(`app-uninstall-${id}`);
   } catch {
-    throw new NodeError('Could not write the signal file');
+    throw new Error('Could not write the signal file');
   }
 }

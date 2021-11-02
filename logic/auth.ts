@@ -3,7 +3,6 @@ import {Buffer} from 'node:buffer';
 import bcrypt from '@node-rs/bcrypt';
 import {CipherSeed} from 'aezeed';
 import * as iocane from 'iocane';
-import {NodeError} from '@runcitadel/utils';
 import type {user as userFile} from '@runcitadel/utils';
 import * as lightningApiService from '../services/lightning-api.js';
 import {generateJwt} from '../utils/jwt.js';
@@ -157,7 +156,7 @@ export async function login(user: UserInfo): Promise<string> {
 
     return jwt;
   } catch {
-    throw new NodeError('Unable to generate JWT');
+    throw new Error('Unable to generate JWT');
   }
 }
 
@@ -171,7 +170,7 @@ export async function getInfo(): Promise<userFile> {
 
     return user;
   } catch {
-    throw new NodeError('Unable to get account info');
+    throw new Error('Unable to get account info');
   }
 }
 
@@ -194,7 +193,7 @@ export async function seed(user: UserInfo): Promise<string[]> {
 
     return decryptedSeed.split(',');
   } catch {
-    throw new NodeError('Unable to decrypt mnemonic seed');
+    throw new Error('Unable to decrypt mnemonic seed');
   }
 }
 
@@ -206,7 +205,7 @@ export async function register(
   jwt: string;
 }> {
   if (await isRegistered()) {
-    throw new NodeError('User already exists', 400);
+    throw new Error('User already exists');
   }
 
   // Encrypt mnemonic seed for storage
@@ -216,7 +215,7 @@ export async function register(
       .createAdapter()
       .encrypt(seed.join(','), user.plainTextPassword!);
   } catch {
-    throw new NodeError('Unable to encrypt mnemonic seed');
+    throw new Error('Unable to encrypt mnemonic seed');
   }
 
   // Save user
@@ -227,14 +226,14 @@ export async function register(
       seed: encryptedSeed,
     });
   } catch {
-    throw new NodeError('Unable to register user');
+    throw new Error('Unable to register user');
   }
 
   // Update system password
   try {
     await setSystemPassword(user.plainTextPassword!);
   } catch {
-    throw new NodeError('Unable to set system password');
+    throw new Error('Unable to set system password');
   }
 
   // Derive seed
@@ -242,7 +241,7 @@ export async function register(
     await deriveUmbrelSeed(seed);
   } catch (error: unknown) {
     console.error(error);
-    throw new NodeError('Unable to create seed');
+    throw new Error('Unable to create seed');
   }
 
   // Generate JWt
@@ -251,7 +250,7 @@ export async function register(
     jwt = await generateJwt(user.username!);
   } catch {
     await diskLogic.deleteUserFile();
-    throw new NodeError('Unable to generate JWT');
+    throw new Error('Unable to generate JWT');
   }
 
   // Initialize lnd wallet
@@ -259,7 +258,7 @@ export async function register(
     await lightningApiService.initializeWallet(seed, jwt);
   } catch (error: unknown) {
     await diskLogic.deleteUserFile();
-    throw new NodeError((error as {response: {data: string}}).response.data);
+    throw new Error((error as {response: {data: string}}).response.data);
   }
 
   // Return token
@@ -273,6 +272,6 @@ export async function refresh(user: UserInfo): Promise<string> {
 
     return jwt;
   } catch {
-    throw new NodeError('Unable to generate JWT');
+    throw new Error('Unable to generate JWT');
   }
 }

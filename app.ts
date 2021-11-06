@@ -16,9 +16,9 @@ import external from './routes/v1/external.js';
 import apps from './routes/v1/apps.js';
 
 // Unstable V3 API with multi-account support
-import account3 from './routes/v3/account.js';
+/*import account3 from './routes/v3/account.js';
 import system3 from './routes/v3/system.js';
-import apps3 from './routes/v3/apps.js';
+import apps3 from './routes/v3/apps.js';*/
 
 config();
 
@@ -54,8 +54,8 @@ app.use(apps.routes());
 app.use(system2.routes());
 
 // Unstable V3 API with multi-account support
-app.use(account3.routes());
+/*app.use(account3.routes());
 app.use(system3.routes());
-app.use(apps3.routes());
+app.use(apps3.routes());*/
 
 export default app;

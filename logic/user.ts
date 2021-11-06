@@ -2,6 +2,7 @@ import KeyvRedis from '@keyv/redis';
 import Keyv from 'keyv';
 import bcrypt from '@node-rs/bcrypt';
 import {generateJwt, getIdFromJwt} from '../utils/jwt.js';
+import * as consts from '../utils/const.js';
 
 export enum Permission {
   OPEN_CHANNEL,
@@ -20,10 +21,10 @@ export type UserData = {
 };
 
 const keyvRedis = new KeyvRedis({
-  port: 6379,
-  host: 'localhost',
+  port: consts.REDIS_PORT,
+  host: consts.REDIS_IP,
   db: 0,
-  password: '',
+  password: consts.REDIS_PASSWORD,
 });
 const keyv = new Keyv({store: keyvRedis});
 

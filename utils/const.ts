@@ -48,5 +48,8 @@ export const VERSION_FILE = process.env.VERSION_FILE ?? '/info.json';
 export const TOR_PROXY_IP = process.env.TOR_PROXY_IP ?? '192.168.0.1';
 export const TOR_PROXY_PORT =
   Number.parseInt(process.env.TOR_PROXY_PORT ?? '9050', 10) ?? 9050;
+export const REDIS_IP = process.env.REDIS_IP ?? '192.168.0.1';
+export const REDIS_PORT = Number.parseInt(process.env.REDIS_PORT ?? '6379', 10) ?? 6379;
+export const REDIS_PASSWORD = process.env.REDIS_PASSWORD ?? 'freedom';
 export const IS_CITADEL_OS = process.env.IS_CITADEL_OS === 'true';
 /* eslint-enable @typescript-eslint/naming-convention */

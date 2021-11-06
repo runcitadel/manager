@@ -12,11 +12,17 @@ COPY . .
 # Install dependencies
 RUN yarn workspaces focus -A --production
 
+# Delete TypeScript code to further reduce image size
+RUN find /app/node_modules | grep ".\.ts" | xargs rm
+
 # TS Build Stage
-FROM build-dependencies-helper as manager-builder
+FROM amd64/node:16-bullseye-slim as manager-builder
 
 # Change directory to '/app'
 WORKDIR /app
+
+# The current working directory
+COPY . . 
 
 # Install dependencies
 RUN yarn install
@@ -40,4 +46,4 @@ COPY --from=build-dependencies-helper /app/node_modules /app/node_modules
 WORKDIR /app
 
 EXPOSE 3006
-CMD [ "node", "bin/www.mjs" ]
+CMD [ "node", "--experimental-json-modules", "bin/www.mjs" ]

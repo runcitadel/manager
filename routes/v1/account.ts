@@ -5,6 +5,7 @@ import type {user as userFile} from '@runcitadel/utils';
 import * as authLogic from '../../logic/auth.js';
 
 import * as auth from '../../middlewares/auth.js';
+import User, { migrateAdminLegacyUser } from '../../logic/user.js';
 
 const router = new Router({
   prefix: '/v1/account',
@@ -99,6 +100,12 @@ router.post(
     user.name = ctx.request.body.name;
 
     const jwt = await authLogic.register(user, seed);
+
+    try {
+      await migrateAdminLegacyUser(user.name, user.plainTextPassword!);
+    } catch (error) {
+      console.error(error);
+    }
 
     ctx.body = {jwt};
     await next();

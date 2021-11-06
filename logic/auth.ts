@@ -7,6 +7,7 @@ import type {user as userFile} from '@runcitadel/utils';
 import * as lightningApiService from '../services/lightning-api.js';
 import {generateJwt} from '../utils/jwt.js';
 import * as diskLogic from './disk.js';
+import { migrateAdminLegacyUser } from './user.js';
 
 export type UserInfo = {
   username?: string;
@@ -75,6 +76,12 @@ export async function changePassword(
     await setSystemPassword(newPassword);
 
     changePasswordStatus.percent = 100;
+    try {
+      let futureUser = await migrateAdminLegacyUser(user.name, newPassword);
+      await futureUser.changePassword(newPassword);
+    } catch (error) {
+      console.warn(error);
+    }
   } catch {
     changePasswordStatus.percent = 100;
     changePasswordStatus.error = true;

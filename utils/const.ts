@@ -42,8 +42,8 @@ export const LND_ADMIN_MACAROON_FILE =
   process.env.LND_ADMIN_MACAROON_FILE ??
   '/lnd/data/chain/bitcoin/mainnet/admin.macaroon';
 export const GITHUB_REPO =
-  process.env.GITHUB_REPO ?? 'runcitadel/compose-nonfree';
-export const GITHUB_BRANCH = process.env.GITHUB_BRANCH ?? 'dev';
+  process.env.GITHUB_REPO ?? 'runcitadel/core';
+export const GITHUB_BRANCH = process.env.GITHUB_BRANCH ?? 'main';
 export const VERSION_FILE = process.env.VERSION_FILE ?? '/info.json';
 export const TOR_PROXY_IP = process.env.TOR_PROXY_IP ?? '192.168.0.1';
 export const TOR_PROXY_PORT =

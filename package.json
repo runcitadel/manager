@@ -29,7 +29,7 @@
     "koa-body": "^4.2.0",
     "koa-morgan": "^1.0.1",
     "koa-passport": "^4.1.4",
-    "node-fetch": "^3.0.0",
+    "node-fetch": "^3.1.0",
     "node-rsa": "^1.1.1",
     "passport-http": "^0.3.0",
     "passport-jwt": "^4.0.0",

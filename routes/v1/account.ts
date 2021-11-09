@@ -5,7 +5,12 @@ import type {user as userFile} from '@runcitadel/utils';
 import * as authLogic from '../../logic/auth.js';
 
 import * as auth from '../../middlewares/auth.js';
-import User, { migrateAdminLegacyUser } from '../../logic/user.js';
+import { migrateAdminLegacyUser } from '../../logic/user.js';
+
+
+import * as diskLogic from '../../logic/disk.js';
+import * as crypto from "node:crypto";
+import { authenticator } from '@otplib/preset-default-async';
 
 const router = new Router({
   prefix: '/v1/account',
@@ -144,6 +149,17 @@ router.post('/refresh', auth.jwt, async (ctx, next) => {
   const jwt = await authLogic.refresh(ctx.state.user as userFile);
   ctx.body = {jwt};
   await next();
+});
+
+router.get('/totp', auth.jwt, async (ctx, next) => {
+  const seed = await diskLogic.readSeedFile();
+  const hmac = crypto.createHmac('sha256', seed.toString());
+  hmac.update("citadel_login_" + ctx.state.user.name);
+
+  const user = ctx.state.user.name;
+  const service = (await diskLogic.readUserFile()).name + "'s Citadel";
+  const otpauth = await authenticator.keyuri(user, service, hmac.digest('hex'));
+  ctx.body = {otpauth};
 });
 
 export default router;

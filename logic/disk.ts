@@ -5,7 +5,6 @@ import {Buffer} from 'node:buffer';
 import * as fs from '@runcitadel/fs';
 
 import type {
-  user as userFile,
   backupStatus,
   updateStatus,
   versionFile,
@@ -14,8 +13,48 @@ import type {
 import * as constants from '../utils/const.js';
 import type {App} from './apps.js';
 
+type userSettings = {
+  twoFactorAuth: boolean;
+};
+
+type userFile = {
+  /** The user's name */
+  name: string;
+  /** The users password, hashed by bcrypt */
+  password?: string;
+  /** The users mnemoic LND seed */
+  seed?: string | Buffer | ArrayBuffer;
+  /** The list of IDs of installed apps */
+  installedApps?: string[];
+  /** User settings */
+  settings?: userSettings;
+};
+
 export async function deleteUserFile(): Promise<void> {
   await fs.unlink(constants.USER_FILE);
+}
+
+export async function disable2fa(): Promise<void> {
+  const userFile = await readUserFile();
+  userFile.settings = {
+    ...userFile.settings,
+    twoFactorAuth: false,
+  };
+  await writeUserFile(userFile);
+}
+
+export async function enable2fa(): Promise<void> {
+  const userFile = await readUserFile();
+  userFile.settings = {
+    ...userFile.settings,
+    twoFactorAuth: true,
+  };
+  await writeUserFile(userFile);
+}
+
+export async function is2faEnabled(): Promise<boolean> {
+  const userFile = await readUserFile();
+  return userFile.settings?.twoFactorAuth ?? false;
 }
 
 export async function readUserFile(): Promise<userFile> {

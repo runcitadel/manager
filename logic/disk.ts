@@ -71,17 +71,17 @@ export async function readUserFile(): Promise<userFile> {
 }
 
 export async function writeUserFile(json: userFile): Promise<void> {
-  return await fs.writeJsonFile(constants.USER_FILE, json);
+  await fs.writeJsonFile(constants.USER_FILE, json);
 }
 
 export async function writeSeedFile(
   seed: string,
 ): Promise<void | NodeJS.ErrnoException> {
-  return await fs.ensureWriteFile(constants.SEED_FILE, seed);
+  return fs.ensureWriteFile(constants.SEED_FILE, seed);
 }
 
 export async function readSeedFile(): Promise<Buffer | string> {
-  return await fs.readFile(constants.SEED_FILE);
+  return fs.readFile(constants.SEED_FILE);
 }
 
 export function seedFileExists(): boolean {

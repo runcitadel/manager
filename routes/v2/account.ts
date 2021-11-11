@@ -1,16 +1,15 @@
+import * as crypto from 'node:crypto';
 import Router from '@koa/router';
 
 import {typeHelper, errorHandler, STATUS_CODES} from '@runcitadel/utils';
 import type {user as userFile} from '@runcitadel/utils';
+import {authenticator} from '@otplib/preset-default-async';
 import * as authLogic from '../../logic/auth.js';
 
 import * as auth from '../../middlewares/auth.js';
-import { migrateAdminLegacyUser } from '../../logic/user.js';
-
+import {migrateAdminLegacyUser} from '../../logic/user.js';
 
 import * as diskLogic from '../../logic/disk.js';
-import * as crypto from "node:crypto";
-import { authenticator } from '@otplib/preset-default-async';
 
 const router = new Router({
   prefix: '/v2/account',
@@ -108,7 +107,7 @@ router.post(
 
     try {
       await migrateAdminLegacyUser(user.name, user.plainTextPassword!);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(error);
     }
 
@@ -122,9 +121,9 @@ router.post(
   auth.convertRequestBodyToBasicAuth,
   auth.basic,
   async (ctx, next) => {
-    if(await diskLogic.is2faEnabled()) {
+    if (await diskLogic.is2faEnabled()) {
       const jwt = await authLogic.login(ctx.state.user as userFile);
-      
+
       ctx.body = {jwt};
       await next();
     } else {
@@ -160,7 +159,7 @@ router.post('/refresh', auth.jwt, async (ctx, next) => {
 router.get('/totp', auth.jwt, async (ctx, next) => {
   const seed = await diskLogic.readSeedFile();
   const hmac = crypto.createHmac('sha256', seed.toString());
-  hmac.update("citadel_login_" + ctx.state.user.name);
+  hmac.update('citadel_login_' + ctx.state.user.name);
 
   const user = ctx.state.user.name;
   const service = (await diskLogic.readUserFile()).name + "'s Citadel";
@@ -175,12 +174,26 @@ router.get('/is-2fa', async (ctx, next) => {
 
 router.post('/login-2fa', auth.tempJwt, async (ctx, next) => {
   // Throw if ctx.request.body.otp isn't a string or number or if it's not a valid OTP
-  if (typeof ctx.request.body.otp !== 'string' && typeof ctx.request.body.otp !== 'number') {
+  if (
+    typeof ctx.request.body.otp !== 'string' &&
+    typeof ctx.request.body.otp !== 'number'
+  ) {
     ctx.throw('Received invalid data.');
   }
-  ctx.body = {error: "Aaron didn't add this yet."};
+
+  if (
+    await authLogic.validateOTP(
+      ctx.request.body.otp,
+      (ctx.state.user as userFile).name,
+    )
+  ) {
+    const jwt = await authLogic.login(ctx.state.user as userFile);
+    ctx.body = {jwt};
+  } else {
+    ctx.throw('Invalid OTP');
+  }
+
   await next();
 });
-
 
 export default router;

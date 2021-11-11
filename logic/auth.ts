@@ -4,10 +4,11 @@ import bcrypt from '@node-rs/bcrypt';
 import {CipherSeed} from 'aezeed';
 import * as iocane from 'iocane';
 import type {user as userFile} from '@runcitadel/utils';
+import {totp} from '@otplib/preset-default-async';
 import * as lightningApiService from '../services/lightning-api.js';
 import {generateJwt} from '../utils/jwt.js';
 import * as diskLogic from './disk.js';
-import { migrateAdminLegacyUser } from './user.js';
+import {migrateAdminLegacyUser} from './user.js';
 
 export type UserInfo = {
   username?: string;
@@ -77,7 +78,7 @@ export async function changePassword(
 
     changePasswordStatus.percent = 100;
     try {
-      let futureUser = await migrateAdminLegacyUser(user.name, newPassword);
+      const futureUser = await migrateAdminLegacyUser(user.name, newPassword);
       await futureUser.changePassword(newPassword);
     } catch (error) {
       console.warn(error);
@@ -152,7 +153,7 @@ export async function deriveUmbrelSeed(
 
 export async function generateTmpJWT(): Promise<string> {
   try {
-    return await generateJwt("temporary");
+    return await generateJwt('temporary');
   } catch {
     throw new Error('Unable to generate JWT');
   }
@@ -289,4 +290,17 @@ export async function refresh(user: UserInfo): Promise<string> {
   } catch {
     throw new Error('Unable to generate JWT');
   }
+}
+
+export async function validateOTP(
+  otp: number | string,
+  name: string,
+): Promise<boolean> {
+  const seed = await diskLogic.readSeedFile();
+  const hmac = crypto.createHmac('sha256', seed.toString());
+  hmac.update('citadel_login_' + name);
+  return totp.verify({
+    secret: hmac.digest('hex'),
+    token: otp.toString(),
+  });
 }

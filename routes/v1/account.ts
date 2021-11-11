@@ -1,16 +1,15 @@
+import * as crypto from 'node:crypto';
 import Router from '@koa/router';
 
 import {typeHelper, errorHandler, STATUS_CODES} from '@runcitadel/utils';
 import type {user as userFile} from '@runcitadel/utils';
+import {authenticator} from '@otplib/preset-default-async';
 import * as authLogic from '../../logic/auth.js';
 
 import * as auth from '../../middlewares/auth.js';
-import { migrateAdminLegacyUser } from '../../logic/user.js';
-
+import {migrateAdminLegacyUser} from '../../logic/user.js';
 
 import * as diskLogic from '../../logic/disk.js';
-import * as crypto from "node:crypto";
-import { authenticator } from '@otplib/preset-default-async';
 
 const router = new Router({
   prefix: '/v1/account',
@@ -154,7 +153,7 @@ router.post('/refresh', auth.jwt, async (ctx, next) => {
 router.get('/totp', auth.jwt, async (ctx, next) => {
   const seed = await diskLogic.readSeedFile();
   const hmac = crypto.createHmac('sha256', seed.toString());
-  hmac.update("citadel_login_" + ctx.state.user.name);
+  hmac.update('citadel_login_' + ctx.state.user.name);
 
   const user = ctx.state.user.name;
   const service = (await diskLogic.readUserFile()).name + "'s Citadel";

@@ -260,7 +260,18 @@ export async function migrateAdminLegacyUser(
   try {
     user = await User.get('admin');
   } catch {
-    user = await User.create('admin', name, [Permission.OPEN_CHANNEL, Permission.CLOSE_CHANNEL, Permission.INSTALL_APP, Permission.ADMIN], password);
+    user = await User.create(
+      'admin',
+      name,
+      [
+        Permission.OPEN_CHANNEL,
+        Permission.CLOSE_CHANNEL,
+        Permission.INSTALL_APP,
+        Permission.ADMIN,
+      ],
+      password,
+    );
   }
+
   return user;
 }

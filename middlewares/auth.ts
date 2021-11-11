@@ -73,8 +73,8 @@ const jwtOptions = await createJwtOptions();
 passport.use(
   JWT_AUTH,
   new JwtStrategy(jwtOptions, (jwtPayload, done) => {
-    if(!jwtPayload.id || jwtPayload.id === "temporary")
-      throw new Error("Tried to use a tempoarary JWT!");
+    if (!jwtPayload.id || jwtPayload.id === 'temporary')
+      throw new Error('Tried to use a tempoarary JWT!');
     done(null, {username: SYSTEM_USER});
   }),
 );

@@ -150,6 +150,14 @@ export async function deriveUmbrelSeed(
   return diskLogic.writeSeedFile(generatedSeed);
 }
 
+export async function generateTmpJWT(): Promise<string> {
+  try {
+    return await generateJwt("temporary");
+  } catch {
+    throw new Error('Unable to generate JWT');
+  }
+}
+
 // Log the user into the device. Caches the password if login is successful. Then returns jwt.
 export async function login(user: UserInfo): Promise<string> {
   try {

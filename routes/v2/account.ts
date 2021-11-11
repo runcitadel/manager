@@ -122,10 +122,16 @@ router.post(
   auth.convertRequestBodyToBasicAuth,
   auth.basic,
   async (ctx, next) => {
-    const jwt = await authLogic.login(ctx.state.user as userFile);
-    
-    ctx.body = {jwt};
-    await next();
+    if(await diskLogic.is2faEnabled()) {
+      const jwt = await authLogic.login(ctx.state.user as userFile);
+      
+      ctx.body = {jwt};
+      await next();
+    } else {
+      const jwt = await authLogic.generateTmpJWT();
+      ctx.body = {jwt};
+      await next();
+    }
   },
 );
 

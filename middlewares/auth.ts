@@ -15,6 +15,7 @@ const BasicStrategy = passportHTTP.BasicStrategy;
 const ExtractJwt = passportJWT.ExtractJwt;
 
 const JWT_AUTH = 'jwt';
+const JWT_AUTH_2FA = 'jwt_2fa';
 const REGISTRATION_AUTH = 'register';
 const BASIC_AUTH = 'basic';
 
@@ -70,7 +71,7 @@ passport.use(
 const jwtOptions = await createJwtOptions();
 
 passport.use(
-  JWT_AUTH,
+  JWT_AUTH_2FA,
   new JwtStrategy(jwtOptions, (jwtPayload, done) => {
     done(null, {username: SYSTEM_USER});
   }),
@@ -130,6 +131,30 @@ export async function basic(ctx: Context, next: Next): Promise<void> {
         }
       } catch {
         ctx.throw(STATUS_CODES.UNAUTHORIZED, 'No user registered');
+      }
+
+      await next();
+    },
+  )(ctx, next);
+}
+
+// eslint-enable @typescript-eslint/no-unsafe-member-access
+export async function tempJwt(ctx: Context, next: Next): Promise<void> {
+  await passport.authenticate(
+    JWT_AUTH_2FA,
+    {session: false},
+    async (error, user) => {
+      if (error || user === false) {
+        ctx.throw(STATUS_CODES.UNAUTHORIZED, 'Invalid JWT');
+      }
+
+      try {
+        await ctx.logIn(user);
+      } catch {
+        ctx.throw(
+          STATUS_CODES.INTERNAL_SERVER_ERROR,
+          'An internal error occured. Please contact the Citadel support team.',
+        );
       }
 
       await next();

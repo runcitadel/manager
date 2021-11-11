@@ -1,0 +1,180 @@
+import Router from '@koa/router';
+
+import {typeHelper, errorHandler, STATUS_CODES} from '@runcitadel/utils';
+import type {user as userFile} from '@runcitadel/utils';
+import * as authLogic from '../../logic/auth.js';
+
+import * as auth from '../../middlewares/auth.js';
+import { migrateAdminLegacyUser } from '../../logic/user.js';
+
+
+import * as diskLogic from '../../logic/disk.js';
+import * as crypto from "node:crypto";
+import { authenticator } from '@otplib/preset-default-async';
+
+const router = new Router({
+  prefix: '/v2/account',
+});
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const COMPLETE = 100;
+
+router.use(errorHandler);
+
+// Endpoint to change your password.
+router.post(
+  '/change-password',
+  auth.convertRequestBodyToBasicAuth,
+  auth.basic,
+  async (ctx, next) => {
+    if (
+      typeof ctx.request.body.password !== 'string' ||
+      typeof ctx.request.body.newPassword !== 'string'
+    )
+      ctx.throw('Received invalid data.');
+    // Use password from the body by default. Basic auth has issues handling special characters.
+    const currentPassword: string = ctx.request.body.password as string;
+    const newPassword: string = ctx.request.body.newPassword as string;
+
+    try {
+      typeHelper.isString(currentPassword, ctx);
+      typeHelper.isMinPasswordLength(currentPassword, ctx);
+      typeHelper.isString(newPassword, ctx);
+      typeHelper.isMinPasswordLength(newPassword, ctx);
+      if (newPassword === currentPassword) {
+        ctx.throw('The new password must not be the same as existing password');
+      }
+    } catch {
+      ctx.throw('Invalid password supplied.');
+      return;
+    }
+
+    const status = authLogic.getChangePasswordStatus();
+
+    // Return a conflict if a change password process is already running
+    if (status.percent > 0 && status.percent !== COMPLETE) {
+      ctx.status = STATUS_CODES.CONFLICT;
+    }
+
+    try {
+      // Start change password process in the background and immediately return
+      await authLogic.changePassword(currentPassword, newPassword);
+      ctx.status = STATUS_CODES.OK;
+    } catch (error: unknown) {
+      ctx.throw(typeof error === 'string' ? error : JSON.stringify(error));
+    }
+
+    await next();
+  },
+);
+
+// Returns the current status of the change password process.
+router.get('/change-password/status', auth.jwt, async (ctx, next) => {
+  const status = authLogic.getChangePasswordStatus();
+  ctx.body = status;
+  await next();
+});
+
+// Registered does not need auth. This is because the user may not be registered at the time and thus won't always have
+// an auth token.
+router.get('/registered', async (ctx, next) => {
+  ctx.body = {registered: await authLogic.isRegistered()};
+  await next();
+});
+
+// Endpoint to register a password with the device. Wallet must not exist. This endpoint is authorized with basic auth
+// or the property password from the body.
+router.post(
+  '/register',
+  auth.convertRequestBodyToBasicAuth,
+  auth.register,
+  async (ctx, next) => {
+    const seed: string[] = ctx.request.body.seed as string[];
+    const user: userFile = ctx.state.user as userFile;
+
+    if (seed.length !== 24) {
+      throw new Error('Invalid seed length');
+    }
+
+    typeHelper.isString(ctx.request.body.name, ctx);
+    typeHelper.isString(user.plainTextPassword, ctx);
+    typeHelper.isMinPasswordLength(user.plainTextPassword!, ctx);
+
+    // Add name to user obj
+    /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
+    user.name = ctx.request.body.name;
+
+    const jwt = await authLogic.register(user, seed);
+
+    try {
+      await migrateAdminLegacyUser(user.name, user.plainTextPassword!);
+    } catch (error) {
+      console.error(error);
+    }
+
+    ctx.body = {jwt};
+    await next();
+  },
+);
+
+router.post(
+  '/login',
+  auth.convertRequestBodyToBasicAuth,
+  auth.basic,
+  async (ctx, next) => {
+    const jwt = await authLogic.login(ctx.state.user as userFile);
+    
+    ctx.body = {jwt};
+    await next();
+  },
+);
+
+router.get('/info', auth.jwt, async (ctx, next) => {
+  ctx.body = await authLogic.getInfo();
+  await next();
+});
+
+router.post(
+  '/seed',
+  auth.convertRequestBodyToBasicAuth,
+  auth.basic,
+  async (ctx, next) => {
+    const seed = await authLogic.seed(ctx.state.user as userFile);
+    ctx.body = {seed};
+    await next();
+  },
+);
+
+router.post('/refresh', auth.jwt, async (ctx, next) => {
+  const jwt = await authLogic.refresh(ctx.state.user as userFile);
+  ctx.body = {jwt};
+  await next();
+});
+
+router.get('/totp', auth.jwt, async (ctx, next) => {
+  const seed = await diskLogic.readSeedFile();
+  const hmac = crypto.createHmac('sha256', seed.toString());
+  hmac.update("citadel_login_" + ctx.state.user.name);
+
+  const user = ctx.state.user.name;
+  const service = (await diskLogic.readUserFile()).name + "'s Citadel";
+  const otpauth = await authenticator.keyuri(user, service, hmac.digest('hex'));
+  ctx.body = {otpauth};
+});
+
+router.get('/is-2fa', async (ctx, next) => {
+  ctx.body = {is2fa: await diskLogic.is2faEnabled()};
+  await next();
+});
+
+router.post('/login-2fa', auth.tempJwt, async (ctx, next) => {
+  // Throw if ctx.request.body.otp isn't a string or number or if it's not a valid OTP
+  if (typeof ctx.request.body.otp !== 'string' && typeof ctx.request.body.otp !== 'number') {
+    ctx.throw('Received invalid data.');
+  }
+  ctx.body = {error: "Aaron didn't add this yet."};
+  await next();
+});
+
+
+export default router;

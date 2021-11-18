@@ -151,7 +151,7 @@ router.post('/refresh', auth.jwt, async (ctx, next) => {
 
 router.get('/totp/setup', auth.jwt, async (ctx, next) => {
   const info = await authLogic.getInfo();
-  const key = await authLogic.enableTotp(
+  const key = await authLogic.setupTotp(
     info.settings?.twoFactorKey || undefined,
   );
 

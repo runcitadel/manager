@@ -3,7 +3,6 @@ import Router from '@koa/router';
 
 import {typeHelper, errorHandler, STATUS_CODES} from '@runcitadel/utils';
 import type {user as userFile} from '@runcitadel/utils';
-import {authenticator} from '@otplib/preset-default-async';
 import * as authLogic from '../../logic/auth.js';
 
 import * as auth from '../../middlewares/auth.js';
@@ -153,46 +152,6 @@ router.post(
 router.post('/refresh', auth.jwt, async (ctx, next) => {
   const jwt = await authLogic.refresh(ctx.state.user as userFile);
   ctx.body = {jwt};
-  await next();
-});
-
-router.get('/totp', auth.jwt, async (ctx, next) => {
-  const seed = await diskLogic.readSeedFile();
-  const hmac = crypto.createHmac('sha256', seed.toString());
-  hmac.update('citadel_login_' + ctx.state.user.name);
-
-  const user = ctx.state.user.name;
-  const service = (await diskLogic.readUserFile()).name + "'s Citadel";
-  const otpauth = await authenticator.keyuri(user, service, hmac.digest('hex'));
-  ctx.body = {otpauth};
-});
-
-router.get('/is-2fa', async (ctx, next) => {
-  ctx.body = {is2fa: await diskLogic.is2faEnabled()};
-  await next();
-});
-
-router.post('/login-2fa', auth.tempJwt, async (ctx, next) => {
-  // Throw if ctx.request.body.otp isn't a string or number or if it's not a valid OTP
-  if (
-    typeof ctx.request.body.otp !== 'string' &&
-    typeof ctx.request.body.otp !== 'number'
-  ) {
-    ctx.throw('Received invalid data.');
-  }
-
-  if (
-    await authLogic.validateOTP(
-      ctx.request.body.otp,
-      (ctx.state.user as userFile).name,
-    )
-  ) {
-    const jwt = await authLogic.login(ctx.state.user as userFile);
-    ctx.body = {jwt};
-  } else {
-    ctx.throw('Invalid OTP');
-  }
-
   await next();
 });
 

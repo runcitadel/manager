@@ -12,6 +12,10 @@
         ],
         "resolveJsonModule": true,
         "allowSyntheticDefaultImports": true,
-        "removeComments": true
+        "removeComments": true,
+        "typeRoots": [
+            "node_modules/@types",
+            "types"
+        ]
     }
 }

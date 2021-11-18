@@ -3,12 +3,19 @@ import {Buffer} from 'node:buffer';
 import bcrypt from '@node-rs/bcrypt';
 import {CipherSeed} from 'aezeed';
 import * as iocane from 'iocane';
-import type {user as userFile} from '@runcitadel/utils';
-import {totp} from '@otplib/preset-default-async';
+import base32 from '@ctrl/ts-base32';
 import * as lightningApiService from '../services/lightning-api.js';
 import {generateJwt} from '../utils/jwt.js';
 import * as diskLogic from './disk.js';
 import {migrateAdminLegacyUser} from './user.js';
+
+export function generateRandomKey(): string {
+  return crypto.randomBytes(10).toString('hex');
+}
+
+export function encodeKey(key: string) {
+  return base32.base32Encode(Buffer.from(key, 'hex'));
+}
 
 export type UserInfo = {
   username?: string;
@@ -17,6 +24,24 @@ export type UserInfo = {
   plainTextPassword?: string;
   seed?: string | Buffer | ArrayBuffer;
   installedApps?: string[];
+};
+
+type userSettings = {
+  twoFactorAuth: boolean;
+  twoFactorKey: string | false;
+};
+
+type userFile = {
+  /** The user's name */
+  name: string;
+  /** The users password, hashed by bcrypt */
+  password?: string;
+  /** The users mnemoic LND seed */
+  seed?: string | Buffer | ArrayBuffer;
+  /** The list of IDs of installed apps */
+  installedApps?: string[];
+  /** User settings */
+  settings?: userSettings;
 };
 
 export type ChangePasswordStatusType = {
@@ -292,15 +317,14 @@ export async function refresh(user: UserInfo): Promise<string> {
   }
 }
 
-export async function validateOTP(
-  otp: number | string,
-  name: string,
-): Promise<boolean> {
-  const seed = await diskLogic.readSeedFile();
-  const hmac = crypto.createHmac('sha256', seed.toString());
-  hmac.update('citadel_login_' + name);
-  return totp.verify({
-    secret: hmac.digest('hex'),
-    token: otp.toString(),
-  });
+export async function enableTotp(key?: string): Promise<string> {
+  const newKey = key ? key : generateRandomKey();
+  await diskLogic.enable2fa(newKey);
+  return newKey;
+}
+
+export async function setupTotp(key?: string): Promise<string> {
+  const newKey = key ? key : generateRandomKey();
+  await diskLogic.setup2fa(newKey);
+  return newKey;
 }

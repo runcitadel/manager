@@ -15,6 +15,7 @@ import type {App} from './apps.js';
 
 type userSettings = {
   twoFactorAuth: boolean;
+  twoFactorKey: string | false;
 };
 
 type userFile = {
@@ -39,15 +40,27 @@ export async function disable2fa(): Promise<void> {
   userFile.settings = {
     ...userFile.settings,
     twoFactorAuth: false,
+    twoFactorKey: false,
   };
   await writeUserFile(userFile);
 }
 
-export async function enable2fa(): Promise<void> {
+export async function setup2fa(key: string): Promise<void> {
+  const userFile = await readUserFile();
+  userFile.settings = {
+    ...userFile.settings,
+    twoFactorAuth: false,
+    twoFactorKey: key,
+  };
+  await writeUserFile(userFile);
+}
+
+export async function enable2fa(key: string): Promise<void> {
   const userFile = await readUserFile();
   userFile.settings = {
     ...userFile.settings,
     twoFactorAuth: true,
+    twoFactorKey: key,
   };
   await writeUserFile(userFile);
 }

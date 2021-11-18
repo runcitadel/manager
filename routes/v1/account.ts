@@ -1,9 +1,8 @@
-import * as crypto from 'node:crypto';
 import Router from '@koa/router';
 
 import {typeHelper, errorHandler, STATUS_CODES} from '@runcitadel/utils';
 import type {user as userFile} from '@runcitadel/utils';
-import {authenticator} from '@otplib/preset-default-async';
+import notp from 'notp';
 import * as authLogic from '../../logic/auth.js';
 
 import * as auth from '../../middlewares/auth.js';
@@ -92,7 +91,7 @@ router.post(
     const user: userFile = ctx.state.user as userFile;
 
     if (seed.length !== 24) {
-      throw new Error('Invalid seed length');
+      ctx.throw('Invalid seed length');
     }
 
     typeHelper.isString(ctx.request.body.name, ctx);
@@ -150,15 +149,65 @@ router.post('/refresh', auth.jwt, async (ctx, next) => {
   await next();
 });
 
-router.get('/totp', auth.jwt, async (ctx, next) => {
-  const seed = await diskLogic.readSeedFile();
-  const hmac = crypto.createHmac('sha256', seed.toString());
-  hmac.update('citadel_login_' + ctx.state.user.name);
+router.get('/totp/setup', auth.jwt, async (ctx, next) => {
+  const info = await authLogic.getInfo();
+  const key = await authLogic.enableTotp(
+    info.settings?.twoFactorKey || undefined,
+  );
 
-  const user = ctx.state.user.name;
-  const service = (await diskLogic.readUserFile()).name + "'s Citadel";
-  const otpauth = await authenticator.keyuri(user, service, hmac.digest('hex'));
-  ctx.body = {otpauth};
+  const encodedKey = authLogic.encodeKey(key);
+  ctx.body = {key: encodedKey.toString()};
+  await next();
+});
+
+router.post('/totp/enable', auth.jwt, async (ctx, next) => {
+  const info = await authLogic.getInfo();
+
+  if (info.settings?.twoFactorKey && ctx.request.body.authenticatorToken) {
+    // TOTP should be already set up
+    const key = info.settings?.twoFactorKey;
+
+    const vres = notp.totp.verify(ctx.request.body.authenticatorToken, key);
+
+    if (vres && vres.delta == 0) {
+      authLogic.enableTotp(key);
+      ctx.body = {success: true};
+    } else {
+      ctx.throw('TOTP token invalid');
+    }
+  } else {
+    ctx.throw('TOTP enable failed');
+  }
+});
+
+router.post('/totp/disable', auth.jwt, async (ctx, next) => {
+  const info = await authLogic.getInfo();
+
+  if (info.settings?.twoFactorKey && ctx.request.body.authenticatorToken) {
+    // TOTP should be already set up
+    const key = info.settings?.twoFactorKey;
+
+    const vres = notp.totp.verify(ctx.request.body.authenticatorToken, key);
+
+    if (vres && vres.delta == 0) {
+      await diskLogic.disable2fa();
+      ctx.body = {success: true};
+    } else {
+      ctx.throw('TOTP token invalid');
+    }
+  } else {
+    ctx.throw('TOTP enable failed');
+  }
+
+  await next();
+});
+
+// Returns the current status of TOTP.
+router.get('/totp/status', async (ctx, next) => {
+  const status =
+    (await diskLogic.readUserFile()).settings?.twoFactorAuth ?? false;
+  ctx.body = {totpEnabled: status};
+  await next();
 });
 
 export default router;

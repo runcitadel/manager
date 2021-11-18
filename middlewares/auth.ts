@@ -2,22 +2,26 @@ import {Buffer} from 'node:buffer';
 import {STATUS_CODES} from '@runcitadel/utils';
 import * as passportJWT from 'passport-jwt';
 import * as passportHTTP from 'passport-http';
+import passportTOTP from "passport-totp";
 import bcrypt from '@node-rs/bcrypt';
 import Rsa from 'node-rsa';
 import type {Next, Context} from 'koa';
 import passport from 'koa-passport';
 import * as authLogic from '../logic/auth.js';
 import * as diskLogic from '../logic/disk.js';
+import notp from 'notp';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 const JwtStrategy = passportJWT.Strategy;
 const BasicStrategy = passportHTTP.BasicStrategy;
+const TotpStrategy = passportTOTP.Strategy;
 const ExtractJwt = passportJWT.ExtractJwt;
 
 const JWT_AUTH = 'jwt';
 const JWT_AUTH_2FA = 'jwt_2fa';
 const REGISTRATION_AUTH = 'register';
 const BASIC_AUTH = 'basic';
+const TOTP_AUTH = 'totp';
 
 const SYSTEM_USER = 'admin';
 /* eslint-enable @typescript-eslint/naming-convention */
@@ -96,6 +100,12 @@ passport.use(
   }),
 );
 
+
+passport.use(new TotpStrategy(async function(user, done) {
+  const info = await diskLogic.readUserFile();
+  done(null, info.settings?.twoFactorKey || "", 30)
+}));
+
 // Override the authorization header with password that is in the body of the request if basic auth was not supplied.
 export async function convertRequestBodyToBasicAuth(
   ctx: Context,
@@ -121,13 +131,25 @@ export async function basic(ctx: Context, next: Next): Promise<void> {
       }
 
       try {
-        const storedPassword = (await diskLogic.readUserFile()).password;
+        const userInfo = await diskLogic.readUserFile();
+        const storedPassword = userInfo.password;
         const equal = await bcrypt.compare(
           (user as {[key: string]: unknown; password: string}).password,
           storedPassword!,
         );
         if (!equal) {
           ctx.throw(STATUS_CODES.UNAUTHORIZED, 'Incorrect password');
+        }
+
+        // check 2FA token when enabled
+        if(userInfo.settings?.twoFactorAuth) {
+          let vres = notp.totp.verify(ctx.request.body.totpToken, userInfo.settings.twoFactorKey || "");
+
+          if(vres && vres.delta == 0) {
+
+          } else {
+            ctx.throw(STATUS_CODES.UNAUTHORIZED, 'Incorrect 2FA code');
+          }
         }
 
         try {

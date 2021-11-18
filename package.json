@@ -10,12 +10,11 @@
     "start": "node ./bin/www.mjs"
   },
   "dependencies": {
+    "@ctrl/ts-base32": "^2.1.1",
     "@keyv/redis": "^2.2.0",
     "@koa/cors": "^3.1.0",
     "@koa/router": "^10.1.1",
     "@node-rs/bcrypt": "^1.4.2",
-    "@otplib/core": "^12.0.1",
-    "@otplib/core-async": "^12.0.1",
     "@runcitadel/fs": "^1.0.1",
     "@runcitadel/lndconnect": "^0.0.2",
     "@runcitadel/utils": "^0.9.1",
@@ -33,13 +32,16 @@
     "koa-passport": "^4.1.4",
     "node-fetch": "^3.1.0",
     "node-rsa": "^1.1.1",
+    "notp": "^2.0.3",
     "passport-http": "^0.3.0",
     "passport-jwt": "^4.0.0",
+    "passport-strategy": "^1.0.0",
+    "passport-totp": "^0.0.2",
     "semver": "^7.3.5",
-    "socks-proxy-agent": "^6.1.0"
+    "socks-proxy-agent": "^6.1.0",
+    "thirty-two": "^1.0.2"
   },
   "devDependencies": {
-    "@otplib/preset-default-async": "^12.0.1",
     "@types/ioredis": "^4.28.1",
     "@types/jsonwebtoken": "^8.5.6",
     "@types/keyv": "^3.1.3",
@@ -51,8 +53,10 @@
     "@types/koa__router": "^8.0.9",
     "@types/node": "^16.11.7",
     "@types/node-rsa": "^1.1.1",
+    "@types/notp": "^2.0.1",
     "@types/passport-http": "^0.3.9",
     "@types/passport-jwt": "^3.0.6",
+    "@types/passport-strategy": "^0.2.35",
     "@types/semver": "^7.3.9",
     "typescript": "^4.5.2",
     "xo": "^0.46.4"

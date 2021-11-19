@@ -152,7 +152,8 @@ export async function basic(ctx: Context, next: Next): Promise<void> {
 
         try {
           await ctx.logIn(user);
-        } catch {
+        } catch (error) {
+          console.error(error);
           ctx.throw(
             STATUS_CODES.INTERNAL_SERVER_ERROR,
             'Failed to log in. Your password seemed to be correct though. Please contact the Citadel support team.',

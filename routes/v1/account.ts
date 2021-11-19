@@ -193,7 +193,7 @@ router.post('/totp/disable', auth.jwt, async (ctx, next) => {
       await diskLogic.disable2fa();
       ctx.body = {success: true};
     } else {
-      ctx.throw('TOTP token invalid');
+      ctx.throw('TOTP token invalid', STATUS_CODES.UNAUTHORIZED);
     }
   } else {
     ctx.throw('TOTP enable failed');

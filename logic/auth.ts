@@ -3,7 +3,7 @@ import {Buffer} from 'node:buffer';
 import bcrypt from '@node-rs/bcrypt';
 import {CipherSeed} from 'aezeed';
 import * as iocane from 'iocane';
-import { base32Encode } from '@ctrl/ts-base32';
+import base32 from 'thirty-two';
 import * as lightningApiService from '../services/lightning-api.js';
 import {generateJwt} from '../utils/jwt.js';
 import * as diskLogic from './disk.js';
@@ -14,7 +14,7 @@ export function generateRandomKey(): string {
 }
 
 export function encodeKey(key: string) {
-  return base32Encode(Buffer.from(key, 'hex'));
+  return base32.encode(key).toString();
 }
 
 export type UserInfo = {

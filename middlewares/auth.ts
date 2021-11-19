@@ -145,9 +145,7 @@ export async function basic(ctx: Context, next: Next): Promise<void> {
         if(userInfo.settings?.twoFactorAuth) {
           let vres = notp.totp.verify(ctx.request.body.totpToken, userInfo.settings.twoFactorKey || "");
 
-          if(vres && vres.delta == 0) {
-
-          } else {
+          if(!vres|| vres.delta == 0) {
             ctx.throw(STATUS_CODES.UNAUTHORIZED, 'Incorrect 2FA code');
           }
         }

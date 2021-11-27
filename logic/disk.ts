@@ -194,8 +194,7 @@ export async function writeSignalFile(
 
   const signalFilePath = path.join(constants.SIGNAL_DIR, signalFile);
   await fs.touch(signalFilePath);
-  // Touch twice, it doesn't work otherwise
-  await fs.touch(signalFilePath);
+  await fs.writeFile(signalFilePath, 'true');
 }
 
 export async function writeStatusFile(
@@ -203,7 +202,7 @@ export async function writeStatusFile(
   contents: string,
 ): Promise<void | NodeJS.ErrnoException> {
   if (!/^[\w-]+$/.test(statusFile)) {
-    throw new Error('Invalid signal file characters');
+    throw new Error('Invalid status file characters');
   }
 
   const statusFilePath = path.join(constants.STATUS_DIR, statusFile);
@@ -212,7 +211,7 @@ export async function writeStatusFile(
 
 export async function readStatusFile(statusFile: string): Promise<unknown> {
   if (!/^[\w-]+$/.test(statusFile)) {
-    throw new Error('Invalid signal file characters');
+    throw new Error('Invalid status file characters');
   }
 
   const statusFilePath = path.join(constants.STATUS_DIR, statusFile);
@@ -221,7 +220,7 @@ export async function readStatusFile(statusFile: string): Promise<unknown> {
 
 export function statusFileExists(statusFile: string): boolean {
   if (!/^[\w-]+$/.test(statusFile)) {
-    throw new Error('Invalid signal file characters');
+    throw new Error('Invalid status file characters');
   }
 
   const statusFilePath = path.join(constants.STATUS_DIR, statusFile);
@@ -230,7 +229,7 @@ export function statusFileExists(statusFile: string): boolean {
 
 export async function deleteStatusFile(statusFile: string): Promise<void> {
   if (!/^[\w-]+$/.test(statusFile)) {
-    throw new Error('Invalid signal file characters');
+    throw new Error('Invalid status file characters');
   }
 
   const statusFilePath = path.join(constants.STATUS_DIR, statusFile);

@@ -3922,7 +3922,6 @@ __metadata:
     passport-http: ^0.3.0
     passport-jwt: ^4.0.0
     passport-strategy: ^1.0.0
-    passport-totp: ^0.0.2
     semver: ^7.3.5
     socks-proxy-agent: ^6.1.0
     thirty-two: ^1.0.2
@@ -3971,7 +3970,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"notp@npm:2.0.x, notp@npm:^2.0.3":
+"notp@npm:^2.0.3":
   version: 2.0.3
   resolution: "notp@npm:2.0.3"
   checksum: aeb2d654e4445e391f8bf428fe4fd01b94c78a17f575b5b0a4ef1a4e072995922ac3854c9dfc7df649465a903fea5fa4194c09f3b6702fd128a1aeb92309bc4a
@@ -4255,21 +4254,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"passport-strategy@npm:1.0.0, passport-strategy@npm:1.x.x, passport-strategy@npm:^1.0.0":
+"passport-strategy@npm:1.x.x, passport-strategy@npm:^1.0.0":
   version: 1.0.0
   resolution: "passport-strategy@npm:1.0.0"
   checksum: 5086693f2508e538dffa55a338c89fe8192fb5f4478c71f80cd5890b8573419a098f4fec88b505374f60bbe9049f6f24b9f3992678612528a3370b4dc73354a2
-  languageName: node
-  linkType: hard
-
-"passport-totp@npm:^0.0.2":
-  version: 0.0.2
-  resolution: "passport-totp@npm:0.0.2"
-  dependencies:
-    notp: 2.0.x
-    passport-strategy: 1.0.0
-    pkginfo: 0.2.x
-  checksum: 09df90188724657c4cc73e455c8acb237ac6de97f48f14bb247c23b1849753aba6b35bd1f36166358f8c491f43cbbd16f38b464fd53162c3047f08719f41caba
   languageName: node
   linkType: hard
 
@@ -4397,13 +4385,6 @@ __metadata:
   dependencies:
     find-up: ^5.0.0
   checksum: b167bb8dac7bbf22b1d5e30ec223e6b064b84b63010c9d49384619a36734caf95ed23ad23d4f9bd975e8e8082b60a83395f43a89bb192df53a7c25a38ecb57d9
-  languageName: node
-  linkType: hard
-
-"pkginfo@npm:0.2.x":
-  version: 0.2.3
-  resolution: "pkginfo@npm:0.2.3"
-  checksum: 2dc005c4821d716e2a20d2940fb136e0585a801941db4937ac8ec2c2404af3c194c34171474067ebdbb34c582187fc3ab08cfca47ef75b988f0fa1de3f833550
   languageName: node
   linkType: hard
 

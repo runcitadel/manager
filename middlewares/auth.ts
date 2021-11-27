@@ -2,7 +2,6 @@ import {Buffer} from 'node:buffer';
 import {STATUS_CODES} from '@runcitadel/utils';
 import * as passportJWT from 'passport-jwt';
 import * as passportHTTP from 'passport-http';
-import passportTOTP from "passport-totp";
 import bcrypt from '@node-rs/bcrypt';
 import Rsa from 'node-rsa';
 import type {Next, Context} from 'koa';
@@ -14,14 +13,12 @@ import notp from 'notp';
 /* eslint-disable @typescript-eslint/naming-convention */
 const JwtStrategy = passportJWT.Strategy;
 const BasicStrategy = passportHTTP.BasicStrategy;
-const TotpStrategy = passportTOTP.Strategy;
 const ExtractJwt = passportJWT.ExtractJwt;
 
 const JWT_AUTH = 'jwt';
 const JWT_AUTH_2FA = 'jwt_2fa';
 const REGISTRATION_AUTH = 'register';
 const BASIC_AUTH = 'basic';
-const TOTP_AUTH = 'totp';
 
 const SYSTEM_USER = 'admin';
 /* eslint-enable @typescript-eslint/naming-convention */
@@ -77,8 +74,6 @@ const jwtOptions = await createJwtOptions();
 passport.use(
   JWT_AUTH,
   new JwtStrategy(jwtOptions, (jwtPayload, done) => {
-    if (!jwtPayload.id || jwtPayload.id === 'temporary')
-      throw new Error('Tried to use a tempoarary JWT!');
     done(null, {username: SYSTEM_USER});
   }),
 );
@@ -99,12 +94,6 @@ passport.use(
     next(null, credentials);
   }),
 );
-
-
-passport.use(new TotpStrategy(async function(user, done) {
-  const info = await diskLogic.readUserFile();
-  done(null, info.settings?.twoFactorKey || "", 30)
-}));
 
 // Override the authorization header with password that is in the body of the request if basic auth was not supplied.
 export async function convertRequestBodyToBasicAuth(

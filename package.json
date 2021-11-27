@@ -35,7 +35,6 @@
     "passport-http": "^0.3.0",
     "passport-jwt": "^4.0.0",
     "passport-strategy": "^1.0.0",
-    "passport-totp": "^0.0.2",
     "semver": "^7.3.5",
     "socks-proxy-agent": "^6.1.0",
     "thirty-two": "^1.0.2"

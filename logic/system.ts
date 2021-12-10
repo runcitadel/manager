@@ -53,7 +53,7 @@ export async function getHiddenServiceUrl(): Promise<string> {
 
 export async function getElectrumConnectionDetails(): Promise<ConnectionDetails> {
   try {
-    const address = await diskLogic.readElectrumHiddenService();
+    const address = (await diskLogic.readElectrumHiddenService()).trim();
     const port = constants.ELECTRUM_PORT;
     const connectionString = `${address}:${port}:t`;
     return {

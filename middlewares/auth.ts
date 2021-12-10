@@ -127,8 +127,7 @@ export async function basic(ctx: Context, next: Next): Promise<void> {
           storedPassword!,
         );
         if (!equal) {
-            ctx.status = STATUS_CODES.UNAUTHORIZED;
-            ctx.body = '"Incorrect password"';
+            ctx.throw(STATUS_CODES.UNAUTHORIZED, '"Incorrect password"');
         }
 
         // check 2FA token when enabled
@@ -136,8 +135,7 @@ export async function basic(ctx: Context, next: Next): Promise<void> {
           let vres = notp.totp.verify(ctx.request.body.totpToken, userInfo.settings.twoFactorKey || "");
 
           if(!vres|| vres.delta !== 0) {
-            ctx.status = STATUS_CODES.UNAUTHORIZED;
-            ctx.body = '"Incorrect 2FA code"';
+            ctx.throw(STATUS_CODES.UNAUTHORIZED, '"Incorrect 2FA code"');
           }
         }
 

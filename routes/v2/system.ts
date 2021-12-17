@@ -131,7 +131,7 @@ router.get('/disk-type', async (ctx, next) => {
   let externalStorage: 'nvme' | 'unknown' = 'unknown';
   try {
     externalStorage =
-      ((await diskLogic.readTextStatusFile('external_storage')).toString("utf-8") as
+      ((await diskLogic.readTextStatusFile('external_storage')).toString("utf-8").trim() as
         | 'nvme'
         | 'unknown') || 'unknown';
   } catch (error) {

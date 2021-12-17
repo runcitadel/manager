@@ -660,12 +660,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ioredis@npm:^4.28.3":
-  version: 4.28.3
-  resolution: "@types/ioredis@npm:4.28.3"
+"@types/ioredis@npm:^4.28.5":
+  version: 4.28.5
+  resolution: "@types/ioredis@npm:4.28.5"
   dependencies:
     "@types/node": "*"
-  checksum: aa3080dafdbc6829d82ffa63407ca89a6139c930467bfb16f85e5824747e15b03827dcb9c3bfdbb65ee7f2839864d1e150978c0be003bfe8cbde41dbf759e9e4
+  checksum: 6df1826ef10b8eb36f1f7147903b54952d6cb06556a6bb14e2b670c34229c0764a61e61d24e2a22c4e73688e42dc5bf933acf730978ad6292634f882961f13c3
   languageName: node
   linkType: hard
 
@@ -764,12 +764,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/koa__cors@npm:^3.0.3":
-  version: 3.0.3
-  resolution: "@types/koa__cors@npm:3.0.3"
+"@types/koa__cors@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@types/koa__cors@npm:3.1.0"
   dependencies:
     "@types/koa": "*"
-  checksum: 692d72f9580afa102517f3726cc517aa705b080cb64d8370f5f2f55c6bd0b7955a17498e1ecb72629da81be7e5466862e0345910f4214ab5ad32da517cfed1fe
+  checksum: 71830790e47ab564d8500e211aa9347ae7bbdf653c45fc8d3d0fcd8174a089ca3baced394443d5c4e073e9865faa8007dc0ccad85aa75e4188b54314cc6095a5
   languageName: node
   linkType: hard
 
@@ -814,10 +814,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^16.11.12":
-  version: 16.11.12
-  resolution: "@types/node@npm:16.11.12"
-  checksum: a3feb346d61a56f5a137c29bb8c63cfa3cc02e184b9dffdc18ef1528dcce55596e570575215a2e39e6ce69343eeb2a5ba71c271938f1dc8db4cc393902855412
+"@types/node@npm:*, @types/node@npm:^17.0.0":
+  version: 17.0.0
+  resolution: "@types/node@npm:17.0.0"
+  checksum: 30970a70c2eb78dbe80613d73243c255aaa9ce057d9e8595069ca0aef0363db0af45dc0d35f445cc804576a99df2970c170130663d76cd60319b779872e92ad6
   languageName: node
   linkType: hard
 
@@ -3895,16 +3895,16 @@ __metadata:
     "@runcitadel/fs": ^1.0.1
     "@runcitadel/lndconnect": ^0.0.2
     "@runcitadel/utils": ^0.9.1
-    "@types/ioredis": ^4.28.3
+    "@types/ioredis": ^4.28.5
     "@types/jsonwebtoken": ^8.5.6
     "@types/keyv": ^3.1.3
     "@types/keyv__redis": ^1.3.3
     "@types/koa": ^2.13.4
     "@types/koa-morgan": ^1.0.5
     "@types/koa-passport": ^4.0.3
-    "@types/koa__cors": ^3.0.3
+    "@types/koa__cors": ^3.1.0
     "@types/koa__router": ^8.0.11
-    "@types/node": ^16.11.12
+    "@types/node": ^17.0.0
     "@types/node-rsa": ^1.1.1
     "@types/notp": ^2.0.1
     "@types/passport-http": ^0.3.9
@@ -3932,7 +3932,7 @@ __metadata:
     semver: ^7.3.5
     socks-proxy-agent: ^6.1.1
     thirty-two: ^1.0.2
-    typescript: ^4.5.3
+    typescript: ^4.5.4
     xo: ^0.47.0
   languageName: unknown
   linkType: soft
@@ -5203,23 +5203,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.5.2, typescript@npm:^4.5.3":
-  version: 4.5.3
-  resolution: "typescript@npm:4.5.3"
+"typescript@npm:^4.5.2, typescript@npm:^4.5.4":
+  version: 4.5.4
+  resolution: "typescript@npm:4.5.4"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 2ac278c20418882816789ad94a5d9e7f11969db7a2a23fa09e61f2fedf3814265cbd4f89d7f5b6e1f0e7be2b5f169becf5dab913d0da255b073ea3c8c324e6d4
+  checksum: 59f3243f9cd6fe3161e6150ff6bf795fc843b4234a655dbd938a310515e0d61afd1ac942799e7415e4334255e41c2c49b7dd5d9fd38a17acd25a6779ca7e0961
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.5.2#~builtin<compat/typescript>, typescript@patch:typescript@^4.5.3#~builtin<compat/typescript>":
-  version: 4.5.3
-  resolution: "typescript@patch:typescript@npm%3A4.5.3#~builtin<compat/typescript>::version=4.5.3&hash=493e53"
+"typescript@patch:typescript@^4.5.2#~builtin<compat/typescript>, typescript@patch:typescript@^4.5.4#~builtin<compat/typescript>":
+  version: 4.5.4
+  resolution: "typescript@patch:typescript@npm%3A4.5.4#~builtin<compat/typescript>::version=4.5.4&hash=493e53"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 3c3a664dfb66e7c45d3823cc1a4038dc506415041f39249ed3af1799a64b3065448549d9e9ba509c94335d1e2dfbe311a4b9e36574e87d248f9381d541cb8626
+  checksum: 2e488dde7d2c4a2fa2e79cf2470600f8ce81bc0563c276b72df8ff412d74456ae532ba824650ae936ce207440c79720ddcfaa25e3cb4477572b8534fa4e34d49
   languageName: node
   linkType: hard
 

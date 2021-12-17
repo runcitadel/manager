@@ -1,4 +1,3 @@
-import * as crypto from 'node:crypto';
 import Router from '@koa/router';
 
 import {typeHelper, errorHandler, STATUS_CODES} from '@runcitadel/utils';

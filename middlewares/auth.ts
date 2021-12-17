@@ -6,9 +6,9 @@ import bcrypt from '@node-rs/bcrypt';
 import Rsa from 'node-rsa';
 import type {Next, Context} from 'koa';
 import passport from 'koa-passport';
+import notp from 'notp';
 import * as authLogic from '../logic/auth.js';
 import * as diskLogic from '../logic/disk.js';
-import notp from 'notp';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 const JwtStrategy = passportJWT.Strategy;
@@ -127,14 +127,17 @@ export async function basic(ctx: Context, next: Next): Promise<void> {
           storedPassword!,
         );
         if (!equal) {
-            ctx.throw(STATUS_CODES.UNAUTHORIZED, '"Incorrect password"');
+          ctx.throw(STATUS_CODES.UNAUTHORIZED, '"Incorrect password"');
         }
 
-        // check 2FA token when enabled
-        if(userInfo.settings?.twoFactorAuth) {
-          let vres = notp.totp.verify(ctx.request.body.totpToken, userInfo.settings.twoFactorKey || "");
+        // Check 2FA token when enabled
+        if (userInfo.settings?.twoFactorAuth) {
+          const vres = notp.totp.verify(
+            ctx.request.body.totpToken,
+            userInfo.settings.twoFactorKey || '',
+          );
 
-          if(!vres|| vres.delta !== 0) {
+          if (!vres || vres.delta !== 0) {
             ctx.throw(STATUS_CODES.UNAUTHORIZED, '"Incorrect 2FA code"');
           }
         }

@@ -169,7 +169,7 @@ router.post('/totp/enable', auth.jwt, async (ctx, next) => {
 
     const vres = notp.totp.verify(ctx.request.body.authenticatorToken, key);
 
-    if (vres && vres.delta == 0) {
+    if (vres && vres.delta === 0) {
       authLogic.enableTotp(key);
       ctx.body = {success: true};
     } else {
@@ -189,7 +189,7 @@ router.post('/totp/disable', auth.jwt, async (ctx, next) => {
 
     const vres = notp.totp.verify(ctx.request.body.authenticatorToken, key);
 
-    if (vres && vres.delta == 0) {
+    if (vres && vres.delta === 0) {
       await diskLogic.disable2fa();
       ctx.body = {success: true};
     } else {

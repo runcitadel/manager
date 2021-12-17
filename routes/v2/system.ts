@@ -127,6 +127,21 @@ router.get('/uptime', async (ctx, next) => {
   await next();
 });
 
+router.get('/disk-type', async (ctx, next) => {
+  let externalStorage: 'nvme' | 'unknown' = 'unknown';
+  try {
+    externalStorage =
+      ((await diskLogic.readTextStatusFile('external_storage')) as
+        | 'nvme'
+        | 'unknown') || 'unknown';
+  } catch (error) {
+    console.error(error);
+  }
+
+  ctx.body = {externalStorage};
+  await next();
+});
+
 router.get('/', async (ctx, next) => {
   ctx.body = {os: constants.IS_CITADEL_OS ? 'Citadel OS' : 'unknown'};
   await next();

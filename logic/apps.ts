@@ -39,7 +39,8 @@ export async function get(query: AppQuery): Promise<App[]> {
   );
 
   if (query.installed === true) {
-    const installedApps = (await diskLogic.readUserFile()).installedApps ?? [];
+    const userFile = await diskLogic.readUserFile();
+    const installedApps = userFile.installedApps ?? [];
     apps = apps.filter((app: App) => installedApps.includes(app.id));
   }
 

@@ -262,9 +262,9 @@ export async function deleteMemoryWarningStatusFile(): Promise<void | NodeJS.Err
   return deleteStatusFile('memory-warning');
 }
 
-export async function readTextStatusFile(resource: string): Promise<unknown> {
+export async function readTextStatusFile(resource: string): Promise<Buffer> {
   const statusFilePath = path.join(constants.STATUS_DIR, resource);
-  return fs.readFile(statusFilePath).catch(() => null);
+  return await fs.readFile(statusFilePath);
 }
 
 export async function readJsonStatusFile(resource: string): Promise<unknown> {

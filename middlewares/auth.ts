@@ -119,8 +119,12 @@ export async function basic(ctx: Context, next: Next): Promise<void> {
         ctx.throw(STATUS_CODES.UNAUTHORIZED, 'Invalid state');
       }
 
+      let userInfo: diskLogic.userFile;
       try {
-        const userInfo = await diskLogic.readUserFile();
+        userInfo = await diskLogic.readUserFile();
+      } catch {
+        ctx.throw(STATUS_CODES.UNAUTHORIZED, 'No user registered');
+      }
         const storedPassword = userInfo.password;
         const equal = await bcrypt.compare(
           (user as {[key: string]: unknown; password: string}).password,
@@ -151,9 +155,7 @@ export async function basic(ctx: Context, next: Next): Promise<void> {
             'Failed to log in. Your password seemed to be correct though. Please contact the Citadel support team.',
           );
         }
-      } catch {
-        ctx.throw(STATUS_CODES.UNAUTHORIZED, 'No user registered');
-      }
+      
 
       await next();
     },

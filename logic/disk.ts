@@ -18,7 +18,7 @@ type userSettings = {
   twoFactorKey: string | false;
 };
 
-type userFile = {
+export type userFile = {
   /** The user's name */
   name: string;
   /** The users password, hashed by bcrypt */

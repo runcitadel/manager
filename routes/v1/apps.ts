@@ -2,6 +2,7 @@ import Router from '@koa/router';
 import {errorHandler, STATUS_CODES} from '@runcitadel/utils';
 
 import * as appsLogic from '../../logic/apps.js';
+import * as diskLogic from '../../logic/disk.js';
 
 import * as auth from '../../middlewares/auth.js';
 
@@ -31,6 +32,13 @@ router.post('/:id/install', auth.jwt, async (ctx, next) => {
 router.post('/:id/uninstall', auth.jwt, async (ctx, next) => {
   const {id} = ctx.params;
   await appsLogic.uninstall(id);
+  ctx.body = {};
+  ctx.status = STATUS_CODES.OK;
+  await next();
+});
+
+router.post('/update', auth.jwt, async (ctx, next) => {
+  await diskLogic.writeSignalFile("app-update");
   ctx.body = {};
   ctx.status = STATUS_CODES.OK;
   await next();

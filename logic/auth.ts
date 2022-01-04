@@ -161,7 +161,7 @@ export async function deriveSeed(
 
 // Derives the root seed and persists it to disk to be used for
 // determinstically deriving further entropy for any other service.
-export async function deriveUmbrelSeed(
+export async function deriveCitadelSeed(
   mnemonic: string[],
 ): Promise<void | NodeJS.ErrnoException> {
   if (diskLogic.seedFileExists()) {
@@ -279,7 +279,7 @@ export async function register(
 
   // Derive seed
   try {
-    await deriveUmbrelSeed(seed);
+    await deriveCitadelSeed(seed);
   } catch (error: unknown) {
     console.error(error);
     throw new Error('Unable to create seed');
@@ -302,6 +302,7 @@ export async function register(
     throw new Error((error as {response: {data: string}}).response.data);
   }
 
+  await diskLogic.writeSignalFile("app-update");
   // Return token
   return {jwt};
 }

@@ -125,37 +125,37 @@ export async function basic(ctx: Context, next: Next): Promise<void> {
       } catch {
         ctx.throw(STATUS_CODES.UNAUTHORIZED, 'No user registered');
       }
-        const storedPassword = userInfo.password;
-        const equal = await bcrypt.compare(
-          (user as {[key: string]: unknown; password: string}).password,
-          storedPassword!,
+
+      const storedPassword = userInfo.password;
+      const equal = await bcrypt.compare(
+        (user as {[key: string]: unknown; password: string}).password,
+        storedPassword!,
+      );
+      if (!equal) {
+        ctx.throw(STATUS_CODES.UNAUTHORIZED, '"Incorrect password"');
+      }
+
+      // Check 2FA token when enabled
+      if (userInfo.settings?.twoFactorAuth) {
+        const vres = notp.totp.verify(
+          ctx.request.body.totpToken,
+          userInfo.settings.twoFactorKey || '',
         );
-        if (!equal) {
-          ctx.throw(STATUS_CODES.UNAUTHORIZED, '"Incorrect password"');
-        }
 
-        // Check 2FA token when enabled
-        if (userInfo.settings?.twoFactorAuth) {
-          const vres = notp.totp.verify(
-            ctx.request.body.totpToken,
-            userInfo.settings.twoFactorKey || '',
-          );
-
-          if (!vres || vres.delta !== 0) {
-            ctx.throw(STATUS_CODES.UNAUTHORIZED, '"Incorrect 2FA code"');
-          }
+        if (!vres || vres.delta !== 0) {
+          ctx.throw(STATUS_CODES.UNAUTHORIZED, '"Incorrect 2FA code"');
         }
+      }
 
-        try {
-          await ctx.logIn(user);
-        } catch (error) {
-          console.error(error);
-          ctx.throw(
-            STATUS_CODES.INTERNAL_SERVER_ERROR,
-            'Failed to log in. Your password seemed to be correct though. Please contact the Citadel support team.',
-          );
-        }
-      
+      try {
+        await ctx.logIn(user);
+      } catch (error) {
+        console.error(error);
+        ctx.throw(
+          STATUS_CODES.INTERNAL_SERVER_ERROR,
+          'Failed to log in. Your password seemed to be correct though. Please contact the Citadel support team.',
+        );
+      }
 
       await next();
     },

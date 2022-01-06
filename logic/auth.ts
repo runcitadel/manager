@@ -302,7 +302,7 @@ export async function register(
     throw new Error((error as {response: {data: string}}).response.data);
   }
 
-  await diskLogic.writeSignalFile("app-update");
+  await diskLogic.writeSignalFile('app-update');
   // Return token
   return {jwt};
 }

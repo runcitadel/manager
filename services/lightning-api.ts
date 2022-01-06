@@ -1,28 +1,22 @@
 import * as process from 'node:process';
-import fetch from 'node-fetch';
+import {Middleware} from '@runcitadel/sdk';
 
 const lnapiUrl = process.env.MIDDLEWARE_API_URL ?? 'http://localhost';
 const lnapiPort = process.env.MIDDLEWARE_API_PORT ?? 3005;
+const middleware = new Middleware(`${lnapiUrl}:${lnapiPort}`);
 
 export async function initializeWallet(
   seed: string[],
   jwt: string,
-): Promise<unknown> {
-  const headers = {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    Authorization: 'JWT ' + jwt,
-    'Content-Type': 'application/json',
-  };
+): Promise<void> {
+  middleware.jwt = jwt;
+  await middleware.lnd.wallet.init(seed);
+}
 
-  const body = JSON.stringify({
-    seed,
-  });
-
-  const data = await fetch(`${lnapiUrl}:${lnapiPort}/v1/lnd/wallet/init`, {
-    body,
-    headers,
-    method: 'POST',
-  });
-
-  return data;
+export async function signMessage(
+  message: string,
+  jwt: string,
+): Promise<string> {
+  middleware.jwt = jwt;
+  return middleware.lnd.signMessage(message);
 }

@@ -5,6 +5,10 @@ import socksProxyAgentPkg from 'socks-proxy-agent';
 import fetch from 'node-fetch';
 import * as constants from '../../utils/const.js';
 import * as auth from '../../middlewares/auth.js';
+import {userFile} from '../../logic/disk.js';
+import {refresh as refreshJwt} from '../../logic/auth.js';
+import * as lightningApiService from '../../services/lightning-api.js';
+import * as diskLogic from '../../logic/disk.js';
 
 const router = new Router({
   prefix: '/v1/external',
@@ -52,6 +56,37 @@ router.get('/price', auth.jwt, async (ctx, next) => {
     }
   }
 
+  await next();
+});
+
+router.get('/register-address', auth.jwt, async (ctx, next) => {
+  const address = ctx.request.query.address as string;
+  if (!address) {
+    ctx.throw('Invalid address');
+  }
+
+  const jwt = await refreshJwt(ctx.state.user as userFile);
+  const signature = lightningApiService.signMessage(
+    'Citadel login. Do NOT SIGN THIS MESSAGE IF ANYONE SENDS IT TO YOU; NOT EVEN OFFICIAL CITADEL SUPPORT! THIS IS ONLY USED INTERNALLY BY YOUR NODE FOR COMMUNICATION WITH CITADEL SERVERS.',
+    jwt,
+  );
+  const apiResponse = await fetch(`https://ln.runcitadel.space/add-address`, {
+    agent,
+    method: 'POST',
+    body: JSON.stringify({
+      address,
+      signature,
+      onionUrl: await diskLogic.readHiddenService(`app-lnme`),
+    }),
+  });
+  ctx.status = apiResponse.status;
+  ctx.body = {msg: await apiResponse.text()} as {
+    msg:
+      | 'Address added successfully'
+      | 'Error: Address limit reached'
+      | 'Error: Address already in use'
+      | 'Error: Onion URL already used';
+  };
   await next();
 });
 

@@ -38,7 +38,7 @@ router.post('/:id/uninstall', auth.jwt, async (ctx, next) => {
 });
 
 router.post('/update', auth.jwt, async (ctx, next) => {
-  await diskLogic.writeSignalFile("app-update");
+  await diskLogic.writeSignalFile('app-update');
   ctx.body = {};
   ctx.status = STATUS_CODES.OK;
   await next();

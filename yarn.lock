@@ -528,6 +528,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@runcitadel/sdk@npm:^0.1.5":
+  version: 0.1.5
+  resolution: "@runcitadel/sdk@npm:0.1.5"
+  peerDependencies:
+    "@types/react": ^17.0.38
+    react: ^17.0.2
+  checksum: aa85d9617a7df29f0485e426a862ff8ee51894cbe3da9f696fbaa53211804ffea18ec037da2a36337a0b8a5b368883cdec9d59cad68f26dac9e084472785c00a
+  languageName: node
+  linkType: hard
+
 "@runcitadel/utils@npm:^0.9.1":
   version: 0.9.1
   resolution: "@runcitadel/utils@npm:0.9.1"
@@ -3894,6 +3904,7 @@ __metadata:
     "@node-rs/bcrypt": ^1.4.2
     "@runcitadel/fs": ^1.0.1
     "@runcitadel/lndconnect": ^0.0.2
+    "@runcitadel/sdk": ^0.1.5
     "@runcitadel/utils": ^0.9.1
     "@types/ioredis": ^4.28.5
     "@types/jsonwebtoken": ^8.5.6

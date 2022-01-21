@@ -1,8 +1,8 @@
 {
-  "name": "node-manager",
+  "name": "@runcitadel/manager",
   "version": "0.0.1",
-  "description": "Manager for Bitcoin Nodes",
-  "author": "Bitcoin Community",
+  "description": "User-managment and host communication API for Citadel",
+  "author": "Citadel developers",
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",

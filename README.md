@@ -43,7 +43,7 @@ Set the following environment variables directly or by placing them in `.env` fi
 yarn start
 ```
 
-You can browse through the available API endpoints [here](https://github.com/runcitadel/manager/tree/master/routes/v1).
+You can browse through the available API endpoints [here](https://github.com/runcitadel/manager/tree/main/routes/v1) or use [our TypeScript SDK](https://github.com/runcitadel/sdk).
 
 ---
 
@@ -72,5 +72,5 @@ Copyright (c) 2020 Umbrel. https://getumbrel.com/
 
 ---
 
-[![License](https://img.shields.io/github/license/runcitadel/manager?color=%235351FB)](https://github.com/runcitadel/manager/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/runcitadel/manager?color=%235351FB)](https://github.com/runcitadel/manager/blob/main/LICENSE)
 

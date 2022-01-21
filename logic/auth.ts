@@ -1,6 +1,6 @@
 import * as crypto from 'node:crypto';
 import {Buffer} from 'node:buffer';
-import bcrypt from '@node-rs/bcrypt';
+import * as bcrypt from '@node-rs/bcrypt';
 import {CipherSeed} from 'aezeed';
 import * as iocane from 'iocane';
 import base32 from 'thirty-two';

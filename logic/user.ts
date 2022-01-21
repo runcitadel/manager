@@ -1,6 +1,6 @@
 import KeyvRedis from '@keyv/redis';
 import Keyv from 'keyv';
-import bcrypt from '@node-rs/bcrypt';
+import * as bcrypt from '@node-rs/bcrypt';
 import {generateJwt, getIdFromJwt} from '../utils/jwt.js';
 import * as consts from '../utils/const.js';
 
@@ -92,7 +92,7 @@ export default class User {
         if (!id) throw new Error('No id provided');
         const user = await User.get(id);
         const data = await user.getData();
-        if (!(await bcrypt.compare(password, data.password)))
+        if (!(await bcrypt.verify(password, data.password)))
           throw new Error('Invalid password');
         return user;
       }
@@ -247,8 +247,8 @@ export default class User {
     await this.#setData(data);
   }
 
-  async validatePassword(password: string) {
-    return bcrypt.compare(password, (await this.getData()).password);
+  async validatePassword(password: string): Promise<boolean> {
+    return bcrypt.verify(password, (await this.getData()).password);
   }
 }
 

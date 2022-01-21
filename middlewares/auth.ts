@@ -2,7 +2,7 @@ import {Buffer} from 'node:buffer';
 import {STATUS_CODES} from '@runcitadel/utils';
 import * as passportJWT from 'passport-jwt';
 import * as passportHTTP from 'passport-http';
-import bcrypt from '@node-rs/bcrypt';
+import * as bcrypt from '@node-rs/bcrypt';
 import Rsa from 'node-rsa';
 import type {Next, Context} from 'koa';
 import passport from 'koa-passport';
@@ -127,7 +127,7 @@ export async function basic(ctx: Context, next: Next): Promise<void> {
       }
 
       const storedPassword = userInfo.password;
-      const equal = await bcrypt.compare(
+      const equal = await bcrypt.verify(
         (user as {[key: string]: unknown; password: string}).password,
         storedPassword!,
       );

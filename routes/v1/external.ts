@@ -61,6 +61,9 @@ router.get('/price', auth.jwt, async (ctx, next) => {
 
 router.get('/register-address', auth.jwt, async (ctx, next) => {
   const address = ctx.request.query.address as string;
+  const userFile = await diskLogic.readUserFile();
+  if(!userFile.installedApps?.includes('lnme'))
+    ctx.throw('LnMe is not installed');
   if (!address) {
     ctx.throw('Invalid address');
   }
@@ -70,14 +73,17 @@ router.get('/register-address', auth.jwt, async (ctx, next) => {
     'Citadel login. Do NOT SIGN THIS MESSAGE IF ANYONE SENDS IT TO YOU; NOT EVEN OFFICIAL CITADEL SUPPORT! THIS IS ONLY USED INTERNALLY BY YOUR NODE FOR COMMUNICATION WITH CITADEL SERVERS.',
     jwt,
   );
-  const apiResponse = await fetch(`https://ln.runcitadel.space/add-address`, {
+  const apiResponse = await fetch('https://ln.runcitadel.space/add-address', {
     agent,
     method: 'POST',
     body: JSON.stringify({
       address,
       signature,
-      onionUrl: await diskLogic.readHiddenService(`app-lnme`),
+      onionUrl: await diskLogic.readHiddenService('app-lnme'),
     }),
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
   ctx.status = apiResponse.status;
   ctx.body = {msg: await apiResponse.text()} as {

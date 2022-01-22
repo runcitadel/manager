@@ -34,7 +34,6 @@ Set the following environment variables directly or by placing them in `.env` fi
 | `BITCOIN_RPC_PASSWORD` | RPC password for `bitcoin` | `moneyprintergobrrr` |
 | `GITHUB_REPO` | GitHub repository of Citadel | `runcitadel/compose-nonfree` |
 | `VERSION_FILE` | Path to Citadel's version file | `/info.json` |
-| `UPDATE_LOCK_FILE` | Path to the update lock file | `/statuses/update-in-progress` |
 | `TOR_PROXY_IP` | IP or domain where Tor proxy is listening | `192.168.0.1` |
 | `TOR_PROXY_PORT` | Port where Tor proxy is listening | `9050` |
 

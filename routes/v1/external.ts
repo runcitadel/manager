@@ -69,7 +69,7 @@ router.get('/register-address', auth.jwt, async (ctx, next) => {
   }
 
   const jwt = await refreshJwt(ctx.state.user as userFile);
-  const signature = lightningApiService.signMessage(
+  const signature = await lightningApiService.signMessage(
     'Citadel login. Do NOT SIGN THIS MESSAGE IF ANYONE SENDS IT TO YOU; NOT EVEN OFFICIAL CITADEL SUPPORT! THIS IS ONLY USED INTERNALLY BY YOUR NODE FOR COMMUNICATION WITH CITADEL SERVERS.',
     jwt,
   );

@@ -531,7 +531,7 @@ __metadata:
     "@node-rs/bcrypt": ^1.5.5
     "@runcitadel/fs": ^1.0.1
     "@runcitadel/lndconnect": ^0.0.2
-    "@runcitadel/sdk": ^0.1.9
+    "@runcitadel/sdk": ^0.2.0
     "@runcitadel/utils": ^0.9.1
     "@types/ioredis": ^4.28.7
     "@types/jsonwebtoken": ^8.5.8
@@ -575,13 +575,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@runcitadel/sdk@npm:^0.1.9":
-  version: 0.1.9
-  resolution: "@runcitadel/sdk@npm:0.1.9"
+"@runcitadel/sdk@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "@runcitadel/sdk@npm:0.2.0"
+  dependencies:
+    undici: ^4.12.2
   peerDependencies:
     "@types/react": ^17.0.38
     react: ^17.0.2
-  checksum: 0f18b3a8e12de30dc1c42f9ad143c871a83c65deb74fb74b5ce41da2e8d0747d0acf6a8a7d70453f86a2363dc53a6821f2789b325e070c693a216e4f544cf92c
+  checksum: 3980fa78017b8ae34d64c77fd30eb6745ba9cb81a46b847bf43eaf2dbae7cc8d5cc1fbf04d141db342134d22152dfb00ab56ff0c6545a2c14e37914df387cdbb
   languageName: node
   linkType: hard
 
@@ -5251,6 +5253,13 @@ __metadata:
   version: 0.1.2
   resolution: "unc-path-regex@npm:0.1.2"
   checksum: a05fa2006bf4606051c10fc7968f08ce7b28fa646befafa282813aeb1ac1a56f65cb1b577ca7851af2726198d59475bb49b11776036257b843eaacee2860a4ec
+  languageName: node
+  linkType: hard
+
+"undici@npm:^4.12.2":
+  version: 4.12.2
+  resolution: "undici@npm:4.12.2"
+  checksum: e53e144e96afdd097e3289f92ec9baad856dbe162cbb9c0e50b9105244cc7c0867cad3ef444274c78700b3ffc0a96603b26516f59a709008f8dd93eb1482567f
   languageName: node
   linkType: hard
 

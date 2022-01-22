@@ -101,24 +101,24 @@ export function seedFileExists(): boolean {
   return fs.existsSync(constants.SEED_FILE);
 }
 
-export async function readElectrumHiddenService(): Promise<string> {
-  return fs.readUtf8File(constants.ELECTRUM_HIDDEN_SERVICE_FILE);
+export function readElectrumHiddenService(): Promise<string> {
+  return readHiddenService("electrum");
 }
 
-export async function readBitcoinP2pHiddenService(): Promise<string> {
-  return fs.readUtf8File(constants.BITCOIN_P2P_HIDDEN_SERVICE_FILE);
+export function readBitcoinP2pHiddenService(): Promise<string> {
+  return readHiddenService("bitcoin-p2p");
 }
 
-export async function readBitcoinRpcHiddenService(): Promise<string> {
-  return fs.readUtf8File(constants.BITCOIN_RPC_HIDDEN_SERVICE_FILE);
+export function readBitcoinRpcHiddenService(): Promise<string> {
+  return readHiddenService("bitcoin-rpc");
 }
 
 export async function readLndRestHiddenService(): Promise<string> {
-  return fs.readUtf8File(constants.LND_REST_HIDDEN_SERVICE_FILE);
+  return readHiddenService("lnd-rest");
 }
 
 export async function readLndGrpcHiddenService(): Promise<string> {
-  return fs.readUtf8File(constants.LND_GRPC_HIDDEN_SERVICE_FILE);
+  return readHiddenService("lnd-grpc");
 }
 
 export async function readLndCert(): Promise<string> {

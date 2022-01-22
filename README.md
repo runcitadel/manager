@@ -27,12 +27,8 @@ Set the following environment variables directly or by placing them in `.env` fi
 | `JWT_PRIVATE_KEY_FILE` | Path to the JWT private key (automatically created) | `/db/jwt-public-key/jwt.key` |
 | `JWT_EXPIRATION` | JWT expiration in miliseconds | `3600` |
 | `SEED_FILE` | Path to the seed used to deterministically generate entropy | `'/db/citadel-seed/seed'` |
-| `DASHBOARD_HIDDEN_SERVICE_FILE` | Path to Tor hostname of [`dashboard`](https://github.com/runcitadel/dashboard) | `/var/lib/tor/dashboard/hostname` |
-| `ELECTRUM_HIDDEN_SERVICE_FILE` | Path to Electrum hidden service hostname | `/var/lib/tor/electrum/hostname` |
 | `ELECTRUM_PORT` | Port the Electrum server is listening on | `50001` |
-| `BITCOIN_P2P_HIDDEN_SERVICE_FILE` | Path to P2P hidden service hostname of `bitcoin` | `/var/lib/tor/bitcoin-p2p/hostname` |
 | `BITCOIN_P2P_PORT` | P2P port of `bitcoin` | `8333` |
-| `BITCOIN_RPC_HIDDEN_SERVICE_FILE` | Path to RPC hidden service hostname of `bitcoin` | `/var/lib/tor/bitcoin-rpc/hostname` |
 | `BITCOIN_RPC_PORT` | RPC port of `bitcoin` | `8332` |
 | `BITCOIN_RPC_USER` | RPC user for `bitcoin` | `citadel` |
 | `BITCOIN_RPC_PASSWORD` | RPC password for `bitcoin` | `moneyprintergobrrr` |
@@ -47,7 +43,7 @@ Set the following environment variables directly or by placing them in `.env` fi
 yarn start
 ```
 
-You can browse through the available API endpoints [here](https://github.com/runcitadel/manager/tree/master/routes/v1).
+You can browse through the available API endpoints [here](https://github.com/runcitadel/manager/tree/main/routes/v1) or use [our TypeScript SDK](https://github.com/runcitadel/sdk).
 
 ---
 
@@ -76,5 +72,5 @@ Copyright (c) 2020 Umbrel. https://getumbrel.com/
 
 ---
 
-[![License](https://img.shields.io/github/license/runcitadel/manager?color=%235351FB)](https://github.com/runcitadel/manager/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/runcitadel/manager?color=%235351FB)](https://github.com/runcitadel/manager/blob/main/LICENSE)
 

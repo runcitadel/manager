@@ -303,12 +303,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@keyv/redis@npm:^2.2.1":
-  version: 2.2.1
-  resolution: "@keyv/redis@npm:2.2.1"
+"@keyv/redis@npm:^2.2.2":
+  version: 2.2.2
+  resolution: "@keyv/redis@npm:2.2.2"
   dependencies:
     ioredis: ^4.28.2
-  checksum: bd39fbf94014a1b93439d22213f40f9ec4634bac00314ac278c794c74a034217a72939431b37e0766f8797aa442954c3cfaa0331f68a9ab1622bf80fcdcc260c
+  checksum: 47a65505d1d0e93bfec0dabd444b8cde0c90a186e5e5add6200ede58c56bd512004dcabc7d43f2ea0d042ab82273db88d798d970bb66fc631830a25e38c129b0
   languageName: node
   linkType: hard
 
@@ -334,115 +334,117 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@napi-rs/triples@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "@napi-rs/triples@npm:1.0.3"
-  checksum: c83a4cc55f69115bf4ce1d5924efce7f5faf2dc79fd52257385559f668ce91a03c5d7d004df01ebba56028a9b663955eb97f31b65ac0acff7a93c143f0d809af
+"@node-rs/bcrypt-android-arm-eabi@npm:1.5.5":
+  version: 1.5.5
+  resolution: "@node-rs/bcrypt-android-arm-eabi@npm:1.5.5"
+  conditions: os=android & cpu=arm
   languageName: node
   linkType: hard
 
-"@node-rs/bcrypt-android-arm64@npm:1.4.2":
-  version: 1.4.2
-  resolution: "@node-rs/bcrypt-android-arm64@npm:1.4.2"
+"@node-rs/bcrypt-android-arm64@npm:1.5.5":
+  version: 1.5.5
+  resolution: "@node-rs/bcrypt-android-arm64@npm:1.5.5"
   conditions: os=android & cpu=arm64
   languageName: node
   linkType: hard
 
-"@node-rs/bcrypt-darwin-arm64@npm:1.4.2":
-  version: 1.4.2
-  resolution: "@node-rs/bcrypt-darwin-arm64@npm:1.4.2"
+"@node-rs/bcrypt-darwin-arm64@npm:1.5.5":
+  version: 1.5.5
+  resolution: "@node-rs/bcrypt-darwin-arm64@npm:1.5.5"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@node-rs/bcrypt-darwin-x64@npm:1.4.2":
-  version: 1.4.2
-  resolution: "@node-rs/bcrypt-darwin-x64@npm:1.4.2"
+"@node-rs/bcrypt-darwin-x64@npm:1.5.5":
+  version: 1.5.5
+  resolution: "@node-rs/bcrypt-darwin-x64@npm:1.5.5"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@node-rs/bcrypt-freebsd-x64@npm:1.4.2":
-  version: 1.4.2
-  resolution: "@node-rs/bcrypt-freebsd-x64@npm:1.4.2"
+"@node-rs/bcrypt-freebsd-x64@npm:1.5.5":
+  version: 1.5.5
+  resolution: "@node-rs/bcrypt-freebsd-x64@npm:1.5.5"
   conditions: os=freebsd & cpu=x64
   languageName: node
   linkType: hard
 
-"@node-rs/bcrypt-linux-arm-gnueabihf@npm:1.4.2":
-  version: 1.4.2
-  resolution: "@node-rs/bcrypt-linux-arm-gnueabihf@npm:1.4.2"
+"@node-rs/bcrypt-linux-arm-gnueabihf@npm:1.5.5":
+  version: 1.5.5
+  resolution: "@node-rs/bcrypt-linux-arm-gnueabihf@npm:1.5.5"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
 
-"@node-rs/bcrypt-linux-arm64-gnu@npm:1.4.2":
-  version: 1.4.2
-  resolution: "@node-rs/bcrypt-linux-arm64-gnu@npm:1.4.2"
+"@node-rs/bcrypt-linux-arm64-gnu@npm:1.5.5":
+  version: 1.5.5
+  resolution: "@node-rs/bcrypt-linux-arm64-gnu@npm:1.5.5"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"@node-rs/bcrypt-linux-arm64-musl@npm:1.4.2":
-  version: 1.4.2
-  resolution: "@node-rs/bcrypt-linux-arm64-musl@npm:1.4.2"
+"@node-rs/bcrypt-linux-arm64-musl@npm:1.5.5":
+  version: 1.5.5
+  resolution: "@node-rs/bcrypt-linux-arm64-musl@npm:1.5.5"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"@node-rs/bcrypt-linux-x64-gnu@npm:1.4.2":
-  version: 1.4.2
-  resolution: "@node-rs/bcrypt-linux-x64-gnu@npm:1.4.2"
+"@node-rs/bcrypt-linux-x64-gnu@npm:1.5.5":
+  version: 1.5.5
+  resolution: "@node-rs/bcrypt-linux-x64-gnu@npm:1.5.5"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"@node-rs/bcrypt-linux-x64-musl@npm:1.4.2":
-  version: 1.4.2
-  resolution: "@node-rs/bcrypt-linux-x64-musl@npm:1.4.2"
+"@node-rs/bcrypt-linux-x64-musl@npm:1.5.5":
+  version: 1.5.5
+  resolution: "@node-rs/bcrypt-linux-x64-musl@npm:1.5.5"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"@node-rs/bcrypt-win32-arm64-msvc@npm:1.4.2":
-  version: 1.4.2
-  resolution: "@node-rs/bcrypt-win32-arm64-msvc@npm:1.4.2"
+"@node-rs/bcrypt-win32-arm64-msvc@npm:1.5.5":
+  version: 1.5.5
+  resolution: "@node-rs/bcrypt-win32-arm64-msvc@npm:1.5.5"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@node-rs/bcrypt-win32-ia32-msvc@npm:1.4.2":
-  version: 1.4.2
-  resolution: "@node-rs/bcrypt-win32-ia32-msvc@npm:1.4.2"
+"@node-rs/bcrypt-win32-ia32-msvc@npm:1.5.5":
+  version: 1.5.5
+  resolution: "@node-rs/bcrypt-win32-ia32-msvc@npm:1.5.5"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
-"@node-rs/bcrypt-win32-x64-msvc@npm:1.4.2":
-  version: 1.4.2
-  resolution: "@node-rs/bcrypt-win32-x64-msvc@npm:1.4.2"
+"@node-rs/bcrypt-win32-x64-msvc@npm:1.5.5":
+  version: 1.5.5
+  resolution: "@node-rs/bcrypt-win32-x64-msvc@npm:1.5.5"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"@node-rs/bcrypt@npm:^1.4.2":
-  version: 1.4.2
-  resolution: "@node-rs/bcrypt@npm:1.4.2"
+"@node-rs/bcrypt@npm:^1.5.5":
+  version: 1.5.5
+  resolution: "@node-rs/bcrypt@npm:1.5.5"
   dependencies:
-    "@node-rs/bcrypt-android-arm64": 1.4.2
-    "@node-rs/bcrypt-darwin-arm64": 1.4.2
-    "@node-rs/bcrypt-darwin-x64": 1.4.2
-    "@node-rs/bcrypt-freebsd-x64": 1.4.2
-    "@node-rs/bcrypt-linux-arm-gnueabihf": 1.4.2
-    "@node-rs/bcrypt-linux-arm64-gnu": 1.4.2
-    "@node-rs/bcrypt-linux-arm64-musl": 1.4.2
-    "@node-rs/bcrypt-linux-x64-gnu": 1.4.2
-    "@node-rs/bcrypt-linux-x64-musl": 1.4.2
-    "@node-rs/bcrypt-win32-arm64-msvc": 1.4.2
-    "@node-rs/bcrypt-win32-ia32-msvc": 1.4.2
-    "@node-rs/bcrypt-win32-x64-msvc": 1.4.2
-    "@node-rs/helper": ^1.2.1
+    "@node-rs/bcrypt-android-arm-eabi": 1.5.5
+    "@node-rs/bcrypt-android-arm64": 1.5.5
+    "@node-rs/bcrypt-darwin-arm64": 1.5.5
+    "@node-rs/bcrypt-darwin-x64": 1.5.5
+    "@node-rs/bcrypt-freebsd-x64": 1.5.5
+    "@node-rs/bcrypt-linux-arm-gnueabihf": 1.5.5
+    "@node-rs/bcrypt-linux-arm64-gnu": 1.5.5
+    "@node-rs/bcrypt-linux-arm64-musl": 1.5.5
+    "@node-rs/bcrypt-linux-x64-gnu": 1.5.5
+    "@node-rs/bcrypt-linux-x64-musl": 1.5.5
+    "@node-rs/bcrypt-win32-arm64-msvc": 1.5.5
+    "@node-rs/bcrypt-win32-ia32-msvc": 1.5.5
+    "@node-rs/bcrypt-win32-x64-msvc": 1.5.5
   dependenciesMeta:
+    "@node-rs/bcrypt-android-arm-eabi":
+      optional: true
     "@node-rs/bcrypt-android-arm64":
       optional: true
     "@node-rs/bcrypt-darwin-arm64":
@@ -467,16 +469,7 @@ __metadata:
       optional: true
     "@node-rs/bcrypt-win32-x64-msvc":
       optional: true
-  checksum: 7265fbbcd602bc6ffc90a15ec1873e9a0e849e58e2ed3e23fe6c834b512a5d16891a17ccb00287a0f99352e709bf4a0ccd1d0c04ef24584963707d69f2e4513e
-  languageName: node
-  linkType: hard
-
-"@node-rs/helper@npm:^1.2.1":
-  version: 1.2.1
-  resolution: "@node-rs/helper@npm:1.2.1"
-  dependencies:
-    "@napi-rs/triples": ^1.0.3
-  checksum: c7b96e46df8a4195e62e51b6f60ed05aff398653c270dc9cffaed749303a4c428215d5826de8511b57cf66f2b0165fb3544fb2aec2aaf385c13ac3b9468bb000
+  checksum: 9f967b3f82f68fe1a587a201afe76330b07a524ac671741ac8910804d930fc674e36ad8088f518e12b2846af6f097824e0f45a9a1f2ce273ca39fbd40b8d2776
   languageName: node
   linkType: hard
 
@@ -528,13 +521,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@runcitadel/sdk@npm:^0.1.7":
-  version: 0.1.7
-  resolution: "@runcitadel/sdk@npm:0.1.7"
+"@runcitadel/sdk@npm:^0.1.9":
+  version: 0.1.9
+  resolution: "@runcitadel/sdk@npm:0.1.9"
   peerDependencies:
     "@types/react": ^17.0.38
     react: ^17.0.2
-  checksum: e6225c88d6b45cfb27143cead7761805bd6bd0163394b100f46c38b1827ea9843d5fe39e77167e62cefd00abf839fbdd16ba6f5b15f0c6d0c47279d34ec4d558
+  checksum: 0f18b3a8e12de30dc1c42f9ad143c871a83c65deb74fb74b5ce41da2e8d0747d0acf6a8a7d70453f86a2363dc53a6821f2789b325e070c693a216e4f544cf92c
   languageName: node
   linkType: hard
 
@@ -670,12 +663,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ioredis@npm:^4.28.5":
-  version: 4.28.5
-  resolution: "@types/ioredis@npm:4.28.5"
+"@types/ioredis@npm:^4.28.7":
+  version: 4.28.7
+  resolution: "@types/ioredis@npm:4.28.7"
   dependencies:
     "@types/node": "*"
-  checksum: 6df1826ef10b8eb36f1f7147903b54952d6cb06556a6bb14e2b670c34229c0764a61e61d24e2a22c4e73688e42dc5bf933acf730978ad6292634f882961f13c3
+  checksum: 80d3dd96acf8c7a329fcc05bd66c201f4836001649f069bc9f675d42ac88b81e4408ed8a907d7a4dde12910eca6cc2ded7fab68c99a803614bd968910e807c75
   languageName: node
   linkType: hard
 
@@ -693,12 +686,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jsonwebtoken@npm:*, @types/jsonwebtoken@npm:^8.5.6":
-  version: 8.5.6
-  resolution: "@types/jsonwebtoken@npm:8.5.6"
+"@types/jsonwebtoken@npm:*, @types/jsonwebtoken@npm:^8.5.8":
+  version: 8.5.8
+  resolution: "@types/jsonwebtoken@npm:8.5.8"
   dependencies:
     "@types/node": "*"
-  checksum: c1c0e40cb1366d3b5f72c2c283abee8e5aedc5656d8857752ed4cb318eb8e117dad87f35431f73cdc03e7b02d169d19b3a1e58422ef94776c17cfd003ee05a33
+  checksum: 56738a918c543dba30786066959f801212e7fb5cd4ec53cf7b8d227711ed358834feb9e5141f7f88ec7c642bb39757330a5a8917e3b22e0ff9084940d35f0d70
   languageName: node
   linkType: hard
 
@@ -774,12 +767,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/koa__cors@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "@types/koa__cors@npm:3.1.0"
+"@types/koa__cors@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "@types/koa__cors@npm:3.1.1"
   dependencies:
     "@types/koa": "*"
-  checksum: 71830790e47ab564d8500e211aa9347ae7bbdf653c45fc8d3d0fcd8174a089ca3baced394443d5c4e073e9865faa8007dc0ccad85aa75e4188b54314cc6095a5
+  checksum: 7ef2c09a453383f7813c25657633a3fe1c3321fe5cdd30a5806aa8be61d02f475deeb44a472bae046c48849d4a60165410b3ea0a7b931ed720da02e3f26515f7
   languageName: node
   linkType: hard
 
@@ -824,10 +817,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^17.0.0":
-  version: 17.0.0
-  resolution: "@types/node@npm:17.0.0"
-  checksum: 30970a70c2eb78dbe80613d73243c255aaa9ce057d9e8595069ca0aef0363db0af45dc0d35f445cc804576a99df2970c170130663d76cd60319b779872e92ad6
+"@types/node@npm:*, @types/node@npm:^17.0.10":
+  version: 17.0.10
+  resolution: "@types/node@npm:17.0.10"
+  checksum: 979e83d642a2b4f18fa1a4233f884822c05abc7acd0836024aa964187f8446432b21f7913e72fe2b3927c4a811c27a0b6cd60ac7c4ac6a6762cfbab70782aa6a
   languageName: node
   linkType: hard
 
@@ -1774,10 +1767,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^10.0.0":
-  version: 10.0.0
-  resolution: "dotenv@npm:10.0.0"
-  checksum: f412c5fe8c24fbe313d302d2500e247ba8a1946492db405a4de4d30dd0eb186a88a43f13c958c5a7de303938949c4231c56994f97d05c4bc1f22478d631b4005
+"dotenv@npm:^14.2.0":
+  version: 14.2.0
+  resolution: "dotenv@npm:14.2.0"
+  checksum: 85a0e44918ef49e64c278f757dab50a156b9a6ca67f708876fd81d265e575e35b67387fc681d910df99368d6c1edca66cd546edeb0f7db3b499cb876c999233e
   languageName: node
   linkType: hard
 
@@ -2440,12 +2433,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fetch-blob@npm:^3.1.2":
-  version: 3.1.3
-  resolution: "fetch-blob@npm:3.1.3"
+"fetch-blob@npm:^3.1.2, fetch-blob@npm:^3.1.4":
+  version: 3.1.4
+  resolution: "fetch-blob@npm:3.1.4"
   dependencies:
+    node-domexception: ^1.0.0
     web-streams-polyfill: ^3.0.3
-  checksum: 7be20e9c9a936601c280ef3cfed1968dbcfb35e31564b9bdc807b48de73587cd358b7c3965a3f03483f5268dc373ae8526608947750f22eb214e20c94efab9c1
+  checksum: 81b074f38a2dbfd546dd58e482cefe14e605abd609e272804bf089d588d84f39e3e95b35640bfb376f71d5038c123d4d41be49d9cdf87e5ec8939d37738df0b6
   languageName: node
   linkType: hard
 
@@ -2941,9 +2935,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ioredis@npm:^4.28.2":
-  version: 4.28.2
-  resolution: "ioredis@npm:4.28.2"
+"ioredis@npm:^4.28.2, ioredis@npm:^4.28.3":
+  version: 4.28.3
+  resolution: "ioredis@npm:4.28.3"
   dependencies:
     cluster-key-slot: ^1.1.0
     debug: ^4.3.1
@@ -2956,7 +2950,7 @@ __metadata:
     redis-errors: ^1.2.0
     redis-parser: ^3.0.0
     standard-as-callback: ^2.1.0
-  checksum: 4d9e5a4707cc918d2c2e161ea430aa06e68d5a513a680e8a315cf2cdea0b65b410a2e7279a04bab6db66aa781af4244acce3df67f560fed198f1f2f1d2c1d609
+  checksum: f054e6db3a4d81200d4009a5efb6e6900bb1dfc590e23ea1a02f35d8da4aa0bb6939d4d8e7ec9af1f28f23cabf60f83d8a6ea66beef035feca4406e646cae8ae
   languageName: node
   linkType: hard
 
@@ -3392,12 +3386,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"keyv@npm:^4.0.4":
-  version: 4.0.4
-  resolution: "keyv@npm:4.0.4"
+"keyv@npm:^4.0.5":
+  version: 4.0.5
+  resolution: "keyv@npm:4.0.5"
   dependencies:
     json-buffer: 3.0.1
-  checksum: 73f0f45e149be12aab0449a59c9a490195f231ef90024222e544f4c24221fa2b4ec1cd432f92384f0f852e6ae48b7e97f1bf2147c29616b2feddf8ffbc401777
+  checksum: 968ec062e66a660bd1c403b2932f602948ea76b17f8419bb04166491c1f186da1c3b39db4ccd1fdb6a19a4dcb374334455dd3ac31e13a70000c81e2daa866117
   languageName: node
   linkType: hard
 
@@ -3883,14 +3877,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "node-fetch@npm:3.1.0"
+"node-domexception@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "node-domexception@npm:1.0.0"
+  checksum: ee1d37dd2a4eb26a8a92cd6b64dfc29caec72bff5e1ed9aba80c294f57a31ba4895a60fd48347cf17dd6e766da0ae87d75657dfd1f384ebfa60462c2283f5c7f
+  languageName: node
+  linkType: hard
+
+"node-fetch@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "node-fetch@npm:3.2.0"
   dependencies:
     data-uri-to-buffer: ^4.0.0
-    fetch-blob: ^3.1.2
+    fetch-blob: ^3.1.4
     formdata-polyfill: ^4.0.10
-  checksum: 23b5977554d21b72d7d99145d00bcf06e463fa621bf0afc276ad121a79509a133f38c7e470b34aad45d4032d3315bf5584ff6a1cb83e8f01be7a44cc7ac72693
+  checksum: 1c809a0f64dd11cc18b49f990440e22c471da47da2a6d6b3388a83beba9d23ba7eaca1b9bf706a792bd283b824cf1a76777910859b9c28ad33a59f2ae4e44f8e
   languageName: node
   linkType: hard
 
@@ -3898,24 +3899,24 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "node-manager@workspace:."
   dependencies:
-    "@keyv/redis": ^2.2.1
+    "@keyv/redis": ^2.2.2
     "@koa/cors": ^3.1.0
     "@koa/router": ^10.1.1
-    "@node-rs/bcrypt": ^1.4.2
+    "@node-rs/bcrypt": ^1.5.5
     "@runcitadel/fs": ^1.0.1
     "@runcitadel/lndconnect": ^0.0.2
-    "@runcitadel/sdk": ^0.1.7
+    "@runcitadel/sdk": ^0.1.9
     "@runcitadel/utils": ^0.9.1
-    "@types/ioredis": ^4.28.5
-    "@types/jsonwebtoken": ^8.5.6
+    "@types/ioredis": ^4.28.7
+    "@types/jsonwebtoken": ^8.5.8
     "@types/keyv": ^3.1.3
     "@types/keyv__redis": ^1.3.3
     "@types/koa": ^2.13.4
     "@types/koa-morgan": ^1.0.5
     "@types/koa-passport": ^4.0.3
-    "@types/koa__cors": ^3.1.0
+    "@types/koa__cors": ^3.1.1
     "@types/koa__router": ^8.0.11
-    "@types/node": ^17.0.0
+    "@types/node": ^17.0.10
     "@types/node-rsa": ^1.1.1
     "@types/notp": ^2.0.1
     "@types/passport-http": ^0.3.9
@@ -3925,16 +3926,16 @@ __metadata:
     aezeed: ^0.0.4
     cors: ^2.8.5
     debug: ^4.3.3
-    dotenv: ^10.0.0
+    dotenv: ^14.2.0
     iocane: ^5.1.1
-    ioredis: ^4.28.2
+    ioredis: ^4.28.3
     jsonwebtoken: ^8.5.1
-    keyv: ^4.0.4
+    keyv: ^4.0.5
     koa: ^2.13.4
     koa-body: ^4.2.0
     koa-morgan: ^1.0.1
     koa-passport: ^4.1.4
-    node-fetch: ^3.1.0
+    node-fetch: ^3.2.0
     node-rsa: ^1.1.1
     notp: ^2.0.3
     passport-http: ^0.3.0
@@ -3943,7 +3944,7 @@ __metadata:
     semver: ^7.3.5
     socks-proxy-agent: ^6.1.1
     thirty-two: ^1.0.2
-    typescript: ^4.5.4
+    typescript: ^4.5.5
     xo: ^0.47.0
   languageName: unknown
   linkType: soft
@@ -5214,23 +5215,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.5.2, typescript@npm:^4.5.4":
-  version: 4.5.4
-  resolution: "typescript@npm:4.5.4"
+"typescript@npm:^4.5.2, typescript@npm:^4.5.5":
+  version: 4.5.5
+  resolution: "typescript@npm:4.5.5"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 59f3243f9cd6fe3161e6150ff6bf795fc843b4234a655dbd938a310515e0d61afd1ac942799e7415e4334255e41c2c49b7dd5d9fd38a17acd25a6779ca7e0961
+  checksum: 506f4c919dc8aeaafa92068c997f1d213b9df4d9756d0fae1a1e7ab66b585ab3498050e236113a1c9e57ee08c21ec6814ca7a7f61378c058d79af50a4b1f5a5e
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.5.2#~builtin<compat/typescript>, typescript@patch:typescript@^4.5.4#~builtin<compat/typescript>":
-  version: 4.5.4
-  resolution: "typescript@patch:typescript@npm%3A4.5.4#~builtin<compat/typescript>::version=4.5.4&hash=493e53"
+"typescript@patch:typescript@^4.5.2#~builtin<compat/typescript>, typescript@patch:typescript@^4.5.5#~builtin<compat/typescript>":
+  version: 4.5.5
+  resolution: "typescript@patch:typescript@npm%3A4.5.5#~builtin<compat/typescript>::version=4.5.5&hash=493e53"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 2e488dde7d2c4a2fa2e79cf2470600f8ce81bc0563c276b72df8ff412d74456ae532ba824650ae936ce207440c79720ddcfaa25e3cb4477572b8534fa4e34d49
+  checksum: c05c318d79c690f101d7ffb34cd6c7d6bbd884d3af9cefe7749ad0cd6be43c7082f098280982ca945dcba23fde34a08fed9602bb26540936baf8c0520727d3ba
   languageName: node
   linkType: hard
 

@@ -14,29 +14,15 @@ export const JWT_PUBLIC_KEY_FILE =
 export const JWT_PRIVATE_KEY_FILE =
   process.env.JWT_PRIVATE_KEY_FILE ?? '/db/jwt-private-key/jwt.key';
 export const SEED_FILE = process.env.SEED_FILE ?? '/db/citadel-seed/seed';
-export const DASHBOARD_HIDDEN_SERVICE_FILE =
-  process.env.DASHBOARD_HIDDEN_SERVICE_FILE ?? '/var/lib/tor/web/hostname';
-export const ELECTRUM_HIDDEN_SERVICE_FILE =
-  process.env.ELECTRUM_HIDDEN_SERVICE_FILE ?? '/var/lib/tor/electrum/hostname';
 export const ELECTRUM_PORT =
   Number.parseInt(process.env.ELECTRUM_PORT ?? '50001', 10) ?? 50_001;
-export const BITCOIN_P2P_HIDDEN_SERVICE_FILE =
-  process.env.BITCOIN_P2P_HIDDEN_SERVICE_FILE ??
-  '/var/lib/tor/bitcoin-p2p/hostname';
 export const BITCOIN_P2P_PORT =
   Number.parseInt(process.env.BITCOIN_P2P_PORT ?? '8333', 10) ?? 8333;
-export const BITCOIN_RPC_HIDDEN_SERVICE_FILE =
-  process.env.BITCOIN_RPC_HIDDEN_SERVICE_FILE ??
-  '/var/lib/tor/bitcoin-rpc/hostname';
 export const BITCOIN_RPC_PORT =
   Number.parseInt(process.env.BITCOIN_RPC_PORT ?? '8332', 10) ?? 8332;
 export const BITCOIN_RPC_USER = process.env.BITCOIN_RPC_USER ?? 'citadel';
 export const BITCOIN_RPC_PASSWORD =
   process.env.BITCOIN_RPC_PASSWORD ?? 'moneyprintergobrrr';
-export const LND_REST_HIDDEN_SERVICE_FILE =
-  process.env.LND_REST_HIDDEN_SERVICE_FILE ?? '/var/lib/tor/lnd-rest/hostname';
-export const LND_GRPC_HIDDEN_SERVICE_FILE =
-  process.env.LND_GRPC_HIDDEN_SERVICE_FILE ?? '/var/lib/tor/lnd-grpc/hostname';
 export const LND_CERT_FILE = process.env.LND_CERT_FILE ?? '/lnd/tls.cert';
 export const LND_ADMIN_MACAROON_FILE =
   process.env.LND_ADMIN_MACAROON_FILE ??

@@ -16,7 +16,7 @@
     "@node-rs/bcrypt": "^1.5.5",
     "@runcitadel/fs": "^1.0.1",
     "@runcitadel/lndconnect": "^0.0.2",
-    "@runcitadel/sdk": "^0.2.0",
+    "@runcitadel/sdk": "^0.2.1",
     "@runcitadel/utils": "^0.9.1",
     "aezeed": "^0.0.4",
     "cors": "^2.8.5",

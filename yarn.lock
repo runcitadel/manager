@@ -532,7 +532,7 @@ __metadata:
     aezeed: ^0.0.4
     cors: ^2.8.5
     debug: ^4.3.3
-    dotenv: ^14.3.0
+    dotenv: ^14.3.2
     iocane: ^5.1.1
     ioredis: ^4.28.3
     jsonwebtoken: ^8.5.1
@@ -1406,9 +1406,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.30001286":
-  version: 1.0.30001301
-  resolution: "caniuse-lite@npm:1.0.30001301"
-  checksum: 0e359f2c682bed35521902ce7fc91136c485de4c1e1e33272d6fbb7cdf77178df7649960a9b69ce9da12022aadd7a0037b3c9b3594c41146d58216654dc9a236
+  version: 1.0.30001302
+  resolution: "caniuse-lite@npm:1.0.30001302"
+  checksum: 612689059f6a9aeebad43afeabac655308ddbad8e0f345030edf7656564cf9d0d5af10e3cbf61b64b09b06a97f82ba3788f5621d6526c7a3e7e068cae88d6782
   languageName: node
   linkType: hard
 
@@ -1780,9 +1780,9 @@ __metadata:
   linkType: hard
 
 "destroy@npm:^1.0.4":
-  version: 1.0.4
-  resolution: "destroy@npm:1.0.4"
-  checksum: da9ab4961dc61677c709da0c25ef01733042614453924d65636a7db37308fef8a24cd1e07172e61173d471ca175371295fbc984b0af5b2b4ff47cd57bd784c03
+  version: 1.1.0
+  resolution: "destroy@npm:1.1.0"
+  checksum: b7c7357f93a38a12ba5c931d37de40d415e2b19ff8d891fed6de38dc6b8a8e8d5fe8e2f55ad13a0d99db4e54980595a6f36b5d48ec467e5f15a60fc6eb9c5c94
   languageName: node
   linkType: hard
 
@@ -1813,10 +1813,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^14.3.0":
-  version: 14.3.0
-  resolution: "dotenv@npm:14.3.0"
-  checksum: 0591a1aa6d2acaf31d4d5e7b79c1bce744fc8e06c6d38a066d70fe77d36cc7c67df6c04be70c9fdf637f421e84512ce83b4f8f8abe6f455b8ba970065f7a2fd6
+"dotenv@npm:^14.3.2":
+  version: 14.3.2
+  resolution: "dotenv@npm:14.3.2"
+  checksum: 86c06758915d6facc35275f4a7fafc16705b6f3b44befaa8abca91367991efc8ff8db5437d3cc14778231d19fb97610fe82d60f8a53ba723cdb69fe4171439aa
   languageName: node
   linkType: hard
 
@@ -1844,9 +1844,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.17":
-  version: 1.4.52
-  resolution: "electron-to-chromium@npm:1.4.52"
-  checksum: 31e8e38f0a4dd45e86f3b9905f3b1f915ec2f3831226dc15542764b3a435dd8025fe1ab546ed0a8ed6c46d87ac49724e80cd074bdbaf926657568ee76105fcd3
+  version: 1.4.53
+  resolution: "electron-to-chromium@npm:1.4.53"
+  checksum: 8c221a85b1941763803836044a8d8eaacb6e9661302fcdd36601a74f7123236aa52b0007d54320a1550cbbcf9dfdd4cf52ca92e677df3f71be0ee2ed68c738d7
   languageName: node
   linkType: hard
 

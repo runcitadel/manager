@@ -18,7 +18,7 @@
     "@runcitadel/lndconnect": "^0.0.2",
     "@runcitadel/sdk": "^0.2.0",
     "@runcitadel/utils": "^0.9.1",
-    "aezeed": "^0.0.4",
+    "aezeed": "^0.0.5",
     "cors": "^2.8.5",
     "debug": "^4.3.3",
     "dotenv": "^14.3.2",

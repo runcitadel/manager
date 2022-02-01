@@ -79,3 +79,15 @@ export async function uninstall(id: string): Promise<void> {
     throw new Error('Could not write the signal file');
   }
 }
+
+export async function update(id: string): Promise<void> {
+  if (!(await isValidAppId(id))) {
+    throw new Error('Invalid app id');
+  }
+
+  try {
+    await diskLogic.writeSignalFile(`app-update-${id}`);
+  } catch {
+    throw new Error('Could not write the signal file');
+  }
+}

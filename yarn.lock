@@ -536,7 +536,7 @@ __metadata:
     iocane: ^5.1.1
     ioredis: ^4.28.3
     jsonwebtoken: ^8.5.1
-    keyv: ^4.0.5
+    keyv: ^4.1.0
     koa: ^2.13.4
     koa-body: ^4.2.0
     koa-morgan: ^1.0.1
@@ -1844,9 +1844,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.17":
-  version: 1.4.59
-  resolution: "electron-to-chromium@npm:1.4.59"
-  checksum: f058ae0197f2eda65698956467935a3b79470a9264e95a4a549cdfce85c8ad9fc07152ec409e9c51c1ad699558ff50c1b3785966272df0e4e0edd1e51d758768
+  version: 1.4.61
+  resolution: "electron-to-chromium@npm:1.4.61"
+  checksum: b07d232ef1721bd30a3825f1443e237d1a7ffc88c1ae09feb5f2ce281b4832216638453614b0786c26cfeee52d0c0a2a633a556c4b3059234f2230a590e09be3
   languageName: node
   linkType: hard
 
@@ -3419,12 +3419,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"keyv@npm:^4.0.5":
-  version: 4.0.5
-  resolution: "keyv@npm:4.0.5"
+"keyv@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "keyv@npm:4.1.0"
   dependencies:
     json-buffer: 3.0.1
-  checksum: 968ec062e66a660bd1c403b2932f602948ea76b17f8419bb04166491c1f186da1c3b39db4ccd1fdb6a19a4dcb374334455dd3ac31e13a70000c81e2daa866117
+  checksum: 3f2f15b3e47fb2ac4bcf0323c814db18f92596d0cd7ec938dbe89947e54ce64ab4fac87ec87404213a410b50493648613c30afcf313acf98bcd47f052b8ea831
   languageName: node
   linkType: hard
 

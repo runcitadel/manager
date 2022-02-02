@@ -46,5 +46,5 @@ jobs:
                 --cache-from "type=local,src=/tmp/.buildx-cache" \
                 --cache-to "type=local,dest=/tmp/.buildx-cache" \
                 --platform linux/amd64,linux/arm64 \
-                ---tag ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:$TAG \
+                --tag ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:$TAG \
                 --output "type=registry" ./

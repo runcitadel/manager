@@ -91,3 +91,7 @@ export async function update(id: string): Promise<void> {
     throw new Error('Could not write the signal file');
   }
 }
+
+export function getAvailableUpdates(): Promise<string[]> {
+  return diskLogic.readJsonStatusFile<string[]>("app-updates");
+}

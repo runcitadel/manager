@@ -209,13 +209,13 @@ export async function writeStatusFile(
   return fs.ensureWriteFile(statusFilePath, contents);
 }
 
-export async function readStatusFile(statusFile: string): Promise<unknown> {
+export async function readStatusFile<FileType extends unknown = unknown>(statusFile: string): Promise<FileType> {
   if (!/^[\w-]+$/.test(statusFile)) {
     throw new Error('Invalid status file characters');
   }
 
   const statusFilePath = path.join(constants.STATUS_DIR, statusFile);
-  return fs.readJSONFile(statusFilePath);
+  return fs.readJSONFile(statusFilePath) as FileType;
 }
 
 export function statusFileExists(statusFile: string): boolean {
@@ -267,12 +267,12 @@ export async function readTextStatusFile(resource: string): Promise<Buffer> {
   return fs.readFile(statusFilePath);
 }
 
-export async function readJsonStatusFile(resource: string): Promise<unknown> {
+export async function readJsonStatusFile<FileType extends unknown = unknown>(resource: string): Promise<FileType> {
   const statusFilePath = path.join(
     constants.STATUS_DIR,
     `${resource}-status.json`,
   );
-  return fs.readJSONFile(statusFilePath).catch(() => null);
+  return fs.readJSONFile(statusFilePath).catch(() => null) as FileType;
 }
 
 export async function writeJsonStatusFile(

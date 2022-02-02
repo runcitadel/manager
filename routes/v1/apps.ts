@@ -45,6 +45,12 @@ router.post('/:id/update', auth.jwt, async (ctx, next) => {
   await next();
 });
 
+router.get('/updates', auth.jwt, async (ctx, next) => {
+  ctx.body = await appsLogic.getAvailableUpdates();
+  ctx.status = STATUS_CODES.OK;
+  await next();
+});
+
 router.post('/update', auth.jwt, async (ctx, next) => {
   await diskLogic.writeSignalFile('app-update');
   ctx.body = {};

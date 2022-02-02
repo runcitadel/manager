@@ -133,8 +133,8 @@ export async function readVersionFile(): Promise<versionFile> {
   return (await fs.readJSONFile(constants.VERSION_FILE)) as versionFile;
 }
 
-export async function readUpdateStatusFile(): Promise<updateStatus> {
-  return (await readJsonStatusFile('update')) as updateStatus;
+export function readUpdateStatusFile(): Promise<updateStatus> {
+  return readJsonStatusFile<updateStatus>('update');
 }
 
 export async function writeUpdateStatusFile(json: updateStatus): Promise<void> {
@@ -153,8 +153,8 @@ export async function writeUpdateSignalFile(): Promise<void> {
   await writeSignalFile('update');
 }
 
-export async function readBackupStatusFile(): Promise<backupStatus> {
-  return (await readJsonStatusFile('backup')) as backupStatus;
+export function readBackupStatusFile(): Promise<backupStatus> {
+  return readJsonStatusFile<backupStatus>('backup');
 }
 
 export async function readJwtPrivateKeyFile(): Promise<string> {
@@ -181,8 +181,8 @@ export async function reboot(): Promise<void> {
   await writeSignalFile('reboot');
 }
 
-export async function readDebugStatusFile(): Promise<debugStatus> {
-  return (await readJsonStatusFile('debug')) as debugStatus;
+export function readDebugStatusFile(): Promise<debugStatus> {
+  return readJsonStatusFile<debugStatus>('debug');
 }
 
 export async function writeSignalFile(

@@ -21,7 +21,7 @@
     "aezeed": "^0.0.5",
     "cors": "^2.8.5",
     "debug": "^4.3.3",
-    "dotenv": "^15.0.0",
+    "dotenv": "^16.0.0",
     "iocane": "^5.1.1",
     "ioredis": "^4.28.4",
     "jsonwebtoken": "^8.5.1",

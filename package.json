@@ -10,7 +10,7 @@
     "start": "node ./bin/www.mjs"
   },
   "dependencies": {
-    "@keyv/redis": "^2.2.2",
+    "@keyv/redis": "^2.2.3",
     "@koa/cors": "^3.1.0",
     "@koa/router": "^10.1.1",
     "@node-rs/bcrypt": "^1.5.5",

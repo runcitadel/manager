@@ -25,7 +25,7 @@
     "iocane": "^5.1.1",
     "ioredis": "^4.28.4",
     "jsonwebtoken": "^8.5.1",
-    "keyv": "^4.1.0",
+    "keyv": "^4.1.1",
     "koa": "^2.13.4",
     "koa-body": "^4.2.0",
     "koa-morgan": "^1.0.1",

@@ -6,13 +6,12 @@ __metadata:
   cacheKey: 8
 
 "@ampproject/remapping@npm:^2.0.0":
-  version: 2.0.1
-  resolution: "@ampproject/remapping@npm:2.0.1"
+  version: 2.0.2
+  resolution: "@ampproject/remapping@npm:2.0.2"
   dependencies:
-    "@jridgewell/resolve-uri": ^3.0.3
     "@jridgewell/trace-mapping": ^0.2.2
     sourcemap-codec: 1.4.8
-  checksum: b4282efe7d3b411966c738762ff4394e0347f2456a39e77f780301132931eae61da6c2186f1ed689559d4220d37f3a89c6f24272269794ee45129d9803c3ad0e
+  checksum: 5759df3715f0291cbf97099a9bb7202201a1a267e232ee1505418c768b9ae7281cd550b1da563a12808a06529eb1298744a6cabde21ac354fc8450044c7f2213
   languageName: node
   linkType: hard
 
@@ -295,19 +294,19 @@ __metadata:
   linkType: hard
 
 "@jridgewell/resolve-uri@npm:^3.0.3":
-  version: 3.0.3
-  resolution: "@jridgewell/resolve-uri@npm:3.0.3"
-  checksum: ec9053d53cc2f86d9560b6e457b1597db876cd2e96efc919c7ced9fc6b0186c8c23a58488150770557270f04d8ea7edd642efab3cb405e653285822ef840fbce
+  version: 3.0.4
+  resolution: "@jridgewell/resolve-uri@npm:3.0.4"
+  checksum: 799bcba2730280a42f11b4d41a5d34d68ce72cb1bd23186bd3356607c93b62765b2b050e5dfb67f04ce4e817f882bfc10a4d1c43fe2d8eeb38371c98d71217b4
   languageName: node
   linkType: hard
 
 "@jridgewell/trace-mapping@npm:^0.2.2":
-  version: 0.2.2
-  resolution: "@jridgewell/trace-mapping@npm:0.2.2"
+  version: 0.2.3
+  resolution: "@jridgewell/trace-mapping@npm:0.2.3"
   dependencies:
     "@jridgewell/resolve-uri": ^3.0.3
     sourcemap-codec: 1.4.8
-  checksum: 09bdcf9b724cc56a44a555a2cc14a4f4463c6628984461fa7b032609eb79198e0508e98380c61b98deca36e54028bf8ed90264b383b4762ace9132065df4341a
+  checksum: afb6e1d980af7e97cdebe9aed0c2c01f682705039c15dcb77c30837f6eb2b1f36876f7725da7136a33eba469539caa7218f99ef08984acf43df896403e9843e7
   languageName: node
   linkType: hard
 
@@ -560,7 +559,7 @@ __metadata:
     aezeed: ^0.0.5
     cors: ^2.8.5
     debug: ^4.3.3
-    dotenv: ^15.0.0
+    dotenv: ^16.0.0
     iocane: ^5.1.1
     ioredis: ^4.28.4
     jsonwebtoken: ^8.5.1
@@ -1841,10 +1840,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^15.0.0":
-  version: 15.0.1
-  resolution: "dotenv@npm:15.0.1"
-  checksum: acebaa5b0bb23fdbbdc50827936bdf6782e935b73c6048e949df352515576ec9542455a93f58cc3eefd839e45c670fbfed250a1061eb72f536dab05745d1bf33
+"dotenv@npm:^16.0.0":
+  version: 16.0.0
+  resolution: "dotenv@npm:16.0.0"
+  checksum: 664cebb51f0a9a1d1b930f51f0271e72e26d62feaecc9dc03df39453dd494b4e724809ca480fb3ec3213382b1ed3f791aaeb83569a137f9329ce58efd4853dbf
   languageName: node
   linkType: hard
 

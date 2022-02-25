@@ -12,11 +12,12 @@ const router = new Router({
 router.use(errorHandler);
 
 router.get('/', auth.jwt, async (ctx, next) => {
-  const query = {
+  /*const query = {
     installed: ctx.request.query.installed === '1',
   };
   const apps = await appsLogic.get(query);
-  ctx.body = apps;
+  ctx.body = apps;*/
+  return [];
   await next();
 });
 

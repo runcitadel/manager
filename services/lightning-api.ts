@@ -20,3 +20,8 @@ export function signMessage(
   middleware.jwt = jwt;
   return middleware.lnd.signMessage(message);
 }
+
+export async function getImplementation(jwt: string) {
+  middleware.jwt = jwt;
+  return (await middleware.lnd.info.version()).implementation.toLowerCase();
+}

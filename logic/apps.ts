@@ -1,4 +1,5 @@
 import * as diskLogic from './disk.js';
+import * as lightningService from '../services/lightning-api.js';
 
 export type App = {
   id: string;
@@ -18,15 +19,16 @@ export type App = {
   defaultPassword: string;
   hiddenService?: string;
   installed?: boolean;
+  compatible: boolean;
 };
 
 export type AppQuery = {
   installed?: boolean;
 };
 
-export async function get(query: AppQuery): Promise<App[]> {
+export async function get(query: AppQuery, jwt: string): Promise<App[]> {
   let apps = await diskLogic.readAppRegistry();
-
+  const lightningImplementation = await lightningService.getImplementation(jwt);
   // Do all hidden service lookups concurrently
   await Promise.all(
     apps.map(async (app: App) => {
@@ -35,6 +37,12 @@ export async function get(query: AppQuery): Promise<App[]> {
       } catch {
         app.hiddenService = '';
       }
+      if((app.dependencies.includes("lnd") && lightningImplementation === "c-lightning")
+        || (app.dependencies.includes("c-lightning") && lightningImplementation === "lnd")) {
+          app.compatible = false;
+        } else {
+          app.compatible = true;
+        }
     }),
   );
 

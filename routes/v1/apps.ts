@@ -3,6 +3,7 @@ import {errorHandler, STATUS_CODES} from '@runcitadel/utils';
 
 import * as appsLogic from '../../logic/apps.js';
 import * as diskLogic from '../../logic/disk.js';
+import {refresh as refreshJwt} from '../../logic/auth.js';
 
 import * as auth from '../../middlewares/auth.js';
 
@@ -16,7 +17,8 @@ router.get('/', auth.jwt, async (ctx, next) => {
   const query = {
     installed: ctx.request.query.installed === '1',
   };
-  const apps = await appsLogic.get(query);
+  const jwt = await refreshJwt(ctx.state.user as diskLogic.userFile);
+  const apps = await appsLogic.get(query, jwt);
   ctx.body = apps;
   await next();
 });

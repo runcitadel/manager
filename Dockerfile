@@ -2,6 +2,21 @@
 FROM node:17-alpine@sha256:250e9a093b861c330be2f4d1d224712d4e49290eeffc287ad190b120c1fe9d9f as base
 
 
+# DEVELOPMENT
+FROM base AS development
+# Create app directory
+WORKDIR /app
+# Install tools globally to avoid permission errors
+RUN yarn global add concurrently nodemon
+# Copy dependency management files
+COPY package.json yarn.lock ./
+# Install dependencies
+RUN yarn install
+# NOTE: Using project files from mounted volumes
+EXPOSE 3006
+CMD [ "concurrently", "npm:build:watch", "nodemon --experimental-json-modules bin/www.mjs" ]
+
+
 # DEPENDENCIES (production)
 FROM base as dependencies
 # Create app directory
@@ -16,7 +31,7 @@ RUN find /app/node_modules | grep ".\.ts" | xargs rm
 
 # BUILD (production)
 FROM base as builder
-# Change directory to '/app'
+# Create app directory
 WORKDIR /app
 # The current working directory
 COPY . .
@@ -32,24 +47,11 @@ RUN rm -rf node_modules tsconfig.tsbuildinfo *.ts **/*.ts .eslint* .git* .pretti
 
 # PRODUCTION
 FROM base AS production
+# Create app directory
+WORKDIR /app
 # Copy built code from build stage to '/app' directory
 COPY --from=builder /app /app
 # Copy node_modules
 COPY --from=dependencies /app/node_modules /app/node_modules
-# Change directory to '/app'
-WORKDIR /app
 EXPOSE 3006
 CMD [ "node", "--experimental-json-modules", "bin/www.mjs" ]
-
-
-# DEVELOPMENT
-FROM base AS development
-# Change directory to '/app'
-WORKDIR /app
-# Copy dependency management files
-COPY package.json yarn.lock ./
-# Install dependencies
-RUN yarn install
-# NOTE: Using project files from mounted volumes
-EXPOSE 3006
-CMD [ "yarn", "dev" ]

@@ -5,11 +5,11 @@
   "author": "Citadel developers",
   "scripts": {
     "build": "tsc",
-    "tsc:watch": "tsc --watch",
-    "dev": "npm-run-all --parallel tsc:watch start:watch",
-    "lint": "xo --fix .",
-    "start": "node ./bin/www.mjs",
-    "start:watch": "nodemon ./bin/www.mjs"
+    "build:watch": "tsc --watch",
+    "start": "node --experimental-json-modules ./bin/www.mjs",
+    "start:watch": "nodemon --experimental-json-modules ./bin/www.mjs",
+    "dev": "concurrently \"npm:build:watch\" \"start:watch\"",
+    "lint": "xo --fix ."
   },
   "dependencies": {
     "@keyv/redis": "^2.2.3",
@@ -59,6 +59,7 @@
     "@types/passport-jwt": "^3.0.6",
     "@types/passport-strategy": "^0.2.35",
     "@types/semver": "^7.3.9",
+    "concurrently": "^7.0.0",
     "nodemon": "^2.0.15",
     "npm-run-all": "^4.1.5",
     "typescript": "^4.6.2",

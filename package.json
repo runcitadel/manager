@@ -8,7 +8,7 @@
     "build:watch": "tsc --watch",
     "start": "node --experimental-json-modules ./bin/www.mjs",
     "start:watch": "nodemon --experimental-json-modules ./bin/www.mjs",
-    "dev": "concurrently \"npm:build:watch\" \"start:watch\"",
+    "dev": "concurrently \"yarn:build:watch\" \"yarn:start:watch\"",
     "lint": "xo --fix ."
   },
   "dependencies": {

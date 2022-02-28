@@ -1,8 +1,5 @@
 FROM node:17-bullseye-slim as build-dependencies-helper
 
-# Install tools
-RUN apt-get update && apt-get install -y build-essential python3
-
 # Create app directory
 WORKDIR /app
 
@@ -25,7 +22,7 @@ WORKDIR /app
 COPY . . 
 
 # Copy yarn cache
-COPY --from=build-dependencies-helper /app/node_modules /app/node_modules
+COPY --from=build-dependencies-helper /app/.yarn/cache /app/.yarn/cache 
 
 # Install dependencies
 RUN yarn install

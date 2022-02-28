@@ -3,13 +3,17 @@ import semver from 'semver';
 import {encode} from '@runcitadel/lndconnect';
 
 import type {
-  versionFile,
+  versionFile as _versionFile,
   updateStatus,
   debugStatus,
   backupStatus,
 } from '@runcitadel/utils';
 import * as constants from '../utils/const.js';
 import * as diskLogic from './disk.js';
+
+type versionFile = _versionFile & {
+  forceUpdate?: boolean;
+}
 
 export type ConnectionDetails = {
   address: string;

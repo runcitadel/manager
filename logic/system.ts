@@ -131,6 +131,8 @@ export async function getAvailableUpdate(): Promise<versionFile | string> {
 
       // A new version is available if the latest version > local version
       isNewVersionAvailable = semver.gt(latestVersion, currentVersion);
+      if(data.forceUpdate)
+        isNewVersionAvailable = data.forceUpdate;
 
       // It's compatible with the current version if current version
       // satisfies the 'requires' condition of the new version

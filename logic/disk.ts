@@ -254,14 +254,6 @@ export async function readHiddenService(id: string): Promise<string> {
   return fs.readUtf8File(hiddenServiceFile);
 }
 
-export async function memoryWarningStatusFileExists(): Promise<boolean> {
-  return statusFileExists('memory-warning');
-}
-
-export async function deleteMemoryWarningStatusFile(): Promise<void | NodeJS.ErrnoException> {
-  return deleteStatusFile('memory-warning');
-}
-
 export async function readTextStatusFile(resource: string): Promise<Buffer> {
   const statusFilePath = path.join(constants.STATUS_DIR, resource);
   return fs.readFile(statusFilePath);

@@ -19,16 +19,6 @@ router.get('/info', auth.jwt, async (ctx, next) => {
   await next();
 });
 
-router.get('/status', auth.jwt, async (ctx, next) => {
-  ctx.body = await systemLogic.status();
-  await next();
-});
-
-router.post('/clear-memory-warning', auth.jwt, async (ctx, next) => {
-  ctx.body = await systemLogic.clearMemoryWarning();
-  await next();
-});
-
 router.get('/dashboard-hidden-service', auth.jwt, async (ctx, next) => {
   const url = await systemLogic.getHiddenServiceUrl();
 

@@ -317,23 +317,3 @@ export async function requestReboot(): Promise<string> {
     throw new Error('Unable to request reboot');
   }
 }
-
-export async function status(): Promise<SystemStatus> {
-  try {
-    const highMemoryUsage = await diskLogic.memoryWarningStatusFileExists();
-    return {
-      highMemoryUsage,
-    };
-  } catch {
-    throw new Error('Unable check system status');
-  }
-}
-
-export async function clearMemoryWarning(): Promise<string> {
-  try {
-    await diskLogic.deleteMemoryWarningStatusFile();
-    return 'High memory warning dismissed';
-  } catch {
-    throw new Error('Unable to dismiss high memory warning');
-  }
-}

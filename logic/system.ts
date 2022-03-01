@@ -3,17 +3,13 @@ import semver from 'semver';
 import {encode} from '@runcitadel/lndconnect';
 
 import type {
-  versionFile as _versionFile,
+  versionFile,
   updateStatus,
   debugStatus,
   backupStatus,
 } from '@runcitadel/utils';
 import * as constants from '../utils/const.js';
 import * as diskLogic from './disk.js';
-
-type versionFile = _versionFile & {
-  forceUpdate?: boolean;
-}
 
 export type ConnectionDetails = {
   address: string;
@@ -135,8 +131,6 @@ export async function getAvailableUpdate(): Promise<versionFile | string> {
 
       // A new version is available if the latest version > local version
       isNewVersionAvailable = semver.gt(latestVersion, currentVersion);
-      if(data.forceUpdate)
-        isNewVersionAvailable = data.forceUpdate;
 
       // It's compatible with the current version if current version
       // satisfies the 'requires' condition of the new version

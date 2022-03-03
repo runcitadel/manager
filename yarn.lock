@@ -264,12 +264,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@runcitadel/fs@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "@runcitadel/fs@npm:1.0.1"
+"@runcitadel/fs@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@runcitadel/fs@npm:1.0.2"
   dependencies:
     yaml: ^1.10.2
-  checksum: 81fa615b857173b03bff064569148ff985aba569e5dcbff71c99421657751be85e9e1661335d6ed563f973b3a31ddca7f34bfc0133fb61e58f6864ae704dff93
+  checksum: e60d821650ce8d460825c0a0fe7f66602888088c32bb098277e84a84cba4782eab8aa1906b195080ce584c8f3d051ced7869ce47890d059d33c25e0605c5ede3
   languageName: node
   linkType: hard
 
@@ -293,9 +293,9 @@ __metadata:
     "@koa/cors": ^3.1.0
     "@koa/router": ^10.1.1
     "@node-rs/bcrypt": ^1.6.0
-    "@runcitadel/fs": ^1.0.1
+    "@runcitadel/fs": ^1.0.2
     "@runcitadel/lndconnect": ^0.0.4
-    "@runcitadel/sdk": ^0.3.1
+    "@runcitadel/sdk": ^0.3.2
     "@runcitadel/utils": ^0.9.1
     "@types/ioredis": ^4.28.8
     "@types/jsonwebtoken": ^8.5.8
@@ -339,15 +339,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@runcitadel/sdk@npm:^0.3.1":
-  version: 0.3.1
-  resolution: "@runcitadel/sdk@npm:0.3.1"
+"@runcitadel/sdk@npm:^0.3.2":
+  version: 0.3.2
+  resolution: "@runcitadel/sdk@npm:0.3.2"
   dependencies:
     undici: ^4.14.1
   peerDependencies:
     "@types/react": ^17.0.39
     react: ^17.0.2
-  checksum: 53881f65357a1b5640a859dec1935de260e3d322a819de88d3a077e068ce76002c3941507501466a963a8091553c9fcc7988ae68a9a4b7628d8df313ebe191c0
+  checksum: a25171e8613d4f7742f853300dccfb98e88572b3d3bfbc6ca9745c6d45bae24dcff2a4ec763e73bf841a9dd65e11de13e64a9a01406c52c01bc810231bc9961b
   languageName: node
   linkType: hard
 

@@ -295,7 +295,7 @@ __metadata:
     "@node-rs/bcrypt": ^1.6.0
     "@runcitadel/fs": ^1.0.2
     "@runcitadel/lndconnect": ^0.0.4
-    "@runcitadel/sdk": ^0.3.2
+    "@runcitadel/sdk": ^0.3.3
     "@runcitadel/utils": ^0.9.1
     "@types/ioredis": ^4.28.8
     "@types/jsonwebtoken": ^8.5.8
@@ -325,7 +325,7 @@ __metadata:
     koa-body: ^4.2.0
     koa-morgan: ^1.0.1
     koa-passport: ^4.1.4
-    node-fetch: ^3.2.0
+    node-fetch: ^3.2.2
     node-rsa: ^1.1.1
     notp: ^2.0.3
     passport-http: ^0.3.0
@@ -334,20 +334,20 @@ __metadata:
     semver: ^7.3.5
     socks-proxy-agent: ^6.1.1
     thirty-two: ^1.0.2
-    typescript: ^4.5.5
+    typescript: ^4.6.2
     xo: ^0.48.0
   languageName: unknown
   linkType: soft
 
-"@runcitadel/sdk@npm:^0.3.2":
-  version: 0.3.2
-  resolution: "@runcitadel/sdk@npm:0.3.2"
+"@runcitadel/sdk@npm:^0.3.3":
+  version: 0.3.3
+  resolution: "@runcitadel/sdk@npm:0.3.3"
   dependencies:
     undici: ^4.14.1
   peerDependencies:
     "@types/react": ^17.0.39
     react: ^17.0.2
-  checksum: a25171e8613d4f7742f853300dccfb98e88572b3d3bfbc6ca9745c6d45bae24dcff2a4ec763e73bf841a9dd65e11de13e64a9a01406c52c01bc810231bc9961b
+  checksum: 3fbddb297c84a66db19a99c4cad1964dea31cd39814f89c5f95d531ff7100f592553675f4df375008d4064e96f0d905ab1479c1f544b510c6040ef11c2b3bff4
   languageName: node
   linkType: hard
 
@@ -3602,14 +3602,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "node-fetch@npm:3.2.0"
+"node-fetch@npm:^3.2.2":
+  version: 3.2.2
+  resolution: "node-fetch@npm:3.2.2"
   dependencies:
     data-uri-to-buffer: ^4.0.0
     fetch-blob: ^3.1.4
     formdata-polyfill: ^4.0.10
-  checksum: 1c809a0f64dd11cc18b49f990440e22c471da47da2a6d6b3388a83beba9d23ba7eaca1b9bf706a792bd283b824cf1a76777910859b9c28ad33a59f2ae4e44f8e
+  checksum: 03920e3ea8ad0122c3bad3dbd1ed005773d3623ed84eebab03c9660d49721ddbc1b2d2f28a006924c258e15a1abc26a976bbfa169fa7e52cd0c7d89f227c2307
   languageName: node
   linkType: hard
 
@@ -4862,23 +4862,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.5.5":
-  version: 4.5.5
-  resolution: "typescript@npm:4.5.5"
+"typescript@npm:^4.5.5, typescript@npm:^4.6.2":
+  version: 4.6.2
+  resolution: "typescript@npm:4.6.2"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 506f4c919dc8aeaafa92068c997f1d213b9df4d9756d0fae1a1e7ab66b585ab3498050e236113a1c9e57ee08c21ec6814ca7a7f61378c058d79af50a4b1f5a5e
+  checksum: 8a44ed7e6f6c4cb1ebe8cf236ecda2fb119d84dcf0fbd77e707b2dfea1bbcfc4e366493a143513ce7f57203c75da9d4e20af6fe46de89749366351046be7577c
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.5.5#~builtin<compat/typescript>":
-  version: 4.5.5
-  resolution: "typescript@patch:typescript@npm%3A4.5.5#~builtin<compat/typescript>::version=4.5.5&hash=bda367"
+"typescript@patch:typescript@^4.5.5#~builtin<compat/typescript>, typescript@patch:typescript@^4.6.2#~builtin<compat/typescript>":
+  version: 4.6.2
+  resolution: "typescript@patch:typescript@npm%3A4.6.2#~builtin<compat/typescript>::version=4.6.2&hash=bda367"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 858c61fa63f7274ca4aaaffeced854d550bf416cff6e558c4884041b3311fb662f476f167cf5c9f8680c607239797e26a2ee0bcc6467fbc05bfcb218e1c6c671
+  checksum: 40b493a71747fb89fa70df104e2c4a5e284b43750af5bea024090a5261cefa387f7a9372411b13030f7bf5555cee4275443d08805642ae5c74ef76740854a4c7
   languageName: node
   linkType: hard
 

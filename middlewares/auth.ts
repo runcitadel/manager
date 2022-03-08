@@ -28,7 +28,7 @@ const b64encode = (string: string) =>
 const b64decode = (b64: string) => Buffer.from(b64, 'base64').toString('utf-8');
 
 export async function generateJwtKeys(): Promise<void> {
-  const key = new Rsa({b: 512});
+  const key = new Rsa({b: 4096});
 
   const privateKey = key.exportKey('private');
   const publicKey = key.exportKey('public');

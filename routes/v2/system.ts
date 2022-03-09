@@ -3,6 +3,8 @@ import {errorHandler} from '@runcitadel/utils';
 
 import * as systemLogic from '../../logic/system.js';
 import * as diskLogic from '../../logic/disk.js';
+import * as lightningService from '../../services/lightning-api.js';
+import {refresh as refreshJwt} from '../../logic/auth.js';
 
 import * as auth from '../../middlewares/auth.js';
 
@@ -43,6 +45,12 @@ router.get('/bitcoin-rpc-connection-details', auth.jwt, async (ctx, next) => {
 
 router.get('/lndconnect-urls', auth.jwt, async (ctx, next) => {
   ctx.body = await systemLogic.getLndConnectUrls();
+  await next();
+});
+
+router.get('/lnconnect-urls', auth.jwt, async (ctx, next) => {
+  const jwt = await refreshJwt(ctx.state.user as diskLogic.userFile);
+  ctx.body = await systemLogic.getLnConnectUrls(await lightningService.getImplementation(jwt) as "lnd" | "c-lightning");
   await next();
 });
 

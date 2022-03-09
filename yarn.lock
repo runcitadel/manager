@@ -273,15 +273,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@runcitadel/lndconnect@npm:^0.0.4":
-  version: 0.0.4
-  resolution: "@runcitadel/lndconnect@npm:0.0.4"
+"@runcitadel/lndconnect@npm:^0.0.55":
+  version: 0.0.55
+  resolution: "@runcitadel/lndconnect@npm:0.0.55"
   dependencies:
     base64url: ^3.0.1
     decode-uri-component: ^0.2.0
     strict-uri-encode: ^2.0.0
     url: ^0.11.0
-  checksum: 6738332c0acda776e88bb0496b258b78de0faa590f35c8da1aa90e717d6a2a8ea38734e9a4fad7f0044934122bec9dd41682ddfcc1320779c6a7e2c3ee5500c8
+  checksum: 61e6c3b7201feb9ba68f6291292674b39f5d64567faffc0a5ad6ccb380aa7a5e327b27957d1add0ad8a82ec113d15f3ff3dcf2070e3ae2cece90e9509f6a3a6e
   languageName: node
   linkType: hard
 
@@ -294,7 +294,7 @@ __metadata:
     "@koa/router": ^10.1.1
     "@node-rs/bcrypt": ^1.6.0
     "@runcitadel/fs": ^1.0.2
-    "@runcitadel/lndconnect": ^0.0.4
+    "@runcitadel/lndconnect": ^0.0.55
     "@runcitadel/sdk": ^0.3.3
     "@runcitadel/utils": ^0.9.1
     "@types/ioredis": ^4.28.8

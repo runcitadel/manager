@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import semver from 'semver';
-import {encode} from '@runcitadel/lndconnect';
+import {encode, UrlVersion} from '@runcitadel/lndconnect';
 
 import type {
   versionFile,
@@ -273,6 +273,83 @@ export async function getLndConnectUrls(): Promise<LndConnectionDetails> {
     host: grpcLocalHost,
     cert,
     macaroon,
+  });
+
+  return {
+    restTor,
+    restLocal,
+    grpcTor,
+    grpcLocal,
+  };
+}
+
+export async function getLnConnectUrls(lightningImplementation: "lnd" | "c-lightning" | "c-lightning-rest"): Promise<LndConnectionDetails> {
+  let cert;
+  try {
+    cert = await diskLogic.readLndCert();
+  } catch {
+    throw new Error('Unable to read lnd cert file');
+  }
+
+  let macaroon: string;
+  try {
+    macaroon = (await diskLogic.readLndAdminMacaroon()).toString('hex');
+  } catch {
+    throw new Error('Unable to read lnd macaroon file');
+  }
+
+  let restTorHost;
+  try {
+    restTorHost = await diskLogic.readLndRestHiddenService();
+    restTorHost += ':8080';
+  } catch {
+    throw new Error('Unable to read lnd REST hostname file');
+  }
+
+  
+  if(lightningImplementation === "c-lightning")
+    lightningImplementation = "c-lightning-rest";
+  
+  const restTor = encode({
+    host: restTorHost,
+    cert,
+    macaroon,
+    server: lightningImplementation,
+    version: UrlVersion.LNCONNECT_UNIVERSAL_V0,
+  });
+
+  let grpcTorHost;
+  try {
+    grpcTorHost = await diskLogic.readLndGrpcHiddenService();
+    grpcTorHost += ':10009';
+  } catch {
+    throw new Error('Unable to read lnd gRPC hostname file');
+  }
+
+  const grpcTor = encode({
+    host: grpcTorHost,
+    cert,
+    macaroon,
+    server: lightningImplementation,
+    version: UrlVersion.LNCONNECT_UNIVERSAL_V0,
+  });
+
+  const restLocalHost = `${constants.DEVICE_HOSTNAME}:8080`;
+  const restLocal = encode({
+    host: restLocalHost,
+    cert,
+    macaroon,
+    server: lightningImplementation,
+    version: UrlVersion.LNCONNECT_UNIVERSAL_V0,
+  });
+
+  const grpcLocalHost = `${constants.DEVICE_HOSTNAME}:10009`;
+  const grpcLocal = encode({
+    host: grpcLocalHost,
+    cert,
+    macaroon,
+    server: lightningImplementation,
+    version: UrlVersion.LNCONNECT_UNIVERSAL_V0,
   });
 
   return {

@@ -1,4 +1,3 @@
-# FROM node:16-alpine@sha256:2c6c59cf4d34d4f937ddfcf33bab9d8bbad8658d1b9de7b97622566a52167f2b as base
 FROM node:17-alpine@sha256:250e9a093b861c330be2f4d1d224712d4e49290eeffc287ad190b120c1fe9d9f as base
 
 
@@ -36,7 +35,7 @@ WORKDIR /app
 # The current working directory
 COPY . .
 # Copy yarn cache
-COPY --from=build-dependencies-helper /app/.yarn/cache /app/.yarn/cache 
+COPY --from=dependencies --chown=node:node /app/.yarn/cache /app/.yarn/cache 
 # Install dependencies
 RUN yarn install
 # Build TS code
@@ -50,8 +49,8 @@ FROM base AS production
 # Create app directory
 WORKDIR /app
 # Copy built code from build stage to '/app' directory
-COPY --from=builder /app /app
+COPY --from=builder --chown=node:node /app /app
 # Copy node_modules
-COPY --from=dependencies /app/node_modules /app/node_modules
+COPY --from=dependencies --chown=node:node /app/node_modules /app/node_modules
 EXPOSE 3006
-CMD [ "node", "--experimental-json-modules", "bin/www.mjs" ]
+# Start with ./start.sh

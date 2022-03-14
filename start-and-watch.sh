@@ -6,5 +6,5 @@ set -e
 chown -R node:node /jwt-public-key
 chown -R node:node /jwt-private-key
 
-# start server as user "node"
-su -p node -c 'node --experimental-json-modules /app/bin/www.mjs'
+# start server in watch mode
+su -p node -c 'concurrently npm:build:watch nodemon --experimental-json-modules bin/www.mjs'

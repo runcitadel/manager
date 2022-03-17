@@ -58,6 +58,7 @@ router.post(
       // Start change password process in the background and immediately return
       await authLogic.changePassword(currentPassword, newPassword);
       ctx.status = STATUS_CODES.OK;
+      ctx.body = status;
     } catch (error: unknown) {
       ctx.throw(typeof error === 'string' ? error : JSON.stringify(error));
     }

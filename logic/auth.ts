@@ -242,9 +242,7 @@ export async function seed(user: UserInfo): Promise<string[]> {
 export async function register(
   user: UserInfo,
   seed: string[],
-): Promise<{
-  jwt: string;
-}> {
+): Promise<string> {
   if (await isRegistered()) {
     throw new Error('User already exists');
   }
@@ -304,7 +302,7 @@ export async function register(
 
   await diskLogic.writeSignalFile('app-update');
   // Return token
-  return {jwt};
+  return jwt;
 }
 
 // Generate and return a new jwt token.

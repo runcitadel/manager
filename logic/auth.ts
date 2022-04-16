@@ -26,12 +26,12 @@ export type UserInfo = {
   installedApps?: string[];
 };
 
-type userSettings = {
+type UserSettings = {
   twoFactorAuth: boolean;
   twoFactorKey: string | false;
 };
 
-type userFile = {
+type UserFile = {
   /** The user's name */
   name: string;
   /** The users password, hashed by bcrypt */
@@ -41,7 +41,7 @@ type userFile = {
   /** The list of IDs of installed apps */
   installedApps?: string[];
   /** User settings */
-  settings?: userSettings;
+  settings?: UserSettings;
 };
 
 export type ChangePasswordStatusType = {
@@ -105,7 +105,7 @@ export async function changePassword(
     try {
       const futureUser = await migrateAdminLegacyUser(user.name, newPassword);
       await futureUser.changePassword(newPassword);
-    } catch (error) {
+    } catch (error: unknown) {
       console.warn(error);
     }
   } catch {
@@ -150,7 +150,8 @@ export async function deriveSeed(
     return;
   }
 
-  const mnemonic = (await seed(user)).join(' ');
+  const userSeed = await seed(user);
+  const mnemonic = userSeed.join(' ');
   const {entropy} = CipherSeed.fromMnemonic(mnemonic);
   const generatedSeed = crypto
     .createHmac('sha256', entropy)
@@ -176,7 +177,7 @@ export async function deriveCitadelSeed(
   return diskLogic.writeSeedFile(generatedSeed);
 }
 
-export async function generateTmpJWT(): Promise<string> {
+export async function generateTemporaryJwt(): Promise<string> {
   try {
     return await generateJwt('temporary');
   } catch {
@@ -201,7 +202,7 @@ export async function login(user: UserInfo): Promise<string> {
   }
 }
 
-export async function getInfo(): Promise<userFile> {
+export async function getInfo(): Promise<UserFile> {
   try {
     const user = await diskLogic.readUserFile();
 

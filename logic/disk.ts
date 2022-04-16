@@ -12,12 +12,12 @@ import type {
 import * as constants from '../utils/const.js';
 import type {App} from './apps.js';
 
-type userSettings = {
+type UserSettings = {
   twoFactorAuth: boolean;
   twoFactorKey: string | false;
 };
 
-export type userFile = {
+export type UserFile = {
   /** The user's name */
   name: string;
   /** The users password, hashed by bcrypt */
@@ -27,7 +27,7 @@ export type userFile = {
   /** The list of IDs of installed apps */
   installedApps?: string[];
   /** User settings */
-  settings?: userSettings;
+  settings?: UserSettings;
 };
 
 export async function deleteUserFile(): Promise<void> {
@@ -69,20 +69,18 @@ export async function is2faEnabled(): Promise<boolean> {
   return userFile.settings?.twoFactorAuth ?? false;
 }
 
-export async function readUserFile(): Promise<userFile> {
-  const defaultProperties: userFile = {
+export async function readUserFile(): Promise<UserFile> {
+  const defaultProperties: UserFile = {
     name: '',
     password: '',
     seed: '',
     installedApps: [],
   };
-  const userFile: userFile = (await fs.readJSONFile(
-    constants.USER_FILE,
-  )) as userFile;
+  const userFile = (await fs.readJSONFile(constants.USER_FILE)) as UserFile;
   return {...defaultProperties, ...userFile};
 }
 
-export async function writeUserFile(json: userFile): Promise<void> {
+export async function writeUserFile(json: UserFile): Promise<void> {
   await fs.writeJsonFile(constants.USER_FILE, json);
 }
 
@@ -281,4 +279,3 @@ export async function writeJsonStatusFile(
   await fs.touch(statusFilePath);
   return fs.writeJsonFile(statusFilePath, data);
 }
-/* eslint-enable import/namespace */

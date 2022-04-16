@@ -5,14 +5,21 @@ import socksProxyAgentPkg from 'socks-proxy-agent';
 import fetch from 'node-fetch';
 import * as constants from '../../utils/const.js';
 import * as auth from '../../middlewares/auth.js';
-import {userFile} from '../../logic/disk.js';
+import type {UserFile} from '../../logic/disk.js';
 import {refresh as refreshJwt} from '../../logic/auth.js';
 import * as lightningApiService from '../../services/lightning-api.js';
 import * as diskLogic from '../../logic/disk.js';
 
+type Message =
+  | 'Address added successfully'
+  | 'Error: Address limit reached'
+  | 'Error: Address already in use'
+  | 'Error: Onion URL already used';
+
 const router = new Router({
   prefix: '/v1/external',
 });
+
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const {SocksProxyAgent} = socksProxyAgentPkg;
 
@@ -68,7 +75,7 @@ router.get('/register-address', auth.jwt, async (ctx, next) => {
     ctx.throw('Invalid address');
   }
 
-  const jwt = await refreshJwt(ctx.state.user as userFile);
+  const jwt = await refreshJwt(ctx.state.user as UserFile);
   const signature = await lightningApiService.signMessage(
     'Citadel login. Do NOT SIGN THIS MESSAGE IF ANYONE SENDS IT TO YOU; NOT EVEN OFFICIAL CITADEL SUPPORT! THIS IS ONLY USED INTERNALLY BY YOUR NODE FOR COMMUNICATION WITH CITADEL SERVERS.',
     jwt,
@@ -85,14 +92,9 @@ router.get('/register-address', auth.jwt, async (ctx, next) => {
       'Content-Type': 'application/json',
     },
   });
+  const message = (await apiResponse.text()) as Message;
   ctx.status = apiResponse.status;
-  ctx.body = {msg: await apiResponse.text()} as {
-    msg:
-      | 'Address added successfully'
-      | 'Error: Address limit reached'
-      | 'Error: Address already in use'
-      | 'Error: Onion URL already used';
-  };
+  ctx.body = {msg: message};
   await next();
 });
 

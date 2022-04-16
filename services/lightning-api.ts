@@ -23,5 +23,6 @@ export async function signMessage(
 
 export async function getImplementation(jwt: string) {
   middleware.jwt = jwt;
-  return (await middleware.lnd.info.version()).implementation.toLowerCase();
+  const version = await middleware.lnd.info.version();
+  return version.implementation.toLowerCase();
 }

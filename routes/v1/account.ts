@@ -107,7 +107,7 @@ router.post(
 
     try {
       await migrateAdminLegacyUser(user.name, user.plainTextPassword!);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(error);
     }
 
@@ -152,16 +152,16 @@ router.post('/refresh', auth.jwt, async (ctx, next) => {
 
 router.get('/totp/setup', auth.jwt, async (ctx, next) => {
   const info = await authLogic.getInfo();
-  const key = await authLogic.setupTotp(
-    info.settings?.twoFactorKey || undefined,
-  );
-
+  const twoFactorKey = info.settings?.twoFactorKey
+    ? info.settings?.twoFactorKey
+    : undefined;
+  const key = await authLogic.setupTotp(twoFactorKey);
   const encodedKey = authLogic.encodeKey(key);
   ctx.body = {key: encodedKey.toString()};
   await next();
 });
 
-router.post('/totp/enable', auth.jwt, async (ctx, next) => {
+router.post('/totp/enable', auth.jwt, async (ctx) => {
   const info = await authLogic.getInfo();
 
   if (info.settings?.twoFactorKey && ctx.request.body.authenticatorToken) {
@@ -171,7 +171,7 @@ router.post('/totp/enable', auth.jwt, async (ctx, next) => {
     const vres = notp.totp.verify(ctx.request.body.authenticatorToken, key);
 
     if (vres && vres.delta === 0) {
-      authLogic.enableTotp(key);
+      await authLogic.enableTotp(key);
       ctx.body = {success: true};
     } else {
       ctx.throw('TOTP token invalid');
@@ -205,8 +205,8 @@ router.post('/totp/disable', auth.jwt, async (ctx, next) => {
 
 // Returns the current status of TOTP.
 router.get('/totp/status', async (ctx, next) => {
-  const status =
-    (await diskLogic.readUserFile()).settings?.twoFactorAuth ?? false;
+  const userFile = await diskLogic.readUserFile();
+  const status = userFile.settings?.twoFactorAuth ?? false;
   ctx.body = {totpEnabled: status};
   await next();
 });

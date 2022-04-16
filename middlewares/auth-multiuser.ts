@@ -8,16 +8,12 @@ export async function convertRequestBodyToBasicAuth(
   ctx: Context,
   next: Next,
 ): Promise<void> {
-  if (
-    ctx.request.body.username &&
-    ctx.request.body.password &&
-    !ctx.request.headers.authorization
-  ) {
+  const username = ctx.request.body.username as string | undefined;
+  const password = ctx.request.body.password as string | undefined;
+
+  if (username && password && !ctx.request.headers.authorization) {
     ctx.request.headers.authorization =
-      'Basic ' +
-      Buffer.from(
-        `${ctx.request.body.username}:${ctx.request.body.password}`,
-      ).toString();
+      'Basic ' + Buffer.from(`${username}:${password}`).toString();
   }
 
   await next();

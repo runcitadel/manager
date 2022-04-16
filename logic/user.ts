@@ -113,7 +113,8 @@ export default class User {
   constructor(public id: string) {}
 
   async hasPermission(permission: Permission): Promise<boolean> {
-    return (await this.getData()).permissions.includes(permission);
+    const userData = await this.getData();
+    return userData.permissions.includes(permission);
   }
 
   /**
@@ -122,7 +123,8 @@ export default class User {
   async getData(): Promise<UserData> {
     const data = await keyv.get(this.id);
     if (!data) throw new Error('User not found');
-    return (await JSON.parse(data)) as UserData;
+    const userData = (await JSON.parse(data)) as UserData;
+    return userData;
   }
 
   /**
@@ -157,12 +159,14 @@ export default class User {
   }
 
   async #setProperty(property: string, value: string | number) {
-    const data = {...(await this.getData()), [property]: value};
+    const userData = await this.getData();
+    const data = {...userData, [property]: value};
     await this.#setData(data);
   }
 
   async getName() {
-    return (await this.getData()).name;
+    const userData = await this.getData();
+    return userData.name;
   }
 
   async setName(name: string) {
@@ -170,7 +174,8 @@ export default class User {
   }
 
   async getOnChainBalance() {
-    return (await this.getData()).onChainBalance;
+    const userData = await this.getData();
+    return userData.onChainBalance;
   }
 
   async setOnChainBalance(balance: string | number | bigint) {
@@ -178,25 +183,24 @@ export default class User {
   }
 
   async incrementOnChainBalance(amount: string | number | bigint) {
+    const userData = await this.getData();
     await this.#setProperty(
       'onChainBalance',
-      (
-        BigInt((await this.getData()).onChainBalance) + BigInt(amount)
-      ).toString(),
+      (BigInt(userData.onChainBalance) + BigInt(amount)).toString(),
     );
   }
 
   async decrementOnChainBalance(amount: string | number | bigint) {
+    const userData = await this.getData();
     await this.#setProperty(
       'onChainBalance',
-      (
-        BigInt((await this.getData()).onChainBalance) - BigInt(amount)
-      ).toString(),
+      (BigInt(userData.onChainBalance) - BigInt(amount)).toString(),
     );
   }
 
   async getLightningBalance() {
-    return (await this.getData()).lightningBalance;
+    const userData = await this.getData();
+    return userData.lightningBalance;
   }
 
   async setLightningBalance(balance: string | number | bigint) {
@@ -204,51 +208,51 @@ export default class User {
   }
 
   async incrementLightningBalance(amount: string | number | bigint) {
+    const userData = await this.getData();
     await this.#setProperty(
       'lightningBalance',
-      (
-        BigInt((await this.getData()).lightningBalance) + BigInt(amount)
-      ).toString(),
+      (BigInt(userData.lightningBalance) + BigInt(amount)).toString(),
     );
   }
 
   async decrementLightningBalance(amount: string | number | bigint) {
+    const userData = await this.getData();
     await this.#setProperty(
       'lightningBalance',
-      (
-        BigInt((await this.getData()).lightningBalance) - BigInt(amount)
-      ).toString(),
+      (BigInt(userData.lightningBalance) - BigInt(amount)).toString(),
     );
   }
 
   async addPermission(permission: Permission) {
+    const userData = await this.getData();
     const data = {
-      ...(await this.getData()),
-      permissions: [...(await this.getData()).permissions, permission],
+      ...userData,
+      permissions: [...userData.permissions, permission],
     };
     await this.#setData(data);
   }
 
   async removePermission(permission: Permission) {
+    const userData = await this.getData();
     const data = {
-      ...(await this.getData()),
-      permissions: (await this.getData()).permissions.filter(
-        (p) => p !== permission,
-      ),
+      ...userData,
+      permissions: userData.permissions.filter((p) => p !== permission),
     };
     await this.#setData(data);
   }
 
   async changePassword(newPassword: string) {
+    const userData = await this.getData();
     const data = {
-      ...(await this.getData()),
+      ...userData,
       password: await bcrypt.hash(newPassword, 10),
     };
     await this.#setData(data);
   }
 
   async validatePassword(password: string): Promise<boolean> {
-    return bcrypt.verify(password, (await this.getData()).password);
+    const userData = await this.getData();
+    return bcrypt.verify(password, userData.password);
   }
 }
 

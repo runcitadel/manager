@@ -1,4 +1,3 @@
-/* eslint-disable import/namespace */
 import * as path from 'node:path';
 
 import {Buffer} from 'node:buffer';
@@ -101,24 +100,24 @@ export function seedFileExists(): boolean {
   return fs.existsSync(constants.SEED_FILE);
 }
 
-export function readElectrumHiddenService(): Promise<string> {
-  return readHiddenService("electrum");
+export async function readElectrumHiddenService(): Promise<string> {
+  return readHiddenService('electrum');
 }
 
-export function readBitcoinP2pHiddenService(): Promise<string> {
-  return readHiddenService("bitcoin-p2p");
+export async function readBitcoinP2pHiddenService(): Promise<string> {
+  return readHiddenService('bitcoin-p2p');
 }
 
-export function readBitcoinRpcHiddenService(): Promise<string> {
-  return readHiddenService("bitcoin-rpc");
+export async function readBitcoinRpcHiddenService(): Promise<string> {
+  return readHiddenService('bitcoin-rpc');
 }
 
 export async function readLndRestHiddenService(): Promise<string> {
-  return readHiddenService("lnd-rest");
+  return readHiddenService('lnd-rest');
 }
 
 export async function readLndGrpcHiddenService(): Promise<string> {
-  return readHiddenService("lnd-grpc");
+  return readHiddenService('lnd-grpc');
 }
 
 export async function readLndCert(): Promise<string> {
@@ -133,7 +132,7 @@ export async function readVersionFile(): Promise<versionFile> {
   return (await fs.readJSONFile(constants.VERSION_FILE)) as versionFile;
 }
 
-export function readUpdateStatusFile(): Promise<updateStatus> {
+export async function readUpdateStatusFile(): Promise<updateStatus> {
   return readJsonStatusFile<updateStatus>('update');
 }
 
@@ -153,7 +152,7 @@ export async function writeUpdateSignalFile(): Promise<void> {
   await writeSignalFile('update');
 }
 
-export function readBackupStatusFile(): Promise<backupStatus> {
+export async function readBackupStatusFile(): Promise<backupStatus> {
   return readJsonStatusFile<backupStatus>('backup');
 }
 
@@ -181,7 +180,7 @@ export async function reboot(): Promise<void> {
   await writeSignalFile('reboot');
 }
 
-export function readDebugStatusFile(): Promise<debugStatus> {
+export async function readDebugStatusFile(): Promise<debugStatus> {
   return readJsonStatusFile<debugStatus>('debug');
 }
 
@@ -209,7 +208,9 @@ export async function writeStatusFile(
   return fs.ensureWriteFile(statusFilePath, contents);
 }
 
-export async function readStatusFile<FileType extends unknown = unknown>(statusFile: string): Promise<FileType> {
+export async function readStatusFile<FileType = unknown>(
+  statusFile: string,
+): Promise<FileType> {
   if (!/^[\w-]+$/.test(statusFile)) {
     throw new Error('Invalid status file characters');
   }
@@ -259,7 +260,9 @@ export async function readTextStatusFile(resource: string): Promise<Buffer> {
   return fs.readFile(statusFilePath);
 }
 
-export async function readJsonStatusFile<FileType extends unknown = unknown>(resource: string): Promise<FileType> {
+export async function readJsonStatusFile<FileType = unknown>(
+  resource: string,
+): Promise<FileType> {
   const statusFilePath = path.join(
     constants.STATUS_DIR,
     `${resource}-status.json`,

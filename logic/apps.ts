@@ -1,5 +1,5 @@
-import * as diskLogic from './disk.js';
 import * as lightningService from '../services/lightning-api.js';
+import * as diskLogic from './disk.js';
 
 export type App = {
   id: string;
@@ -37,12 +37,17 @@ export async function get(query: AppQuery, jwt: string): Promise<App[]> {
       } catch {
         app.hiddenService = '';
       }
-      if((app.dependencies.includes("lnd") && lightningImplementation === "c-lightning")
-        || (app.dependencies.includes("c-lightning") && lightningImplementation === "lnd")) {
-          app.compatible = false;
-        } else {
-          app.compatible = true;
-        }
+
+      if (
+        (app.dependencies.includes('lnd') &&
+          lightningImplementation === 'c-lightning') ||
+        (app.dependencies.includes('c-lightning') &&
+          lightningImplementation === 'lnd')
+      ) {
+        app.compatible = false;
+      } else {
+        app.compatible = true;
+      }
     }),
   );
 
@@ -100,6 +105,6 @@ export async function update(id: string): Promise<void> {
   }
 }
 
-export function getAvailableUpdates(): Promise<string[]> {
-  return diskLogic.readJsonStatusFile<string[]>("app-updates");
+export async function getAvailableUpdates(): Promise<string[]> {
+  return diskLogic.readJsonStatusFile<string[]>('app-updates');
 }

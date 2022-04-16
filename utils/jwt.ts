@@ -8,29 +8,33 @@ const {sign, verify} = jwt;
 export async function getIdFromJwt(payload: string): Promise<string> {
   const pubkey = await diskLogic.readJwtPublicKeyFile();
   return new Promise((resolve, reject) => {
-    verify(payload, pubkey, (error: VerifyErrors | null, decoded: unknown) => {
-      if (error) {
-        reject(`Invalid JWT: ${JSON.stringify(error)}`);
-      } else {
-        // Make sure decoded exists and is an object and id is defined and is a string
-        if (
-          typeof decoded === 'object' &&
-          decoded !== null &&
-          (decoded as {id: unknown}).id &&
-          typeof (decoded as {id: unknown}).id === 'string'
-        ) {
-          resolve((decoded as {id: string}).id);
+    verify(
+      payload,
+      pubkey,
+      (error: VerifyErrors | undefined, decoded: unknown) => {
+        if (error) {
+          reject(`Invalid JWT: ${JSON.stringify(error)}`);
         } else {
-          reject('Invalid JWT');
+          // Make sure decoded exists and is an object and id is defined and is a string
+          if (
+            typeof decoded === 'object' &&
+            decoded !== null &&
+            (decoded as {id: unknown}).id &&
+            typeof (decoded as {id: unknown}).id === 'string'
+          ) {
+            resolve((decoded as {id: string}).id);
+          } else {
+            reject('Invalid JWT');
+          }
         }
-      }
-    });
+      },
+    );
   });
 }
 
 async function isValidJwt(payload: string, pubkey: string): Promise<boolean> {
   return new Promise((resolve) => {
-    verify(payload, pubkey, (error: VerifyErrors | null) => {
+    verify(payload, pubkey, (error: VerifyErrors | undefined) => {
       if (error) {
         resolve(false);
       } else {
@@ -56,7 +60,7 @@ export async function generateJwt(account: string): Promise<string> {
   });
 
   if (!(await isValidJwt(token, jwtPubKey))) {
-    return Promise.reject(new Error('Error generating JWT token.'));
+    throw new Error('Error generating JWT token.');
   }
 
   return token;

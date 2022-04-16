@@ -50,7 +50,9 @@ router.get('/lndconnect-urls', auth.jwt, async (ctx, next) => {
 
 router.get('/lnconnect-urls', auth.jwt, async (ctx, next) => {
   const jwt = await refreshJwt(ctx.state.user as diskLogic.userFile);
-  ctx.body = await systemLogic.getLnConnectUrls(await lightningService.getImplementation(jwt) as "lnd" | "c-lightning");
+  ctx.body = await systemLogic.getLnConnectUrls(
+    (await lightningService.getImplementation(jwt)) as 'lnd' | 'c-lightning',
+  );
   await next();
 });
 

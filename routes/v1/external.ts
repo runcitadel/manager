@@ -62,7 +62,7 @@ router.get('/price', auth.jwt, async (ctx, next) => {
 router.get('/register-address', auth.jwt, async (ctx, next) => {
   const address = ctx.request.query.address as string;
   const userFile = await diskLogic.readUserFile();
-  if(!userFile.installedApps?.includes('lnme'))
+  if (!userFile.installedApps?.includes('lnme'))
     ctx.throw('LnMe is not installed');
   if (!address) {
     ctx.throw('Invalid address');
@@ -82,7 +82,7 @@ router.get('/register-address', auth.jwt, async (ctx, next) => {
       onionUrl: await diskLogic.readHiddenService('app-lnme'),
     }),
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   });
   ctx.status = apiResponse.status;

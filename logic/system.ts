@@ -283,7 +283,9 @@ export async function getLndConnectUrls(): Promise<LndConnectionDetails> {
   };
 }
 
-export async function getLnConnectUrls(lightningImplementation: "lnd" | "c-lightning" | "c-lightning-rest"): Promise<LndConnectionDetails> {
+export async function getLnConnectUrls(
+  lightningImplementation: 'lnd' | 'c-lightning' | 'c-lightning-rest',
+): Promise<LndConnectionDetails> {
   let cert;
   try {
     cert = await diskLogic.readLndCert();
@@ -306,10 +308,9 @@ export async function getLnConnectUrls(lightningImplementation: "lnd" | "c-light
     throw new Error('Unable to read lnd REST hostname file');
   }
 
-  
-  if(lightningImplementation === "c-lightning")
-    lightningImplementation = "c-lightning-rest";
-  
+  if (lightningImplementation === 'c-lightning')
+    lightningImplementation = 'c-lightning-rest';
+
   const restTor = encode({
     host: restTorHost,
     cert,

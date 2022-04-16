@@ -13,7 +13,7 @@ export async function initializeWallet(
   await middleware.lnd.wallet.init(seed);
 }
 
-export function signMessage(
+export async function signMessage(
   message: string,
   jwt: string,
 ): Promise<string> {

@@ -17,7 +17,7 @@ router.get('/', auth.jwt, async (ctx, next) => {
   const query = {
     installed: ctx.request.query.installed === '1',
   };
-  const jwt = await refreshJwt(ctx.state.user as diskLogic.userFile);
+  const jwt = await refreshJwt(ctx.state.user as diskLogic.UserFile);
   const apps = await appsLogic.get(query, jwt);
   ctx.body = apps;
   await next();

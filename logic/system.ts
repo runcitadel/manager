@@ -53,7 +53,8 @@ export async function getHiddenServiceUrl(): Promise<string> {
 
 export async function getElectrumConnectionDetails(): Promise<ConnectionDetails> {
   try {
-    const address = (await diskLogic.readElectrumHiddenService()).trim();
+    const addressUnformatted = await diskLogic.readElectrumHiddenService();
+    const address = addressUnformatted.trim();
     const port = constants.ELECTRUM_PORT;
     const connectionString = `${address}:${port}:t`;
     return {
@@ -228,7 +229,8 @@ export async function getLndConnectUrls(): Promise<LndConnectionDetails> {
 
   let macaroon: string;
   try {
-    macaroon = (await diskLogic.readLndAdminMacaroon()).toString('hex');
+    const macaroonBuffer = await diskLogic.readLndAdminMacaroon();
+    macaroon = macaroonBuffer.toString('hex');
   } catch {
     throw new Error('Unable to read lnd macaroon file');
   }
@@ -295,7 +297,8 @@ export async function getLnConnectUrls(
 
   let macaroon: string;
   try {
-    macaroon = (await diskLogic.readLndAdminMacaroon()).toString('hex');
+    const macaroonBuffer = await diskLogic.readLndAdminMacaroon();
+    macaroon = macaroonBuffer.toString('hex');
   } catch {
     throw new Error('Unable to read lnd macaroon file');
   }

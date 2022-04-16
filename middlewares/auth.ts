@@ -119,7 +119,7 @@ export async function basic(ctx: Context, next: Next): Promise<void> {
         ctx.throw(STATUS_CODES.UNAUTHORIZED, 'Invalid state');
       }
 
-      let userInfo: diskLogic.userFile;
+      let userInfo: diskLogic.UserFile;
       try {
         userInfo = await diskLogic.readUserFile();
       } catch {
@@ -129,7 +129,7 @@ export async function basic(ctx: Context, next: Next): Promise<void> {
       const storedPassword = userInfo.password;
       const equal = await bcrypt.verify(
         (user as {[key: string]: unknown; password: string}).password,
-        storedPassword!,
+        storedPassword,
       );
       if (!equal) {
         ctx.throw(STATUS_CODES.UNAUTHORIZED, '"Incorrect password"');
@@ -149,7 +149,7 @@ export async function basic(ctx: Context, next: Next): Promise<void> {
 
       try {
         await ctx.logIn(user);
-      } catch (error) {
+      } catch (error: unknown) {
         console.error(error);
         ctx.throw(
           STATUS_CODES.INTERNAL_SERVER_ERROR,
@@ -163,7 +163,7 @@ export async function basic(ctx: Context, next: Next): Promise<void> {
 }
 
 // eslint-enable @typescript-eslint/no-unsafe-member-access
-export async function tempJwt(ctx: Context, next: Next): Promise<void> {
+export async function temporaryJwt(ctx: Context, next: Next): Promise<void> {
   await passport.authenticate(
     JWT_AUTH_2FA,
     {session: false},

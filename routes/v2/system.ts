@@ -49,7 +49,7 @@ router.get('/lndconnect-urls', auth.jwt, async (ctx, next) => {
 });
 
 router.get('/lnconnect-urls', auth.jwt, async (ctx, next) => {
-  const jwt = await refreshJwt(ctx.state.user as diskLogic.userFile);
+  const jwt = await refreshJwt(ctx.state.user as diskLogic.UserFile);
   ctx.body = await systemLogic.getLnConnectUrls(
     (await lightningService.getImplementation(jwt)) as 'lnd' | 'c-lightning',
   );
@@ -130,11 +130,14 @@ router.get('/uptime', async (ctx, next) => {
 router.get('/disk-type', async (ctx, next) => {
   let externalStorage: 'nvme' | 'unknown' = 'unknown';
   try {
+    const externalStorageUnformatted = await diskLogic.readTextStatusFile(
+      'external_storage',
+    );
     externalStorage =
-      ((await diskLogic.readTextStatusFile('external_storage'))
-        .toString('utf-8')
-        .trim() as 'nvme' | 'unknown') || 'unknown';
-  } catch (error) {
+      (externalStorageUnformatted.toString('utf-8').trim() as
+        | 'nvme'
+        | 'unknown') || 'unknown';
+  } catch (error: unknown) {
     console.error(error);
   }
 

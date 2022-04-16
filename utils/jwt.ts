@@ -13,19 +13,17 @@ export async function getIdFromJwt(payload: string): Promise<string> {
       pubkey,
       (error: VerifyErrors | undefined, decoded: unknown) => {
         if (error) {
-          reject(`Invalid JWT: ${JSON.stringify(error)}`);
-        } else {
+          reject(new Error(`Invalid JWT: ${JSON.stringify(error)}`));
           // Make sure decoded exists and is an object and id is defined and is a string
-          if (
-            typeof decoded === 'object' &&
-            decoded !== null &&
-            (decoded as {id: unknown}).id &&
-            typeof (decoded as {id: unknown}).id === 'string'
-          ) {
-            resolve((decoded as {id: string}).id);
-          } else {
-            reject('Invalid JWT');
-          }
+        } else if (
+          typeof decoded === 'object' &&
+          decoded !== null &&
+          (decoded as {id: unknown}).id &&
+          typeof (decoded as {id: unknown}).id === 'string'
+        ) {
+          resolve((decoded as {id: string}).id);
+        } else {
+          reject(new Error('Invalid JWT'));
         }
       },
     );
@@ -51,7 +49,6 @@ const expiresIn = process.env.JWT_EXPIRATION
 
 export async function generateJwt(account: string): Promise<string> {
   const jwtPrivateKey = await diskLogic.readJwtPrivateKeyFile();
-
   const jwtPubKey = await diskLogic.readJwtPublicKeyFile();
 
   const token = sign({id: account}, jwtPrivateKey, {

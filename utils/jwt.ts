@@ -1,6 +1,5 @@
 import * as process from 'node:process';
 import jwt from 'jsonwebtoken';
-import type {VerifyErrors} from 'jsonwebtoken';
 import * as diskLogic from '../logic/disk.js';
 
 const {sign, verify} = jwt;
@@ -8,31 +7,25 @@ const {sign, verify} = jwt;
 export async function getIdFromJwt(payload: string): Promise<string> {
   const pubkey = await diskLogic.readJwtPublicKeyFile();
   return new Promise((resolve, reject) => {
-    verify(
-      payload,
-      pubkey,
-      (error: VerifyErrors | undefined, decoded: unknown) => {
-        if (error) {
-          reject(new Error(`Invalid JWT: ${JSON.stringify(error)}`));
-          // Make sure decoded exists and is an object and id is defined and is a string
-        } else if (
-          typeof decoded === 'object' &&
-          decoded !== null &&
-          (decoded as {id: unknown}).id &&
-          typeof (decoded as {id: unknown}).id === 'string'
-        ) {
-          resolve((decoded as {id: string}).id);
-        } else {
-          reject(new Error('Invalid JWT'));
-        }
-      },
-    );
+    verify(payload, pubkey, (error, decoded) => {
+      if (error) {
+        reject(new Error(`Invalid JWT: ${JSON.stringify(error)}`));
+        // Make sure decoded exists and is an object and id is defined and is a string
+      } else if (
+        typeof decoded === 'object' &&
+        typeof decoded.id === 'string'
+      ) {
+        resolve(decoded.id);
+      } else {
+        reject(new Error('Invalid JWT'));
+      }
+    });
   });
 }
 
 async function isValidJwt(payload: string, pubkey: string): Promise<boolean> {
   return new Promise((resolve) => {
-    verify(payload, pubkey, (error: VerifyErrors | undefined) => {
+    verify(payload, pubkey, (error) => {
       if (error) {
         resolve(false);
       } else {

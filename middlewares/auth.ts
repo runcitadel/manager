@@ -127,10 +127,11 @@ export async function basic(ctx: Context, next: Next): Promise<void> {
       }
 
       const storedPassword = userInfo.password;
-      const equal = await bcrypt.verify(
-        (user as {[key: string]: unknown; password: string}).password,
-        storedPassword,
-      );
+      if (!storedPassword) {
+        ctx.throw(STATUS_CODES.UNAUTHORIZED, '"No password stored"');
+      }
+
+      const equal = await bcrypt.verify(user.password, storedPassword);
       if (!equal) {
         ctx.throw(STATUS_CODES.UNAUTHORIZED, '"Incorrect password"');
       }

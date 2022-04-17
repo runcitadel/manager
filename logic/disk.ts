@@ -214,7 +214,7 @@ export async function readStatusFile<FileType = unknown>(
   }
 
   const statusFilePath = path.join(constants.STATUS_DIR, statusFile);
-  return fs.readJSONFile(statusFilePath) as FileType;
+  return (await fs.readJSONFile(statusFilePath)) as FileType;
 }
 
 export function statusFileExists(statusFile: string): boolean {
@@ -265,7 +265,7 @@ export async function readJsonStatusFile<FileType = unknown>(
     constants.STATUS_DIR,
     `${resource}-status.json`,
   );
-  return fs.readJSONFile(statusFilePath).catch(() => null) as FileType;
+  return (await fs.readJSONFile(statusFilePath).catch(() => null)) as FileType;
 }
 
 export async function writeJsonStatusFile(

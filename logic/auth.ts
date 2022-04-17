@@ -310,7 +310,6 @@ export async function register(
 export async function refresh(user: UserInfo): Promise<string> {
   try {
     const jwt = await generateJwt(user.username!);
-
     return jwt;
   } catch {
     throw new Error('Unable to generate JWT');

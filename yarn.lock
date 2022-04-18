@@ -345,6 +345,7 @@ __metadata:
     cors: ^2.8.5
     debug: ^4.3.3
     dotenv: ^16.0.0
+    husky: ^7.0.0
     iocane: ^5.1.1
     ioredis: ^4.28.5
     jsonwebtoken: ^8.5.1
@@ -361,6 +362,7 @@ __metadata:
     passport-http: ^0.3.0
     passport-jwt: ^4.0.0
     passport-strategy: ^1.0.0
+    pinst: ^3.0.0
     semver: ^7.3.5
     socks-proxy-agent: ^6.1.1
     thirty-two: ^1.0.2
@@ -3112,6 +3114,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"husky@npm:^7.0.0":
+  version: 7.0.4
+  resolution: "husky@npm:7.0.4"
+  bin:
+    husky: lib/bin.js
+  checksum: c6ec4af63da2c9522da8674a20ad9b48362cc92704896cc8a58c6a2a39d797feb2b806f93fbd83a6d653fbdceb2c3b6e0b602c6b2e8565206ffc2882ef7db9e9
+  languageName: node
+  linkType: hard
+
 "iconv-lite@npm:0.4.24":
   version: 0.4.24
   resolution: "iconv-lite@npm:0.4.24"
@@ -5062,6 +5073,15 @@ __metadata:
   version: 3.0.0
   resolution: "pify@npm:3.0.0"
   checksum: 6cdcbc3567d5c412450c53261a3f10991665d660961e06605decf4544a61a97a54fefe70a68d5c37080ff9d6f4cf51444c90198d1ba9f9309a6c0d6e9f5c4fde
+  languageName: node
+  linkType: hard
+
+"pinst@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "pinst@npm:3.0.0"
+  bin:
+    pinst: bin.js
+  checksum: 4ae48a6a60f79c37071233af51b4d91bfc85cfa3c12b66ccda60cdb642b4d14a4ab0cb3587afc55b1f6192cea1772a5e4822026a0d0d3528296edef00cc2d61f
   languageName: node
   linkType: hard
 

@@ -123,7 +123,7 @@ export default class User {
   async getData(): Promise<UserData> {
     const data = await keyv.get(this.id);
     if (!data) throw new Error('User not found');
-    const userData = (await JSON.parse(data)) as UserData;
+    const userData = JSON.parse(data) as UserData;
     return userData;
   }
 

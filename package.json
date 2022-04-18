@@ -9,7 +9,12 @@
     "start": "node --experimental-json-modules ./bin/www.mjs",
     "start:watch": "nodemon --experimental-json-modules ./bin/www.mjs",
     "dev": "concurrently \"yarn:build:watch\" \"yarn:start:watch\"",
-    "lint": "xo --fix ."
+    "tsc:check": "tsc --noEmit",
+    "lint": "xo --fix .",
+    "lint:check": "xo .",
+    "postinstall": "husky install",
+    "prepack": "pinst --disable",
+    "postpack": "pinst --enable"
   },
   "dependencies": {
     "@keyv/redis": "^2.2.3",
@@ -60,8 +65,10 @@
     "@types/passport-strategy": "^0.2.35",
     "@types/semver": "^7.3.9",
     "concurrently": "^7.0.0",
+    "husky": "^7.0.0",
     "nodemon": "^2.0.15",
     "npm-run-all": "^4.1.5",
+    "pinst": "^3.0.0",
     "typescript": "^4.6.2",
     "xo": "^0.48.0"
   },

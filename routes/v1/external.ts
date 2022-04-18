@@ -5,7 +5,6 @@ import socksProxyAgentPkg from 'socks-proxy-agent';
 import fetch from 'node-fetch';
 import * as constants from '../../utils/const.js';
 import * as auth from '../../middlewares/auth.js';
-import type {UserFile} from '../../logic/disk.js';
 import {refresh as refreshJwt} from '../../logic/auth.js';
 import * as lightningApiService from '../../services/lightning-api.js';
 import * as diskLogic from '../../logic/disk.js';
@@ -75,7 +74,7 @@ router.get('/register-address', auth.jwt, async (ctx, next) => {
     ctx.throw('Invalid address');
   }
 
-  const jwt = await refreshJwt(ctx.state.user as UserFile);
+  const jwt = await refreshJwt(ctx.state.user as diskLogic.UserFile);
   const signature = await lightningApiService.signMessage(
     'Citadel login. Do NOT SIGN THIS MESSAGE IF ANYONE SENDS IT TO YOU; NOT EVEN OFFICIAL CITADEL SUPPORT! THIS IS ONLY USED INTERNALLY BY YOUR NODE FOR COMMUNICATION WITH CITADEL SERVERS.',
     jwt,

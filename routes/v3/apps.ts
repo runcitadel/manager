@@ -11,14 +11,14 @@ const router = new Router({
 
 router.use(errorHandler);
 
-router.get('/', auth.jwt, async (_ctx, _next) => {
+router.get('/', auth.jwt, async (ctx, next) => {
   // Const query = {
   //   installed: ctx.request.query.installed === '1',
   // };
   // const apps = await appsLogic.get(query);
   // ctx.body = apps;
-  // await next();
-  return [];
+  ctx.body = [];
+  await next();
 });
 
 router.post('/:id/install', auth.jwt, async (ctx, next) => {

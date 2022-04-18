@@ -3,6 +3,7 @@
   "version": "0.0.3",
   "description": "User-managment and host communication API for Citadel",
   "author": "Citadel developers",
+  "private": true,
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
@@ -12,9 +13,7 @@
     "tsc:check": "tsc --noEmit",
     "lint": "xo --fix .",
     "lint:check": "xo .",
-    "postinstall": "husky install",
-    "prepack": "pinst --disable",
-    "postpack": "pinst --enable"
+    "postinstall": "husky install"
   },
   "dependencies": {
     "@keyv/redis": "^2.2.3",

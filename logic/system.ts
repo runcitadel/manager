@@ -7,6 +7,7 @@ import type {
   updateStatus,
   debugStatus,
   backupStatus,
+  systemStatus,
 } from '@runcitadel/utils';
 import * as constants from '../utils/const.js';
 import * as diskLogic from './disk.js';
@@ -364,10 +365,14 @@ export async function getLnConnectUrls(
   };
 }
 
-export async function requestDebug(): Promise<string> {
+export async function requestDebug(): Promise<debugStatus> {
   try {
     await diskLogic.writeSignalFile('debug');
-    return 'Debug requested';
+    return {
+      status: 'requested',
+      debug: null,
+      dmesg: null,
+    };
   } catch {
     throw new Error('Could not write the signal file');
   }
@@ -381,19 +386,25 @@ export async function getDebugResult(): Promise<debugStatus> {
   }
 }
 
-export async function requestShutdown(): Promise<string> {
+export async function requestShutdown(): Promise<systemStatus> {
   try {
     await diskLogic.shutdown();
-    return 'Shutdown requested';
+    return {
+      type: 'shutdown',
+      status: 'requested',
+    };
   } catch {
     throw new Error('Unable to request shutdown');
   }
 }
 
-export async function requestReboot(): Promise<string> {
+export async function requestReboot(): Promise<systemStatus> {
   try {
     await diskLogic.reboot();
-    return 'Reboot requested';
+    return {
+      type: 'reboot',
+      status: 'requested',
+    };
   } catch {
     throw new Error('Unable to request reboot');
   }

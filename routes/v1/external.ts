@@ -66,8 +66,10 @@ router.get('/price', auth.jwt, async (ctx, next) => {
 router.get('/register-address', auth.jwt, async (ctx, next) => {
   const address = ctx.request.query.address as string;
   const userFile = await diskLogic.readUserFile();
-  if (!userFile.installedApps?.includes('lnme'))
+  if (!userFile.installedApps?.includes('lnme')) {
     ctx.throw('LnMe is not installed');
+  }
+
   if (!address) {
     ctx.throw('Invalid address');
   }

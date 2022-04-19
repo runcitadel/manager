@@ -320,8 +320,9 @@ export async function getLnConnectUrls(
     throw new Error('Unable to read lnd REST hostname file');
   }
 
-  if (lightningImplementation === 'c-lightning')
+  if (lightningImplementation === 'c-lightning') {
     lightningImplementation = 'c-lightning-rest';
+  }
 
   const restTor = encode({
     host: restTorHost,

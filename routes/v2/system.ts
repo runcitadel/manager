@@ -5,9 +5,7 @@ import * as systemLogic from '../../logic/system.js';
 import * as diskLogic from '../../logic/disk.js';
 import * as lightningService from '../../services/lightning-api.js';
 import {refresh as refreshJwt} from '../../logic/auth.js';
-
 import * as auth from '../../middlewares/auth.js';
-
 import * as constants from '../../utils/const.js';
 
 const router = new Router({

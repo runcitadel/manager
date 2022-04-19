@@ -10,7 +10,7 @@ export async function initializeWallet(
   jwt: string,
 ): Promise<void> {
   middleware.jwt = jwt;
-  await middleware.lnd.wallet.init(seed);
+  await middleware.lightning.wallet.init(seed);
 }
 
 export async function signMessage(
@@ -18,11 +18,11 @@ export async function signMessage(
   jwt: string,
 ): Promise<string> {
   middleware.jwt = jwt;
-  return middleware.lnd.signMessage(message);
+  return middleware.lightning.signMessage(message);
 }
 
 export async function getImplementation(jwt: string) {
   middleware.jwt = jwt;
-  const version = await middleware.lnd.info.version();
+  const version = await middleware.lightning.info.version();
   return version.implementation.toLowerCase();
 }

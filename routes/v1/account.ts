@@ -28,8 +28,10 @@ router.post(
     if (
       typeof ctx.request.body.password !== 'string' ||
       typeof ctx.request.body.newPassword !== 'string'
-    )
+    ) {
       ctx.throw('Received invalid data.');
+    }
+
     // Use password from the body by default. Basic auth has issues handling special characters.
     const currentPassword: string = ctx.request.body.password as string;
     const newPassword: string = ctx.request.body.newPassword as string;

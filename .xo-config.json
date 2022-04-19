@@ -2,6 +2,7 @@
   "prettier": true,
   "space": true,
   "rules": {
+    "curly": ["error", "multi-line"],
     "@typescript-eslint/no-unsafe-call": "off"
   }
 }

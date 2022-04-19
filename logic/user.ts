@@ -92,8 +92,10 @@ export default class User {
         if (!id) throw new Error('No id provided');
         const user = await User.get(id);
         const data = await user.getData();
-        if (!(await bcrypt.verify(password, data.password)))
+        if (!(await bcrypt.verify(password, data.password))) {
           throw new Error('Invalid password');
+        }
+
         return user;
       }
 

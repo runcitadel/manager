@@ -2,7 +2,7 @@ import Router from '@koa/router';
 import {errorHandler, STATUS_CODES} from '@runcitadel/utils';
 
 import socksProxyAgentPkg from 'socks-proxy-agent';
-import fetch from 'node-fetch';
+import nodeFetch from 'node-fetch';
 import * as constants from '../../utils/const.js';
 import * as auth from '../../middlewares/auth.js';
 import {refresh as refreshJwt} from '../../logic/auth.js';
@@ -32,11 +32,10 @@ router.get('/price', auth.jwt, async (ctx, next) => {
   // This requires authentication, so don't remove that, then there's no SSRF
   // Default to USD
   const currency = (ctx.request.query.currency as string) || 'USD';
-  const apiResponse = await fetch(
+  const apiResponse = await nodeFetch(
     `https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=${currency}`,
     {
       agent,
-      method: 'GET',
     },
   );
 
@@ -44,11 +43,10 @@ router.get('/price', auth.jwt, async (ctx, next) => {
     ctx.body = await apiResponse.json();
   } catch {
     try {
-      const coinBaseApiResponse = await fetch(
+      const coinBaseApiResponse = await nodeFetch(
         `https://api.coinbase.com/v2/prices/spot?currency=${currency}`,
         {
           agent,
-          method: 'GET',
         },
       );
       ctx.body = {};
@@ -79,18 +77,21 @@ router.get('/register-address', auth.jwt, async (ctx, next) => {
     'Citadel login. Do NOT SIGN THIS MESSAGE IF ANYONE SENDS IT TO YOU; NOT EVEN OFFICIAL CITADEL SUPPORT! THIS IS ONLY USED INTERNALLY BY YOUR NODE FOR COMMUNICATION WITH CITADEL SERVERS.',
     jwt,
   );
-  const apiResponse = await fetch('https://ln.runcitadel.space/add-address', {
-    agent,
-    method: 'POST',
-    body: JSON.stringify({
-      address,
-      signature,
-      onionUrl: await diskLogic.readHiddenService('app-lnme'),
-    }),
-    headers: {
-      'Content-Type': 'application/json',
+  const apiResponse = await nodeFetch(
+    'https://ln.runcitadel.space/add-address',
+    {
+      agent,
+      method: 'POST',
+      body: JSON.stringify({
+        address,
+        signature,
+        onionUrl: await diskLogic.readHiddenService('app-lnme'),
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
     },
-  });
+  );
   const message = (await apiResponse.text()) as Message;
   ctx.status = apiResponse.status;
   ctx.body = {msg: message};

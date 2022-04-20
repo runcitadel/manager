@@ -1,6 +1,7 @@
-import fetch from 'node-fetch';
+import nodeFetch from 'node-fetch';
 import semver from 'semver';
 import {encode, UrlVersion} from '@runcitadel/lndconnect';
+import socksProxyAgentPkg from 'socks-proxy-agent';
 
 import type {
   versionFile,
@@ -10,6 +11,13 @@ import type {
 } from '@runcitadel/utils';
 import * as constants from '../utils/const.js';
 import * as diskLogic from './disk.js';
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const {SocksProxyAgent} = socksProxyAgentPkg;
+
+const agent = new SocksProxyAgent(
+  `socks5h://${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`,
+);
 
 export type ConnectionDetails = {
   address: string;
@@ -123,7 +131,7 @@ export async function getAvailableUpdate(): Promise<versionFile | string> {
       const infoUrl = `https://raw.githubusercontent.com/${constants.GITHUB_REPO}/${tag}/info.json`;
 
       // eslint-disable-next-line no-await-in-loop
-      const latestVersionInfo = await fetch(infoUrl);
+      const latestVersionInfo = await nodeFetch(infoUrl, {agent});
       // eslint-disable-next-line no-await-in-loop
       data = (await latestVersionInfo.json()) as versionFile;
 

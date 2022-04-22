@@ -58,6 +58,8 @@ export async function get(query: AppQuery, jwt: string): Promise<App[]> {
         app.hiddenService = '';
       }
 
+      app.dependencies = app.dependencies || [];
+
       for (const dependency of app.dependencies) {
         if (typeof dependency === 'string') {
           if (

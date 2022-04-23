@@ -1,4 +1,8 @@
-FROM node:17-alpine@sha256:250e9a093b861c330be2f4d1d224712d4e49290eeffc287ad190b120c1fe9d9f as base
+# Define version & use pinned images
+ARG NODE_VERSION=18
+
+# Use multi-arch image for running the app
+FROM node:${NODE_VERSION}-alpine@sha256:469ee26d9e00547ea91202a34ff2542f984c2c60a2edbb4007558ccb76b56df2 as base
 
 
 # DEVELOPMENT

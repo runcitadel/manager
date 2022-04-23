@@ -2,4 +2,4 @@
 . "$(dirname "$0")/_/husky.sh"
 
 # delete TS incremental build info file and check for errors
-rm tsconfig.tsbuildinfo && yarn tsc:check && yarn lint:check
+rm -f tsconfig.tsbuildinfo && yarn tsc:check && yarn lint:check

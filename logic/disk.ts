@@ -10,6 +10,7 @@ import type {
   debugStatus,
 } from '@runcitadel/utils';
 import * as constants from '../utils/const.js';
+import {runCommand} from '../services/karen.js';
 import type {App} from './apps.js';
 
 type UserSettings = {
@@ -147,7 +148,7 @@ export async function updateLockFileExists(): Promise<boolean> {
 }
 
 export async function writeUpdateSignalFile(): Promise<void> {
-  await writeSignalFile('update');
+  await runCommand('update');
 }
 
 export async function readBackupStatusFile(): Promise<backupStatus> {
@@ -171,26 +172,15 @@ export async function writeJwtPublicKeyFile(data: string): Promise<void> {
 }
 
 export async function shutdown(): Promise<void> {
-  await writeSignalFile('shutdown');
+  await runCommand('shutdown');
 }
 
 export async function reboot(): Promise<void> {
-  await writeSignalFile('reboot');
+  await runCommand('reboot');
 }
 
 export async function readDebugStatusFile(): Promise<debugStatus> {
   return readJsonStatusFile<debugStatus>('debug');
-}
-
-export async function writeSignalFile(
-  signalFile: string,
-): Promise<void | NodeJS.ErrnoException> {
-  if (!/^[\w-]+$/.test(signalFile)) {
-    throw new Error('Invalid signal file characters');
-  }
-
-  const signalFilePath = path.join(constants.SIGNAL_DIR, signalFile);
-  await fs.touch(signalFilePath);
 }
 
 export async function writeStatusFile(

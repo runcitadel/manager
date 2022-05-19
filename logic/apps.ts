@@ -1,4 +1,5 @@
 import * as lightningService from '../services/lightning-api.js';
+import {runCommand} from '../services/karen.js';
 import * as diskLogic from './disk.js';
 
 /** A dependency an app could have */
@@ -109,7 +110,7 @@ export async function install(id: string): Promise<void> {
   }
 
   try {
-    await diskLogic.writeSignalFile(`app-install-${id}`);
+    await runCommand(`app install ${id}`);
   } catch {
     throw new Error('Could not write the signal file');
   }
@@ -121,7 +122,7 @@ export async function uninstall(id: string): Promise<void> {
   }
 
   try {
-    await diskLogic.writeSignalFile(`app-uninstall-${id}`);
+    await runCommand(`app uninstall ${id}`);
   } catch {
     throw new Error('Could not write the signal file');
   }
@@ -133,7 +134,7 @@ export async function update(id: string): Promise<void> {
   }
 
   try {
-    await diskLogic.writeSignalFile(`app-update-${id}`);
+    await runCommand(`app update ${id}`);
   } catch {
     throw new Error('Could not write the signal file');
   }

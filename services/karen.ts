@@ -1,10 +1,11 @@
 import {createConnection, type Socket} from 'node:net';
+import {KAREN_SOCKET} from '../utils/const.js';
 
 let connection: Socket;
 
 async function initConnection() {
   return new Promise<void>((resolve) => {
-    connection = createConnection('events/karen', () => {
+    connection = createConnection(KAREN_SOCKET, () => {
       resolve();
     });
   });

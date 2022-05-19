@@ -73,8 +73,10 @@ export async function get(query: AppQuery, jwt: string): Promise<App[]> {
           }
         } else if (
           (dependency.includes('c-lightning') &&
+            !dependency.includes('lnd') &&
             lightningImplementation === 'lnd') ||
           (dependency.includes('lnd') &&
+            !dependency.includes('c-lightning') &&
             lightningImplementation === 'c-lightning')
         ) {
           app.compatible = false;

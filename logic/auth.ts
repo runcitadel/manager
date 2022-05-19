@@ -63,7 +63,7 @@ export function resetChangePasswordStatus(): void {
 // Sets system password
 const setSystemPassword = async (password: string) => {
   await diskLogic.writeStatusFile('password', password);
-  await runCommand(`change-password`);
+  await runCommand(`trigger change-password`);
 };
 
 // Change the dashboard and system password.
@@ -302,7 +302,7 @@ export async function register(
     throw new Error((error as {response: {data: string}}).response.data);
   }
 
-  await runCommand('app-update');
+  await runCommand('trigger app-update');
   // Return token
   return jwt;
 }

@@ -148,7 +148,7 @@ export async function updateLockFileExists(): Promise<boolean> {
 }
 
 export async function writeUpdateSignalFile(): Promise<void> {
-  await runCommand('update');
+  await runCommand('trigger update');
 }
 
 export async function readBackupStatusFile(): Promise<backupStatus> {
@@ -172,11 +172,11 @@ export async function writeJwtPublicKeyFile(data: string): Promise<void> {
 }
 
 export async function shutdown(): Promise<void> {
-  await runCommand('shutdown');
+  await runCommand('trigger shutdown');
 }
 
 export async function reboot(): Promise<void> {
-  await runCommand('reboot');
+  await runCommand('trigger reboot');
 }
 
 export async function readDebugStatusFile(): Promise<debugStatus> {

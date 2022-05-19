@@ -377,7 +377,7 @@ export async function getLnConnectUrls(
 
 export async function requestDebug(): Promise<debugStatus> {
   try {
-    await runCommand('debug');
+    await runCommand('trigger debug');
     return {
       status: 'requested',
       debug: null,

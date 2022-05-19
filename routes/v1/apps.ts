@@ -55,7 +55,7 @@ router.get('/updates', auth.jwt, async (ctx, next) => {
 });
 
 router.post('/update', auth.jwt, async (ctx, next) => {
-  await runCommand('app-update');
+  await runCommand('trigger app-update');
   ctx.body = {};
   ctx.status = STATUS_CODES.OK;
   await next();

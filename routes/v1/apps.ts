@@ -6,6 +6,7 @@ import * as diskLogic from '../../logic/disk.js';
 import {refresh as refreshJwt} from '../../logic/auth.js';
 
 import * as auth from '../../middlewares/auth.js';
+import {runCommand} from '../../services/karen.js';
 
 const router = new Router({
   prefix: '/v1/apps',
@@ -54,7 +55,7 @@ router.get('/updates', auth.jwt, async (ctx, next) => {
 });
 
 router.post('/update', auth.jwt, async (ctx, next) => {
-  await diskLogic.writeSignalFile('app-update');
+  await runCommand('trigger app-update');
   ctx.body = {};
   ctx.status = STATUS_CODES.OK;
   await next();

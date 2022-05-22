@@ -6,6 +6,7 @@ import * as iocane from 'iocane';
 import base32 from 'thirty-two';
 import * as lightningApiService from '../services/lightning-api.js';
 import {generateJwt} from '../utils/jwt.js';
+import {runCommand} from '../services/karen.js';
 import * as diskLogic from './disk.js';
 import {migrateAdminLegacyUser} from './user.js';
 
@@ -62,7 +63,7 @@ export function resetChangePasswordStatus(): void {
 // Sets system password
 const setSystemPassword = async (password: string) => {
   await diskLogic.writeStatusFile('password', password);
-  await diskLogic.writeSignalFile('change-password');
+  await runCommand(`trigger change-password`);
 };
 
 // Change the dashboard and system password.
@@ -301,7 +302,7 @@ export async function register(
     throw new Error((error as {response: {data: string}}).response.data);
   }
 
-  await diskLogic.writeSignalFile('app-update');
+  await runCommand('trigger app-update');
   // Return token
   return jwt;
 }

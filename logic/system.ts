@@ -11,6 +11,7 @@ import type {
   systemStatus,
 } from '@runcitadel/utils';
 import * as constants from '../utils/const.js';
+import {runCommand} from '../services/karen.js';
 import * as diskLogic from './disk.js';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -376,7 +377,7 @@ export async function getLnConnectUrls(
 
 export async function requestDebug(): Promise<debugStatus> {
   try {
-    await diskLogic.writeSignalFile('debug');
+    await runCommand('trigger debug');
     return {
       status: 'requested',
       debug: null,

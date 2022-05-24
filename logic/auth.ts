@@ -285,6 +285,9 @@ export async function register(
     throw new Error('Unable to create seed');
   }
 
+  // Build app files with the seed existing
+  await runCommand('trigger app-update');
+
   // Generate JWt
   let jwt;
   try {

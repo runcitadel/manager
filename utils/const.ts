@@ -4,7 +4,6 @@ import * as process from 'node:process';
 
 export const DEVICE_HOSTNAME = process.env.DEVICE_HOSTNAME ?? 'citadel.local';
 export const USER_FILE = process.env.USER_FILE ?? '/db/user.json';
-export const SIGNAL_DIR = process.env.SIGNAL_DIR ?? '/signals';
 export const KAREN_SOCKET = process.env.KAREN_SOCKET ?? '/events/karen';
 export const STATUS_DIR = process.env.STATUS_DIR ?? '/statuses';
 export const APPS_DIR = process.env.APPS_DIR ?? '/apps';

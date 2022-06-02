@@ -211,12 +211,11 @@ export async function startUpdate(): Promise<{message: string} | string> {
     throw new Error('Could not update the update-status file');
   }
 
-  // Write update signal file
   try {
-    await diskLogic.writeUpdateSignalFile();
+    await runCommand('trigger update');
     return {message: 'Updating to Citadel v' + availableUpdate.version};
   } catch {
-    throw new Error('Unable to write update signal file');
+    throw new Error('Unable to get backup status');
   }
 }
 
@@ -384,7 +383,7 @@ export async function requestDebug(): Promise<debugStatus> {
       dmesg: null,
     };
   } catch {
-    throw new Error('Could not write the signal file');
+    throw new Error('Could not communicate with karen');
   }
 }
 

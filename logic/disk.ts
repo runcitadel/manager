@@ -139,16 +139,8 @@ export async function writeUpdateStatusFile(json: updateStatus): Promise<void> {
   await writeJsonStatusFile('update', json);
 }
 
-export async function updateSignalFileExists(): Promise<boolean> {
-  return statusFileExists('update-status.json');
-}
-
 export async function updateLockFileExists(): Promise<boolean> {
   return statusFileExists('update-in-progress');
-}
-
-export async function writeUpdateSignalFile(): Promise<void> {
-  await runCommand('trigger update');
 }
 
 export async function readBackupStatusFile(): Promise<backupStatus> {

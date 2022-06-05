@@ -91,8 +91,8 @@ export async function writeSeedFile(
   return fs.ensureWriteFile(constants.SEED_FILE, seed);
 }
 
-export async function readSeedFile(): Promise<Buffer | string> {
-  return fs.readFile(constants.SEED_FILE);
+export async function readSeedFile(): Promise<string> {
+  return fs.readFile(constants.SEED_FILE, 'utf-8');
 }
 
 export function seedFileExists(): boolean {

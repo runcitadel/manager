@@ -4,11 +4,20 @@ import * as bcrypt from '@node-rs/bcrypt';
 import {CipherSeed} from 'aezeed';
 import * as iocane from 'iocane';
 import base32 from 'thirty-two';
+import nodeFetch from 'node-fetch';
+import socksProxyAgentPkg from 'socks-proxy-agent';
 import * as lightningApiService from '../services/lightning-api.js';
 import {generateJwt} from '../utils/jwt.js';
 import {runCommand} from '../services/karen.js';
+import * as constants from '../utils/const.js';
 import * as diskLogic from './disk.js';
 import {migrateAdminLegacyUser} from './user.js';
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const {SocksProxyAgent} = socksProxyAgentPkg;
+
+const agent = new SocksProxyAgent(
+  `socks5h://${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`,
+);
 
 export function generateRandomKey(): string {
   return crypto.randomBytes(10).toString('hex');
@@ -163,11 +172,9 @@ export async function deriveSeed(
 
 // Derives the root seed and persists it to disk to be used for
 // determinstically deriving further entropy for any other service.
-export async function deriveCitadelSeed(
-  mnemonic: string[],
-): Promise<void | NodeJS.ErrnoException> {
+export async function deriveCitadelSeed(mnemonic: string[]): Promise<string> {
   if (diskLogic.seedFileExists()) {
-    return;
+    return diskLogic.readSeedFile();
   }
 
   const {entropy} = CipherSeed.fromMnemonic(mnemonic.join(' '));
@@ -175,7 +182,7 @@ export async function deriveCitadelSeed(
     .createHmac('sha256', entropy)
     .update('umbrel-seed')
     .digest('hex');
-  return diskLogic.writeSeedFile(generatedSeed);
+  return generatedSeed;
 }
 
 export async function generateTemporaryJwt(): Promise<string> {
@@ -186,7 +193,7 @@ export async function generateTemporaryJwt(): Promise<string> {
   }
 }
 
-// Log the user into the device. Caches the password if login is successful. Then returns jwt.
+// Log the user into the device, then returns jwt.
 export async function login(user: UserInfo): Promise<string> {
   try {
     const jwt = await generateJwt(user.username!);
@@ -244,7 +251,10 @@ export async function seed(user: UserInfo): Promise<string[]> {
 export async function register(
   user: UserInfo,
   seed: string[],
-): Promise<string> {
+): Promise<{
+  jwt: string;
+  backupId: string;
+}> {
   if (await isRegistered()) {
     throw new Error('User already exists');
   }
@@ -278,8 +288,50 @@ export async function register(
   }
 
   // Derive seed
+  let citadelSeed;
   try {
-    await deriveCitadelSeed(seed);
+    citadelSeed = await deriveCitadelSeed(seed);
+  } catch (error: unknown) {
+    console.error(error);
+    throw new Error('Unable to create seed');
+  }
+
+  // Check for backup uuid from server
+  let lastBackup = 'none';
+  try {
+    const backupId = crypto
+      .createHmac('sha256', citadelSeed)
+      .update('citadel_backup_id')
+      .digest('hex');
+    const latestBackup = await nodeFetch(
+      'https://account.runcitadel.space/api/get-backup-id',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        agent,
+        body: JSON.stringify({
+          name: backupId,
+        }),
+      },
+    );
+    if (latestBackup.status === 200) {
+      const response = await latestBackup.json();
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+      lastBackup = (response as {data?: string})?.data || 'none';
+    }
+  } catch (error: unknown) {
+    console.error(error);
+    // Don't throw here to ensure Citadel setup is possible if our servers are offline
+    lastBackup = 'none';
+  }
+
+  // Save seed file
+  try {
+    if (!diskLogic.seedFileExists()) {
+      await diskLogic.writeSeedFile(citadelSeed);
+    }
   } catch (error: unknown) {
     console.error(error);
     throw new Error('Unable to create seed');
@@ -304,7 +356,10 @@ export async function register(
 
   await runCommand('trigger app-update');
   // Return token
-  return jwt;
+  return {
+    jwt,
+    backupId: lastBackup,
+  };
 }
 
 // Generate and return a new jwt token.

@@ -105,7 +105,7 @@ router.post(
     /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
     user.name = ctx.request.body.name;
 
-    const jwt = await authLogic.register(user, seed);
+    const {jwt, backupId} = await authLogic.register(user, seed);
 
     try {
       await migrateAdminLegacyUser(user.name, user.plainTextPassword!);
@@ -113,7 +113,7 @@ router.post(
       console.error(error);
     }
 
-    ctx.body = {jwt};
+    ctx.body = {jwt, backupId};
     await next();
   },
 );

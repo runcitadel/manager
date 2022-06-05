@@ -148,6 +148,9 @@ export async function getAvailableUpdate(): Promise<versionFile | string> {
       isCompatibleWithCurrentVersion = semver.satisfies(
         currentVersion,
         requiresVersionRange,
+        {
+          includePrerelease: true,
+        },
       );
 
       // Calculate the minimum required version

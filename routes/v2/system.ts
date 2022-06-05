@@ -1,5 +1,5 @@
 import Router from '@koa/router';
-import {errorHandler} from '@runcitadel/utils';
+import {errorHandler, typeHelper} from '@runcitadel/utils';
 
 import * as systemLogic from '../../logic/system.js';
 import * as diskLogic from '../../logic/disk.js';
@@ -140,6 +140,12 @@ router.get('/disk-type', async (ctx, next) => {
   }
 
   ctx.body = {externalStorage};
+  await next();
+});
+
+router.put('/update-channel', async (ctx, next) => {
+  typeHelper.isString(ctx.body.channel, ctx);
+  await systemLogic.setUpdateChannel(ctx.body.channel as string);
   await next();
 });
 

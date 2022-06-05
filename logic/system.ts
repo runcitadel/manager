@@ -418,3 +418,7 @@ export async function requestReboot(): Promise<systemStatus> {
     throw new Error('Unable to request reboot');
   }
 }
+
+export async function setUpdateChannel(channel: string): Promise<void> {
+  return runCommand(`set-update-channel ${channel}`);
+}

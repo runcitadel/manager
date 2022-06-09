@@ -66,7 +66,7 @@ router.get('/get-update-details', auth.jwt, async (ctx, next) => {
   await next();
 });
 
-router.get('/update-status', async (ctx, next) => {
+router.get('/update-status', auth.jwt, async (ctx, next) => {
   ctx.body = await systemLogic.getUpdateStatus();
   await next();
 });
@@ -76,7 +76,7 @@ router.post('/update', auth.jwt, async (ctx, next) => {
   await next();
 });
 
-router.get('/backup-status', async (ctx, next) => {
+router.get('/backup-status', auth.jwt, async (ctx, next) => {
   ctx.body = await systemLogic.getBackupStatus();
   await next();
 });
@@ -111,21 +111,21 @@ router.get('/memory', async (ctx, next) => {
   await next();
 });
 
-router.get('/temperature', async (ctx, next) => {
+router.get('/temperature', auth.jwt, async (ctx, next) => {
   ctx.body = {
     temperature: await diskLogic.readJsonStatusFile('temperature'),
   };
   await next();
 });
 
-router.get('/uptime', async (ctx, next) => {
+router.get('/uptime', auth.jwt, async (ctx, next) => {
   ctx.body = {
     uptime: await diskLogic.readJsonStatusFile('uptime'),
   };
   await next();
 });
 
-router.get('/disk-type', async (ctx, next) => {
+router.get('/disk-type', auth.jwt, async (ctx, next) => {
   let externalStorage: 'nvme' | 'unknown' = 'unknown';
   try {
     const externalStorageUnformatted = await diskLogic.readTextStatusFile(
@@ -143,13 +143,20 @@ router.get('/disk-type', async (ctx, next) => {
   await next();
 });
 
-router.put('/update-channel', async (ctx, next) => {
+router.put('/update-channel', auth.jwt, async (ctx, next) => {
   typeHelper.isString(ctx.body.channel, ctx);
   await systemLogic.setUpdateChannel(ctx.body.channel as string);
   await next();
 });
 
-router.get('/', async (ctx, next) => {
+router.get('/update-channel', auth.jwt, async (ctx, next) => {
+  ctx.body = {
+    channel: constants.GITHUB_BRANCH,
+  };
+  await next();
+});
+
+router.get('/', auth.jwt, async (ctx, next) => {
   ctx.body = {os: constants.IS_CITADEL_OS ? 'Citadel OS' : 'unknown'};
   await next();
 });

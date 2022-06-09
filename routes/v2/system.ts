@@ -66,7 +66,7 @@ router.get('/get-update-details', auth.jwt, async (ctx, next) => {
   await next();
 });
 
-router.get('/update-status', auth.jwt, async (ctx, next) => {
+router.get('/update-status', async (ctx, next) => {
   ctx.body = await systemLogic.getUpdateStatus();
   await next();
 });

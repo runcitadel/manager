@@ -4,7 +4,6 @@ import {encode, UrlVersion} from '@runcitadel/lndconnect';
 import socksProxyAgentPkg from 'socks-proxy-agent';
 
 import type {
-  versionFile,
   updateStatus,
   debugStatus,
   backupStatus,
@@ -43,7 +42,15 @@ export type SystemStatus = {
   highMemoryUsage: boolean;
 };
 
-export async function getInfo(): Promise<versionFile> {
+export type VersionFile = {
+  version: string;
+  name: string;
+  requires: string;
+  notes: string;
+  isQuickUpdate?: boolean;
+};
+
+export async function getInfo(): Promise<VersionFile> {
   try {
     const info = await diskLogic.readVersionFile();
     return info;
@@ -116,14 +123,14 @@ export async function getBitcoinRpcConnectionDetails(): Promise<RpcConnectionDet
   }
 }
 
-export async function getAvailableUpdate(): Promise<versionFile | string> {
+export async function getAvailableUpdate(): Promise<VersionFile | string> {
   try {
     const current = await diskLogic.readVersionFile();
     const currentVersion = current.version;
 
     // 'tag' should be the default Git branch
     let tag = constants.GITHUB_BRANCH;
-    let data: versionFile | undefined;
+    let data: VersionFile | undefined;
     let isNewVersionAvailable = true;
     let isCompatibleWithCurrentVersion = false;
 
@@ -135,7 +142,7 @@ export async function getAvailableUpdate(): Promise<versionFile | string> {
       // eslint-disable-next-line no-await-in-loop
       const latestVersionInfo = await nodeFetch(infoUrl, {agent});
       // eslint-disable-next-line no-await-in-loop
-      data = (await latestVersionInfo.json()) as versionFile;
+      data = (await latestVersionInfo.json()) as VersionFile;
 
       const latestVersion = data.version;
       const requiresVersionRange = data.requires;

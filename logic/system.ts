@@ -432,3 +432,7 @@ export async function requestReboot(): Promise<systemStatus> {
 export async function setUpdateChannel(channel: string): Promise<void> {
   return runCommand(`set-update-channel ${channel}`);
 }
+
+export async function startQuickUpdate(): Promise<void> {
+  return runCommand(`trigger quick-update`);
+}

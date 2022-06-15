@@ -76,6 +76,12 @@ router.post('/update', auth.jwt, async (ctx, next) => {
   await next();
 });
 
+router.post('/quick-update', auth.jwt, async (ctx, next) => {
+  await systemLogic.startQuickUpdate();
+  ctx.body = {};
+  await next();
+});
+
 router.get('/backup-status', auth.jwt, async (ctx, next) => {
   ctx.body = await systemLogic.getBackupStatus();
   await next();

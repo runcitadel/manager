@@ -43,11 +43,74 @@ export type App = {
   /** Automatically added */
   compatible: boolean;
 };
-export type AppQuery = {
+
+export type MetadataV4 = {
+  /**
+   * The category for the app
+   */
+  category: string;
+  /**
+   * The app's default password. Can also be $APP_SEED for a random password
+   */
+  defaultPassword?: string | undefined;
+  developers: Record<string, string>;
+  /**
+   * A list of promo images for the apps
+   */
+  gallery?: string[] | undefined;
+  /**
+   * The name of the app
+   */
+  name: string;
+  /**
+   * The path the "Open" link on the dashboard should lead to
+   */
+  path?: string | undefined;
+  /**
+   * Permissions the app requires
+   */
+  permissions?: Array<string | string[]>;
+  /**
+   * App repository name -> repo URL
+   */
+  repo: Record<string, string>;
+  /**
+   * A support link for the app
+   */
+  support: string;
+  /**
+   * A short tagline for the app
+   */
+  tagline: string;
+  /**
+   * True if the app only works over Tor
+   */
+  torOnly?: boolean;
+  /**
+   * A list of containers to update automatically (still validated by the Citadel team)
+   */
+  updateContainers?: string[] | undefined;
+  /**
+   * The version of the app
+   */
+  version: string;
+  /** Automatically added */
+  hiddenService?: string;
+  /** Automatically added */
   installed?: boolean;
+  /** Automatically added */
+  compatible: boolean;
 };
 
-export async function get(query: AppQuery, jwt: string): Promise<App[]> {
+export type AppQuery = {
+  installed?: boolean;
+  compatible?: boolean;
+};
+
+export async function get(
+  query: AppQuery,
+  jwt: string,
+): Promise<Array<App | MetadataV4>> {
   let apps = await diskLogic.readAppRegistry();
   const lightningImplementation = await lightningService.getImplementation(jwt);
   // Do all hidden service lookups concurrently
@@ -91,7 +154,11 @@ export async function get(query: AppQuery, jwt: string): Promise<App[]> {
   if (query.installed === true) {
     const userFile = await diskLogic.readUserFile();
     const installedApps = userFile.installedApps ?? [];
-    apps = apps.filter((app: App) => installedApps.includes(app.id));
+    apps = apps.filter((app) => installedApps.includes(app.id));
+  }
+
+  if (query.compatible === true) {
+    apps = apps.filter((app) => app.compatible);
   }
 
   return apps;

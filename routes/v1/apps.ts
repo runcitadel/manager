@@ -20,7 +20,7 @@ router.get('/', auth.jwt, async (ctx, next) => {
   };
   const jwt = await refreshJwt(ctx.state.user as diskLogic.UserFile);
   const apps = await appsLogic.get(query, jwt);
-  ctx.body = apps;
+  ctx.body = {apps, jwt};
   await next();
 });
 

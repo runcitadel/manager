@@ -150,8 +150,9 @@ router.get('/disk-type', auth.jwt, async (ctx, next) => {
 });
 
 router.put('/update-channel', auth.jwt, async (ctx, next) => {
-  typeHelper.isString(ctx.body.channel, ctx);
-  await systemLogic.setUpdateChannel(ctx.body.channel as string);
+  typeHelper.isString(ctx.request.body.channel, ctx);
+  await systemLogic.setUpdateChannel(ctx.request.body.channel as string);
+  ctx.body = {};
   await next();
 });
 

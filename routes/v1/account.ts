@@ -170,6 +170,7 @@ router.post('/totp/enable', auth.jwt, async (ctx) => {
     // TOTP should be already set up
     const key = info.settings?.twoFactorKey;
 
+    typeHelper.isString(ctx.request.body.authenticatorToken, ctx);
     const vres = notp.totp.verify(ctx.request.body.authenticatorToken, key);
 
     if (vres && vres.delta === 0) {
@@ -190,6 +191,7 @@ router.post('/totp/disable', auth.jwt, async (ctx, next) => {
     // TOTP should be already set up
     const key = info.settings?.twoFactorKey;
 
+    typeHelper.isString(ctx.request.body.authenticatorToken, ctx);
     const vres = notp.totp.verify(ctx.request.body.authenticatorToken, key);
 
     if (vres && vres.delta === 0) {

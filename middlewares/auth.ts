@@ -137,8 +137,8 @@ export async function basic(ctx: Context, next: Next): Promise<void> {
       }
 
       // Check 2FA token when enabled
-      typeHelper.isString(ctx.request.body.totpToken, ctx);
       if (userInfo.settings?.twoFactorAuth) {
+        typeHelper.isString(ctx.request.body.totpToken, ctx);
         const vres = notp.totp.verify(
           ctx.request.body.totpToken,
           userInfo.settings.twoFactorKey || '',

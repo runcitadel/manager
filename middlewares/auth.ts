@@ -1,5 +1,5 @@
 import {Buffer} from 'node:buffer';
-import {STATUS_CODES} from '@runcitadel/utils';
+import {STATUS_CODES, typeHelper} from '@runcitadel/utils';
 import * as passportJWT from 'passport-jwt';
 import * as passportHTTP from 'passport-http';
 import * as bcrypt from '@node-rs/bcrypt';
@@ -138,6 +138,7 @@ export async function basic(ctx: Context, next: Next): Promise<void> {
 
       // Check 2FA token when enabled
       if (userInfo.settings?.twoFactorAuth) {
+        typeHelper.isString(ctx.request.body.totpToken, ctx);
         const vres = notp.totp.verify(
           ctx.request.body.totpToken,
           userInfo.settings.twoFactorKey || '',

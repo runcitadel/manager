@@ -1,23 +1,20 @@
-import nodeFetch from 'node-fetch';
-import semver from 'semver';
-import {encode, UrlVersion} from '@runcitadel/lndconnect';
-import socksProxyAgentPkg from 'socks-proxy-agent';
+import * as semver from "https://deno.land/std@0.153.0/semver/mod.ts";
+import {encode as encodeLnurl} from "https://deno.land/x/lndconnect@v1.0.1/mod.ts";
+import {encode as encodeHex} from "https://deno.land/std@0.153.0/encoding/hex.ts";
 
 import type {
   updateStatus,
   debugStatus,
   backupStatus,
   systemStatus,
-} from '@runcitadel/utils';
-import * as constants from '../utils/const.js';
-import {runCommand} from '../services/karen.js';
-import * as diskLogic from './disk.js';
+} from "https://esm.sh/@runcitadel/utils@0.9.2";
+import * as constants from '../utils/const.ts';
+import {runCommand} from '../services/karen.ts';
+import * as diskLogic from './disk.ts';
+import {Tor} from "https://deno.land/x/tor@0.0.3.10/mod.ts";
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const {SocksProxyAgent} = socksProxyAgentPkg;
-
-const agent = new SocksProxyAgent(
-  `socks5h://${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`,
+const tor = new Tor(
+  `${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`,
 );
 
 export type ConnectionDetails = {
@@ -140,9 +137,9 @@ export async function getAvailableUpdate(): Promise<VersionFile | string> {
       const infoUrl = `https://raw.githubusercontent.com/${constants.GITHUB_REPO}/${tag}/info.json`;
 
       // eslint-disable-next-line no-await-in-loop
-      const latestVersionInfo = await nodeFetch(infoUrl, {agent});
+      const latestVersionInfo = await tor.get(infoUrl);
       // eslint-disable-next-line no-await-in-loop
-      data = (await latestVersionInfo.json()) as VersionFile;
+      data = JSON.parse(latestVersionInfo) as VersionFile;
 
       const latestVersion = data.version;
       const requiresVersionRange = data.requires;
@@ -249,7 +246,7 @@ export async function getLndConnectUrls(): Promise<LndConnectionDetails> {
   let macaroon: string;
   try {
     const macaroonBuffer = await diskLogic.readLndAdminMacaroon();
-    macaroon = macaroonBuffer.toString('hex');
+    macaroon = new TextDecoder().decode(encodeHex(macaroonBuffer));
   } catch {
     throw new Error('Unable to read lnd macaroon file');
   }
@@ -262,7 +259,7 @@ export async function getLndConnectUrls(): Promise<LndConnectionDetails> {
     throw new Error('Unable to read lnd REST hostname file');
   }
 
-  const restTor = encode({
+  const restTor = encodeLnurl({
     host: restTorHost,
     cert,
     macaroon,
@@ -276,104 +273,24 @@ export async function getLndConnectUrls(): Promise<LndConnectionDetails> {
     throw new Error('Unable to read lnd gRPC hostname file');
   }
 
-  const grpcTor = encode({
+  const grpcTor = encodeLnurl({
     host: grpcTorHost,
     cert,
     macaroon,
   });
 
   const restLocalHost = `${constants.DEVICE_HOSTNAME}:8080`;
-  const restLocal = encode({
+  const restLocal = encodeLnurl({
     host: restLocalHost,
     cert,
     macaroon,
   });
 
   const grpcLocalHost = `${constants.DEVICE_HOSTNAME}:10009`;
-  const grpcLocal = encode({
+  const grpcLocal = encodeLnurl({
     host: grpcLocalHost,
     cert,
     macaroon,
-  });
-
-  return {
-    restTor,
-    restLocal,
-    grpcTor,
-    grpcLocal,
-  };
-}
-
-export async function getLnConnectUrls(
-  lightningImplementation: 'lnd' | 'c-lightning' | 'c-lightning-rest',
-): Promise<LndConnectionDetails> {
-  let cert;
-  try {
-    cert = await diskLogic.readLndCert();
-  } catch {
-    throw new Error('Unable to read lnd cert file');
-  }
-
-  let macaroon: string;
-  try {
-    const macaroonBuffer = await diskLogic.readLndAdminMacaroon();
-    macaroon = macaroonBuffer.toString('hex');
-  } catch {
-    throw new Error('Unable to read lnd macaroon file');
-  }
-
-  let restTorHost;
-  try {
-    restTorHost = await diskLogic.readLndRestHiddenService();
-    restTorHost += ':8080';
-  } catch {
-    throw new Error('Unable to read lnd REST hostname file');
-  }
-
-  if (lightningImplementation === 'c-lightning') {
-    lightningImplementation = 'c-lightning-rest';
-  }
-
-  const restTor = encode({
-    host: restTorHost,
-    cert,
-    macaroon,
-    server: lightningImplementation,
-    version: UrlVersion.LNCONNECT_UNIVERSAL_V0,
-  });
-
-  let grpcTorHost;
-  try {
-    grpcTorHost = await diskLogic.readLndGrpcHiddenService();
-    grpcTorHost += ':10009';
-  } catch {
-    throw new Error('Unable to read lnd gRPC hostname file');
-  }
-
-  const grpcTor = encode({
-    host: grpcTorHost,
-    cert,
-    macaroon,
-    server: lightningImplementation,
-    version: UrlVersion.LNCONNECT_UNIVERSAL_V0,
-  });
-
-  const restLocalHost = `${constants.DEVICE_HOSTNAME}:8080`;
-  const restLocal = encode({
-    host: restLocalHost,
-    cert,
-    macaroon,
-    server: lightningImplementation,
-    version: UrlVersion.LNCONNECT_UNIVERSAL_V0,
-  });
-
-  const grpcLocalHost = `${constants.DEVICE_HOSTNAME}:10009`;
-  const grpcLocal = encode({
-    host: grpcLocalHost,
-    cert,
-    macaroon,
-    server: lightningImplementation,
-    version: UrlVersion.LNCONNECT_UNIVERSAL_V0,
   });
 
   return {
@@ -429,10 +346,10 @@ export async function requestReboot(): Promise<systemStatus> {
   }
 }
 
-export async function setUpdateChannel(channel: string): Promise<void> {
+export function setUpdateChannel(channel: string): Promise<void> {
   return runCommand(`trigger set-update-channel ${channel}`);
 }
 
-export async function startQuickUpdate(): Promise<void> {
+export function startQuickUpdate(): Promise<void> {
   return runCommand(`trigger quick-update`);
 }

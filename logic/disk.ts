@@ -1,18 +1,14 @@
-import * as path from 'node:path';
-
-import {Buffer} from 'node:buffer';
-import * as fs from '@runcitadel/fs';
-
 import type {
   backupStatus,
   updateStatus,
   versionFile,
   debugStatus,
-} from '@runcitadel/utils';
-import * as constants from '../utils/const.js';
-import {runCommand} from '../services/karen.js';
-import type {App} from './apps.js';
-
+} from "https://esm.sh/@runcitadel/utils@0.9.2";
+import * as constants from '../utils/const.ts';
+import {runCommand} from '../services/karen.ts';
+import type {App} from './apps.ts';
+import { exists, existsSync, ensureFile } from "https://deno.land/std@0.153.0/fs/mod.ts";
+import { join } from "https://deno.land/std@0.153.0/path/mod.ts";
 type UserSettings = {
   twoFactorAuth: boolean;
   twoFactorKey: string | false;
@@ -24,15 +20,52 @@ export type UserFile = {
   /** The users password, hashed by bcrypt */
   password?: string;
   /** The users mnemoic LND seed */
-  seed?: string | Buffer | ArrayBuffer;
+  seed?: string;
   /** The list of IDs of installed apps */
   installedApps?: string[];
   /** User settings */
   settings?: UserSettings;
 };
 
-export async function deleteUserFile(): Promise<void> {
-  await fs.unlink(constants.USER_FILE);
+function getRandomString(s: number) {
+  if (s % 2 == 1) {
+    throw new Deno.errors.InvalidData("Only even sizes are supported");
+  }
+  const buf = new Uint8Array(s / 2);
+  crypto.getRandomValues(buf);
+  let ret = "";
+  for (let i = 0; i < buf.length; ++i) {
+    ret += ("0" + buf[i].toString(16)).slice(-2);
+  }
+  return ret;
+}
+
+async function readJsonFile(path: string) {
+  const contents = await Deno.readTextFile(path);
+  return JSON.parse(contents);
+}
+
+function writeJsonFile(path: string, data: unknown): Promise<void> {
+  return Deno.writeTextFile(path, JSON.stringify(data));
+}
+
+async function safeWriteTextFile(
+  filePath: string,
+  data: string
+): Promise<void> {
+  const tempFileName = `${filePath}.${getRandomString(8)}`;
+
+  await Deno.writeTextFile(tempFileName, data);
+  try {
+      await Deno.rename(tempFileName, filePath);
+  } catch (err) {
+      await Deno.remove(tempFileName);
+      throw err;
+  }
+}
+
+export function deleteUserFile(): Promise<void> {
+  return Deno.remove(constants.USER_FILE);
 }
 
 export async function disable2fa(): Promise<void> {
@@ -77,61 +110,62 @@ export async function readUserFile(): Promise<UserFile> {
     seed: '',
     installedApps: [],
   };
-  const userFile = (await fs.readJSONFile(constants.USER_FILE)) as UserFile;
+  const userFile = (await readJsonFile(constants.USER_FILE)) as UserFile;
   return {...defaultProperties, ...userFile};
 }
 
 export async function writeUserFile(json: UserFile): Promise<void> {
-  await fs.writeJsonFile(constants.USER_FILE, json);
+  await writeJsonFile(constants.USER_FILE, json);
 }
 
 export async function writeSeedFile(
   seed: string,
-): Promise<void | NodeJS.ErrnoException> {
-  return fs.ensureWriteFile(constants.SEED_FILE, seed);
+): Promise<void> {
+  await ensureFile(constants.SEED_FILE);
+  return Deno.writeTextFile(constants.SEED_FILE, seed);
 }
 
-export async function readSeedFile(): Promise<Buffer | string> {
-  return fs.readFile(constants.SEED_FILE);
+export function readSeedFile(): Promise<string> {
+  return Deno.readTextFile(constants.SEED_FILE);
 }
 
 export function seedFileExists(): boolean {
-  return fs.existsSync(constants.SEED_FILE);
+  return existsSync(constants.SEED_FILE);
 }
 
-export async function readElectrumHiddenService(): Promise<string> {
+export function readElectrumHiddenService(): Promise<string> {
   return readHiddenService('electrum');
 }
 
-export async function readBitcoinP2pHiddenService(): Promise<string> {
+export function readBitcoinP2pHiddenService(): Promise<string> {
   return readHiddenService('bitcoin-p2p');
 }
 
-export async function readBitcoinRpcHiddenService(): Promise<string> {
+export function readBitcoinRpcHiddenService(): Promise<string> {
   return readHiddenService('bitcoin-rpc');
 }
 
-export async function readLndRestHiddenService(): Promise<string> {
+export function readLndRestHiddenService(): Promise<string> {
   return readHiddenService('lnd-rest');
 }
 
-export async function readLndGrpcHiddenService(): Promise<string> {
+export function readLndGrpcHiddenService(): Promise<string> {
   return readHiddenService('lnd-grpc');
 }
 
-export async function readLndCert(): Promise<string> {
-  return fs.readUtf8File(constants.LND_CERT_FILE);
+export function readLndCert(): Promise<string> {
+  return Deno.readTextFile(constants.LND_CERT_FILE);
 }
 
-export async function readLndAdminMacaroon(): Promise<Buffer> {
-  return fs.readFile(constants.LND_ADMIN_MACAROON_FILE);
+export function readLndAdminMacaroon(): Promise<Uint8Array> {
+  return Deno.readFile(constants.LND_ADMIN_MACAROON_FILE);
 }
 
-export async function readVersionFile(): Promise<versionFile> {
-  return (await fs.readJSONFile(constants.VERSION_FILE)) as versionFile;
+export function readVersionFile(): Promise<versionFile> {
+  return readJsonFile(constants.VERSION_FILE);
 }
 
-export async function readUpdateStatusFile(): Promise<updateStatus> {
+export function readUpdateStatusFile(): Promise<updateStatus> {
   return readJsonStatusFile<updateStatus>('update');
 }
 
@@ -139,39 +173,39 @@ export async function writeUpdateStatusFile(json: updateStatus): Promise<void> {
   await writeJsonStatusFile('update', json);
 }
 
-export async function updateLockFileExists(): Promise<boolean> {
+export function updateLockFileExists(): Promise<boolean> {
   return statusFileExists('update-in-progress');
 }
 
-export async function readBackupStatusFile(): Promise<backupStatus> {
+export function readBackupStatusFile(): Promise<backupStatus> {
   return readJsonStatusFile<backupStatus>('backup');
 }
 
-export async function readJwtPrivateKeyFile(): Promise<string> {
-  return fs.readUtf8File(constants.JWT_PRIVATE_KEY_FILE);
+export function readJwtPrivateKeyFile(): Promise<string> {
+  return Deno.readTextFile(constants.JWT_PRIVATE_KEY_FILE);
 }
 
-export async function readJwtPublicKeyFile(): Promise<string> {
-  return fs.readUtf8File(constants.JWT_PUBLIC_KEY_FILE);
+export function readJwtPublicKeyFile(): Promise<string> {
+  return Deno.readTextFile(constants.JWT_PUBLIC_KEY_FILE);
 }
 
-export async function writeJwtPrivateKeyFile(data: string): Promise<void> {
-  return fs.safeWriteFile(constants.JWT_PRIVATE_KEY_FILE, data);
+export function writeJwtPrivateKeyFile(data: string): Promise<void> {
+  return safeWriteTextFile(constants.JWT_PRIVATE_KEY_FILE, data);
 }
 
-export async function writeJwtPublicKeyFile(data: string): Promise<void> {
-  return fs.safeWriteFile(constants.JWT_PUBLIC_KEY_FILE, data);
+export function writeJwtPublicKeyFile(data: string): Promise<void> {
+  return safeWriteTextFile(constants.JWT_PUBLIC_KEY_FILE, data);
 }
 
-export async function shutdown(): Promise<void> {
-  await runCommand('trigger shutdown');
+export function shutdown(): Promise<void> {
+  return runCommand('trigger shutdown');
 }
 
-export async function reboot(): Promise<void> {
-  await runCommand('trigger reboot');
+export function reboot(): Promise<void> {
+  return runCommand('trigger reboot');
 }
 
-export async function readDebugStatusFile(): Promise<debugStatus> {
+export function readDebugStatusFile(): Promise<debugStatus> {
   return readJsonStatusFile<debugStatus>('debug');
 }
 
@@ -183,8 +217,9 @@ export async function writeStatusFile(
     throw new Error('Invalid status file characters');
   }
 
-  const statusFilePath = path.join(constants.STATUS_DIR, statusFile);
-  return fs.ensureWriteFile(statusFilePath, contents);
+  const statusFilePath = join(constants.STATUS_DIR, statusFile);
+  await ensureFile(statusFilePath);
+  return Deno.writeTextFile(statusFilePath, contents);
 }
 
 export async function readStatusFile<FileType = unknown>(
@@ -194,69 +229,69 @@ export async function readStatusFile<FileType = unknown>(
     throw new Error('Invalid status file characters');
   }
 
-  const statusFilePath = path.join(constants.STATUS_DIR, statusFile);
-  return (await fs.readJSONFile(statusFilePath)) as FileType;
+  const statusFilePath = join(constants.STATUS_DIR, statusFile);
+  return (await readJsonFile(statusFilePath)) as FileType;
 }
 
-export function statusFileExists(statusFile: string): boolean {
+export function statusFileExists(statusFile: string): Promise<boolean> {
   if (!/^[\w-]+$/.test(statusFile)) {
     throw new Error('Invalid status file characters');
   }
 
-  const statusFilePath = path.join(constants.STATUS_DIR, statusFile);
-  return fs.existsSync(statusFilePath);
+  const statusFilePath = join(constants.STATUS_DIR, statusFile);
+  return exists(statusFilePath);
 }
 
-export async function deleteStatusFile(statusFile: string): Promise<void> {
+export function deleteStatusFile(statusFile: string): Promise<void> {
   if (!/^[\w-]+$/.test(statusFile)) {
     throw new Error('Invalid status file characters');
   }
 
-  const statusFilePath = path.join(constants.STATUS_DIR, statusFile);
-  await fs.unlink(statusFilePath);
+  const statusFilePath = join(constants.STATUS_DIR, statusFile);
+  return Deno.remove(statusFilePath);
 }
 
 export async function readAppRegistry(): Promise<App[]> {
-  const appRegistryFile = path.join(constants.APPS_DIR, 'registry.json');
-  return (await fs.readJSONFile(appRegistryFile)) as App[];
+  const appRegistryFile = join(constants.APPS_DIR, 'registry.json');
+  return (await readJsonFile(appRegistryFile)) as App[];
 }
 
-export async function readHiddenService(id: string): Promise<string> {
+export function readHiddenService(id: string): Promise<string> {
   if (!/^[\w-]+$/.test(id)) {
     throw new Error('Invalid hidden service ID');
   }
 
-  const hiddenServiceFile = path.join(
+  const hiddenServiceFile = join(
     constants.TOR_HIDDEN_SERVICE_DIR,
     id,
     'hostname',
   );
-  return fs.readUtf8File(hiddenServiceFile);
+  return Deno.readTextFile(hiddenServiceFile);
 }
 
-export async function readTextStatusFile(resource: string): Promise<Buffer> {
-  const statusFilePath = path.join(constants.STATUS_DIR, resource);
-  return fs.readFile(statusFilePath);
+export function readTextStatusFile(resource: string): Promise<string> {
+  const statusFilePath = join(constants.STATUS_DIR, resource);
+  return Deno.readTextFile(statusFilePath);
 }
 
 export async function readJsonStatusFile<FileType = unknown>(
   resource: string,
 ): Promise<FileType> {
-  const statusFilePath = path.join(
+  const statusFilePath = join(
     constants.STATUS_DIR,
     `${resource}-status.json`,
   );
-  return (await fs.readJSONFile(statusFilePath).catch(() => null)) as FileType;
+  return (await readJsonFile(statusFilePath).catch(() => null)) as FileType;
 }
 
 export async function writeJsonStatusFile(
   resource: string,
   data: unknown,
 ): Promise<void | NodeJS.ErrnoException> {
-  const statusFilePath = path.join(
+  const statusFilePath = join(
     constants.STATUS_DIR,
     `${resource}-status.json`,
   );
-  await fs.touch(statusFilePath);
-  return fs.writeJsonFile(statusFilePath, data);
+  await ensureFile(statusFilePath);
+  return writeJsonFile(statusFilePath, data);
 }

@@ -1,40 +1,38 @@
-import Router from '@koa/router';
+import { Router, Status } from "https://deno.land/x/oak@v11.1.0/mod.ts";
 
-import {typeHelper, errorHandler, STATUS_CODES} from '@runcitadel/utils';
-import type {user as userFile} from '@runcitadel/utils';
-import notp from 'notp';
-import * as authLogic from '../../logic/auth.js';
+import * as diskLogic from "../../logic/disk.ts";
+import * as auth from "../../middlewares/auth.ts";
+import * as typeHelper from "../../utils/types.ts";
 
-import * as auth from '../../middlewares/auth.js';
-import {migrateAdminLegacyUser} from '../../logic/user.js';
-
-import * as diskLogic from '../../logic/disk.js';
+import notp from "https://esm.sh/notp@2.0.3";
+import * as authLogic from "../../logic/auth.ts";
+import { getPasswordFromContext } from "../../utils/auth.ts";
 
 const router = new Router({
-  prefix: '/v1/account',
+  prefix: "/v1/account",
 });
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 const COMPLETE = 100;
-
-router.use(errorHandler);
 
 // Endpoint to change your password.
 router.post(
-  '/change-password',
+  "/change-password",
   auth.convertRequestBodyToBasicAuth,
   auth.basic,
   async (ctx, next) => {
+    const body = await ctx.request.body({
+      type: "json",
+    }).value;
     if (
-      typeof ctx.request.body.password !== 'string' ||
-      typeof ctx.request.body.newPassword !== 'string'
+      typeof body.password !== "string" ||
+      typeof body.newPassword !== "string"
     ) {
-      ctx.throw('Received invalid data.');
+      ctx.throw(Status.BadRequest, "Received invalid data.");
     }
 
     // Use password from the body by default. Basic auth has issues handling special characters.
-    const currentPassword: string = ctx.request.body.password as string;
-    const newPassword: string = ctx.request.body.newPassword as string;
+    const currentPassword: string = body.password as string;
+    const newPassword: string = body.newPassword as string;
 
     try {
       typeHelper.isString(currentPassword, ctx);
@@ -42,10 +40,13 @@ router.post(
       typeHelper.isString(newPassword, ctx);
       typeHelper.isMinPasswordLength(newPassword, ctx);
       if (newPassword === currentPassword) {
-        ctx.throw('The new password must not be the same as existing password');
+        ctx.throw(
+          Status.BadRequest,
+          "The new password must not be the same as existing password",
+        );
       }
     } catch {
-      ctx.throw('Invalid password supplied.');
+      ctx.throw(Status.Unauthorized, "Invalid password supplied.");
       return;
     }
 
@@ -53,16 +54,19 @@ router.post(
 
     // Return a conflict if a change password process is already running
     if (status.percent > 0 && status.percent !== COMPLETE) {
-      ctx.status = STATUS_CODES.CONFLICT;
+      ctx.response.status = Status.Conflict;
     }
 
     try {
       // Start change password process in the background and immediately return
       await authLogic.changePassword(currentPassword, newPassword);
-      ctx.status = STATUS_CODES.OK;
-      ctx.body = status;
+      ctx.response.status = Status.OK;
+      ctx.response.body = status;
     } catch (error: unknown) {
-      ctx.throw(typeof error === 'string' ? error : JSON.stringify(error));
+      ctx.throw(
+        Status.InternalServerError,
+        typeof error === "string" ? error : JSON.stringify(error),
+      );
     }
 
     await next();
@@ -70,148 +74,151 @@ router.post(
 );
 
 // Returns the current status of the change password process.
-router.get('/change-password/status', auth.jwt, async (ctx, next) => {
+router.get("/change-password/status", auth.jwt, async (ctx, next) => {
   const status = authLogic.getChangePasswordStatus();
-  ctx.body = status;
+  ctx.response.body = status;
   await next();
 });
 
 // Registered does not need auth. This is because the user may not be registered at the time and thus won't always have
 // an auth token.
-router.get('/registered', async (ctx, next) => {
-  ctx.body = {registered: await authLogic.isRegistered()};
+router.get("/registered", async (ctx, next) => {
+  ctx.response.body = { registered: await authLogic.isRegistered() };
   await next();
 });
 
 // Endpoint to register a password with the device. Wallet must not exist. This endpoint is authorized with basic auth
 // or the property password from the body.
 router.post(
-  '/register',
+  "/register",
   auth.convertRequestBodyToBasicAuth,
-  auth.register,
   async (ctx, next) => {
-    const seed: string[] = ctx.request.body.seed as string[];
-    const user: userFile = ctx.state.user as userFile;
+    const body = await ctx.request.body({
+      type: "json",
+    }).value;
+    const plainTextPassword = getPasswordFromContext(ctx);
+    typeHelper.isString(plainTextPassword, ctx);
+    const seed: string[] = body.seed as string[];
 
     if (seed.length !== 24) {
-      ctx.throw('Invalid seed length');
+      ctx.throw(Status.BadRequest, "Invalid seed length");
     }
 
-    typeHelper.isString(ctx.request.body.name, ctx);
-    typeHelper.isString(user.plainTextPassword, ctx);
-    typeHelper.isMinPasswordLength(user.plainTextPassword!, ctx);
+    typeHelper.isString(body.name, ctx);
+    typeHelper.isString(plainTextPassword, ctx);
+    typeHelper.isMinPasswordLength(plainTextPassword, ctx);
 
-    // Add name to user obj
-    /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
-    user.name = ctx.request.body.name;
 
-    const jwt = await authLogic.register(user, seed);
+    const jwt = await authLogic.register(body.name, plainTextPassword, seed);
 
-    try {
-      await migrateAdminLegacyUser(user.name, user.plainTextPassword!);
-    } catch (error: unknown) {
-      console.error(error);
-    }
-
-    ctx.body = {jwt};
+    ctx.response.body = { jwt };
     await next();
   },
 );
 
 router.post(
-  '/login',
+  "/login",
   auth.convertRequestBodyToBasicAuth,
   auth.basic,
   async (ctx, next) => {
-    const jwt = await authLogic.login(ctx.state.user as userFile);
+    const plainTextPassword = getPasswordFromContext(ctx);
+    typeHelper.isString(plainTextPassword, ctx);
+    const jwt = await authLogic.login(plainTextPassword);
 
-    ctx.body = {jwt};
+    ctx.response.body = { jwt };
     await next();
   },
 );
 
-router.get('/info', auth.jwt, async (ctx, next) => {
-  ctx.body = await authLogic.getInfo();
+router.get("/info", auth.jwt, async (ctx, next) => {
+  ctx.response.body = await authLogic.getInfo();
   await next();
 });
 
 router.post(
-  '/seed',
+  "/seed",
   auth.convertRequestBodyToBasicAuth,
   auth.basic,
   async (ctx, next) => {
-    const seed = await authLogic.seed(ctx.state.user as userFile);
-    ctx.body = {seed};
+    const plainTextPassword = getPasswordFromContext(ctx);
+    const seed = await authLogic.seed(plainTextPassword);
+    ctx.response.body = { seed };
     await next();
   },
 );
 
-router.post('/refresh', auth.jwt, async (ctx, next) => {
-  const jwt = await authLogic.refresh(ctx.state.user as userFile);
-  ctx.body = {jwt};
+router.post("/refresh", auth.jwt, async (ctx, next) => {
+  const jwt = await authLogic.refresh();
+  ctx.response.body = { jwt };
   await next();
 });
 
-router.get('/totp/setup', auth.jwt, async (ctx, next) => {
+router.get("/totp/setup", auth.jwt, async (ctx, next) => {
   const info = await authLogic.getInfo();
   const twoFactorKey = info.settings?.twoFactorKey
     ? info.settings?.twoFactorKey
     : undefined;
   const key = await authLogic.setupTotp(twoFactorKey);
   const encodedKey = authLogic.encodeKey(key);
-  ctx.body = {key: encodedKey.toString()};
+  ctx.response.body = { key: encodedKey.toString() };
   await next();
 });
 
-router.post('/totp/enable', auth.jwt, async (ctx) => {
+router.post("/totp/enable", auth.jwt, async (ctx) => {
+  const body = await ctx.request.body({
+    type: "json",
+  }).value;
   const info = await authLogic.getInfo();
 
-  if (info.settings?.twoFactorKey && ctx.request.body.authenticatorToken) {
+  if (info.settings?.twoFactorKey && body.authenticatorToken) {
     // TOTP should be already set up
     const key = info.settings?.twoFactorKey;
 
-    typeHelper.isString(ctx.request.body.authenticatorToken, ctx);
-    const vres = notp.totp.verify(ctx.request.body.authenticatorToken, key);
+    typeHelper.isString(body.authenticatorToken, ctx);
+    const vres = notp.totp.verify(body.authenticatorToken, key);
 
     if (vres && vres.delta === 0) {
       await authLogic.enableTotp(key);
-      ctx.body = {success: true};
+      ctx.response.body = { success: true };
     } else {
-      ctx.throw('TOTP token invalid');
+      ctx.throw(Status.Unauthorized, "TOTP token invalid");
     }
   } else {
-    ctx.throw('TOTP enable failed');
+    ctx.throw(Status.InternalServerError, "TOTP enable failed");
   }
 });
 
-router.post('/totp/disable', auth.jwt, async (ctx, next) => {
+router.post("/totp/disable", auth.jwt, async (ctx, next) => {
   const info = await authLogic.getInfo();
+  const body = await ctx.request.body({
+    type: "json",
+  }).value;
 
-  if (info.settings?.twoFactorKey && ctx.request.body.authenticatorToken) {
+  if (info.settings?.twoFactorKey && body.authenticatorToken) {
     // TOTP should be already set up
     const key = info.settings?.twoFactorKey;
 
-    typeHelper.isString(ctx.request.body.authenticatorToken, ctx);
-    const vres = notp.totp.verify(ctx.request.body.authenticatorToken, key);
+    typeHelper.isString(body.authenticatorToken, ctx);
+    const vres = notp.totp.verify(body.authenticatorToken, key);
 
     if (vres && vres.delta === 0) {
       await diskLogic.disable2fa();
-      ctx.body = {success: true};
+      ctx.response.body = { success: true };
     } else {
-      ctx.throw('TOTP token invalid', STATUS_CODES.UNAUTHORIZED);
+      ctx.throw(Status.Unauthorized, "TOTP token invalid");
     }
   } else {
-    ctx.throw('TOTP enable failed');
+    ctx.throw(Status.InternalServerError, "TOTP disable failed");
   }
 
   await next();
 });
 
 // Returns the current status of TOTP.
-router.get('/totp/status', async (ctx, next) => {
+router.get("/totp/status", async (ctx, next) => {
   const userFile = await diskLogic.readUserFile();
   const status = userFile.settings?.twoFactorAuth ?? false;
-  ctx.body = {totpEnabled: status};
+  ctx.response.body = { totpEnabled: status };
   await next();
 });
 

@@ -1,63 +1,59 @@
-import Router from '@koa/router';
-import {errorHandler, STATUS_CODES} from '@runcitadel/utils';
+import { Router, Status } from "https://deno.land/x/oak@v11.1.0/mod.ts";
 
-import * as appsLogic from '../../logic/apps.js';
-import * as diskLogic from '../../logic/disk.js';
-import {refresh as refreshJwt} from '../../logic/auth.js';
+import * as appsLogic from '../../logic/apps.ts';
 
-import * as auth from '../../middlewares/auth.js';
-import {runCommand} from '../../services/karen.js';
+import * as auth from '../../middlewares/auth.ts';
+import {runCommand} from '../../services/karen.ts';
 
 const router = new Router({
   prefix: '/v1/apps',
 });
 
-router.use(errorHandler);
-
 router.get('/', auth.jwt, async (ctx, next) => {
+  // auth.jwt ensures this exists
+  const jwt = ctx.request.headers.get("Authorization")?.split(" ")[1];
   const query = {
-    installed: ctx.request.query.installed === '1',
+    installed: ctx.request.url.searchParams.get("installed") === '1',
   };
-  const jwt = await refreshJwt(ctx.state.user as diskLogic.UserFile);
-  const apps = await appsLogic.get(query, jwt);
-  ctx.body = {apps, jwt};
+  const apps = await appsLogic.get(query, jwt as string);
+  ctx.response.body = {apps, jwt};
   await next();
 });
 
 router.post('/:id/install', auth.jwt, async (ctx, next) => {
   const {id} = ctx.params;
   await appsLogic.install(id);
-  ctx.body = {};
-  ctx.status = STATUS_CODES.OK;
+  ctx.response.body = {};
+  ctx.response.status = Status.OK;
   await next();
 });
 
 router.post('/:id/uninstall', auth.jwt, async (ctx, next) => {
   const {id} = ctx.params;
   await appsLogic.uninstall(id);
-  ctx.body = {};
-  ctx.status = STATUS_CODES.OK;
+  ctx.response.body = {};
+  ctx.response.status = Status.OK;
   await next();
 });
 
 router.post('/:id/update', auth.jwt, async (ctx, next) => {
   const {id} = ctx.params;
   await appsLogic.update(id);
-  ctx.body = {};
-  ctx.status = STATUS_CODES.OK;
+  ctx.response.body = {};
+  ctx.response.status = Status.OK;
   await next();
 });
 
 router.get('/updates', auth.jwt, async (ctx, next) => {
-  ctx.body = await appsLogic.getAvailableUpdates();
-  ctx.status = STATUS_CODES.OK;
+  ctx.response.body = await appsLogic.getAvailableUpdates();
+  ctx.response.status = Status.OK;
   await next();
 });
 
 router.post('/update', auth.jwt, async (ctx, next) => {
   await runCommand('trigger app-update');
-  ctx.body = {};
-  ctx.status = STATUS_CODES.OK;
+  ctx.response.body = {};
+  ctx.response.status = Status.OK;
   await next();
 });
 

@@ -1,61 +1,30 @@
-import {config} from 'dotenv';
+import {config} from "https://deno.land/x/dotenv@v3.2.0/mod.ts";
+import { Application } from "https://deno.land/x/oak@v11.1.0/mod.ts";
+import { oakCors } from "https://deno.land/x/cors@v1.2.2/mod.ts";
 
-import Koa, {Context} from 'koa';
-import morgan from 'koa-morgan';
-import bodyParser from 'koa-body';
-import passport from 'koa-passport';
-import cors from '@koa/cors';
-
-import {errorHandler, corsOptions} from '@runcitadel/utils';
-
-import ping from './routes/ping.js';
-import account from './routes/v1/account.js';
-import system from './routes/v1/system.js';
-import system2 from './routes/v2/system.js';
-import external from './routes/v1/external.js';
-import apps from './routes/v1/apps.js';
-
-// Unstable V3 API with multi-account support
-import account3 from './routes/v3/account.js';
-import system3 from './routes/v3/system.js';
-import apps3 from './routes/v3/apps.js';
+import ping from './routes/ping.ts';
+import account from './routes/v1/account.ts';
+import system from './routes/v1/system.ts';
+import system2 from './routes/v2/system.ts';
+import external from './routes/v1/external.ts';
+import apps from './routes/v1/apps.ts';
 
 config();
 
-const app = new Koa();
+const app = new Application();
 
-app.use(errorHandler);
-
-app.on('error', (error: Error, ctx: Context) => {
-  const route = ctx.request.URL.pathname ?? '';
-  const message = error.message ?? JSON.stringify(error);
-  console.warn(`[WARNING] ${message} on ${route}.`);
-  console.warn(error.stack);
-});
-
-// Handles CORS
-app.use(cors(corsOptions));
-
-app.use(bodyParser());
-app.use(passport.initialize());
-app.use(passport.session());
-
-app.use(morgan('combined'));
+app.use(oakCors({ origin: "*" }));
 
 app.use(ping.routes());
 
-// V1 API used by the old dashboard
+// V1 API
 app.use(account.routes());
-app.use(system.routes());
 app.use(external.routes());
 app.use(apps.routes());
+// Unused right now
+app.use(system.routes());
 
 // V2 API for Citadel SDK
 app.use(system2.routes());
 
-// Unstable V3 API with multi-account support
-app.use(account3.routes());
-app.use(system3.routes());
-app.use(apps3.routes());
-
-export default app;
+app.listen("0.0.0.0:3000");

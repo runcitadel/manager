@@ -1,11 +1,10 @@
-import * as process from 'node:process';
-import jwt from 'jsonwebtoken';
-import * as diskLogic from '../logic/disk.js';
+import jwt from "https://esm.sh/jsonwebtoken@8.5.1";
+import { readJwtPublicKeyFile, readJwtPrivateKeyFile } from '../logic/disk.ts';
 
 const {sign, verify} = jwt;
 
 export async function getIdFromJwt(payload: string): Promise<string> {
-  const pubkey = await diskLogic.readJwtPublicKeyFile();
+  const pubkey = await readJwtPublicKeyFile();
   return new Promise((resolve, reject) => {
     verify(payload, pubkey, (error, decoded) => {
       if (error) {
@@ -23,7 +22,7 @@ export async function getIdFromJwt(payload: string): Promise<string> {
   });
 }
 
-async function isValidJwt(payload: string, pubkey: string): Promise<boolean> {
+export function isValidJwt(payload: string, pubkey: string): Promise<boolean> {
   return new Promise((resolve) => {
     verify(payload, pubkey, (error) => {
       if (error) {
@@ -36,13 +35,13 @@ async function isValidJwt(payload: string, pubkey: string): Promise<boolean> {
 }
 
 // Environmental variables are strings, the expiry will be interpreted as milliseconds if not converted to int.
-const expiresIn = process.env.JWT_EXPIRATION
-  ? Number.parseInt(process.env.JWT_EXPIRATION, 10)
+const expiresIn = Deno.env.get("JWT_EXPIRATION")
+  ? Number.parseInt(Deno.env.get("JWT_EXPIRATION") as string, 10)
   : 3600;
 
 export async function generateJwt(account: string): Promise<string> {
-  const jwtPrivateKey = await diskLogic.readJwtPrivateKeyFile();
-  const jwtPubKey = await diskLogic.readJwtPublicKeyFile();
+  const jwtPrivateKey = await readJwtPrivateKeyFile();
+  const jwtPubKey = await readJwtPublicKeyFile();
 
   const token = sign({id: account}, jwtPrivateKey, {
     expiresIn,

@@ -1,11 +1,12 @@
-import Router from '@koa/router';
+import { Router } from "https://deno.land/x/oak@v11.1.0/mod.ts";
 
 const router = new Router({
-  prefix: '/ping',
+  prefix: "/ping",
 });
 
+
 router.get('/', async (ctx, next) => {
-  ctx.body = {
+  ctx.response.body = {
     version: 'Manager by Citadel',
     // This will later be used to check for features
     features: [],

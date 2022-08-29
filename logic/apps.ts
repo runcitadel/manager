@@ -1,6 +1,6 @@
-import * as lightningService from '../services/lightning-api.js';
-import {runCommand} from '../services/karen.js';
-import * as diskLogic from './disk.js';
+import * as lightningService from '../services/lightning-api.ts';
+import {runCommand} from '../services/karen.ts';
+import * as diskLogic from './disk.ts';
 
 /** A dependency an app could have */
 export type Dependency = 'bitcoind' | 'electrum' | 'lnd' | 'c-lightning';
@@ -164,7 +164,7 @@ export async function get(
   return apps;
 }
 
-async function isValidAppId(id: string): Promise<boolean> {
+function isValidAppId(id: string): boolean {
   if (!id) {
     return false;
   }
@@ -174,7 +174,7 @@ async function isValidAppId(id: string): Promise<boolean> {
 }
 
 export async function install(id: string): Promise<void> {
-  if (!(await isValidAppId(id))) {
+  if (!isValidAppId(id)) {
     throw new Error('Invalid app id');
   }
 
@@ -209,6 +209,6 @@ export async function update(id: string): Promise<void> {
   }
 }
 
-export async function getAvailableUpdates(): Promise<string[]> {
+export function getAvailableUpdates(): Promise<string[]> {
   return diskLogic.readJsonStatusFile<string[]>('app-updates');
 }

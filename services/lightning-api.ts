@@ -1,8 +1,8 @@
-import * as process from 'node:process';
-import {Middleware} from '@runcitadel/sdk';
 
-const lnapiUrl = process.env.MIDDLEWARE_API_URL ?? 'http://localhost';
-const lnapiPort = process.env.MIDDLEWARE_API_PORT ?? 3005;
+import {Middleware} from "https://deno.land/x/citadel@v0.5.3/mod.ts";
+
+const lnapiUrl = Deno.env.get("MIDDLEWARE_API_URL") || 'http://localhost';
+const lnapiPort = Deno.env.get("MIDDLEWARE_API_PORT") || 3005;
 const middleware = new Middleware(`${lnapiUrl}:${lnapiPort}`);
 
 export async function initializeWallet(
@@ -11,14 +11,6 @@ export async function initializeWallet(
 ): Promise<void> {
   middleware.jwt = jwt;
   await middleware.lightning.wallet.init(seed);
-}
-
-export async function signMessage(
-  message: string,
-  jwt: string,
-): Promise<string> {
-  middleware.jwt = jwt;
-  return middleware.lightning.signMessage(message);
 }
 
 export async function getImplementation(jwt: string) {

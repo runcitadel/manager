@@ -1,131 +1,122 @@
-import Router from '@koa/router';
-import {errorHandler, typeHelper} from '@runcitadel/utils';
+import { Router } from "https://deno.land/x/oak@v11.1.0/mod.ts";
+import * as typeHelper from '../../utils/types.ts';
 
-import * as systemLogic from '../../logic/system.js';
-import * as diskLogic from '../../logic/disk.js';
-import * as lightningService from '../../services/lightning-api.js';
-import {refresh as refreshJwt} from '../../logic/auth.js';
-import * as auth from '../../middlewares/auth.js';
-import * as constants from '../../utils/const.js';
+import * as systemLogic from '../../logic/system.ts';
+import * as diskLogic from '../../logic/disk.ts';
+import * as auth from '../../middlewares/auth.ts';
+import * as constants from '../../utils/const.ts';
+
 
 const router = new Router({
-  prefix: '/v2/system',
+  prefix: "/v1/external",
 });
 
-router.use(errorHandler);
 
 router.get('/info', auth.jwt, async (ctx, next) => {
-  ctx.body = await systemLogic.getInfo();
+  ctx.response.body = await systemLogic.getInfo();
   await next();
 });
 
 router.get('/dashboard-hidden-service', auth.jwt, async (ctx, next) => {
   const url = await systemLogic.getHiddenServiceUrl();
 
-  ctx.body = {url};
+  ctx.response.body = {url};
   await next();
 });
 
 router.get('/electrum-connection-details', auth.jwt, async (ctx, next) => {
-  ctx.body = await systemLogic.getElectrumConnectionDetails();
+  ctx.response.body = await systemLogic.getElectrumConnectionDetails();
   await next();
 });
 
 router.get('/bitcoin-p2p-connection-details', auth.jwt, async (ctx, next) => {
-  ctx.body = await systemLogic.getBitcoinP2pConnectionDetails();
+  ctx.response.body = await systemLogic.getBitcoinP2pConnectionDetails();
   await next();
 });
 
 router.get('/bitcoin-rpc-connection-details', auth.jwt, async (ctx, next) => {
-  ctx.body = await systemLogic.getBitcoinRpcConnectionDetails();
+  ctx.response.body = await systemLogic.getBitcoinRpcConnectionDetails();
   await next();
 });
 
 router.get('/lndconnect-urls', auth.jwt, async (ctx, next) => {
-  ctx.body = await systemLogic.getLndConnectUrls();
+  ctx.response.body = await systemLogic.getLndConnectUrls();
   await next();
 });
 
-router.get('/lnconnect-urls', auth.jwt, async (ctx, next) => {
-  const jwt = await refreshJwt(ctx.state.user as diskLogic.UserFile);
-  ctx.body = await systemLogic.getLnConnectUrls(
-    (await lightningService.getImplementation(jwt)) as 'lnd' | 'c-lightning',
-  );
-  await next();
-});
 
 router.get('/get-update', auth.jwt, async (ctx, next) => {
-  ctx.body = await systemLogic.getAvailableUpdate();
+  ctx.response.body = await systemLogic.getAvailableUpdate();
   await next();
 });
 
 router.get('/get-update-details', auth.jwt, async (ctx, next) => {
   const update = await systemLogic.getAvailableUpdate();
 
-  ctx.body = {update};
+  ctx.response.body = {update};
   await next();
 });
 
 router.get('/update-status', async (ctx, next) => {
-  ctx.body = await systemLogic.getUpdateStatus();
+  ctx.response.body = await systemLogic.getUpdateStatus();
   await next();
 });
 
 router.post('/update', auth.jwt, async (ctx, next) => {
-  ctx.body = await systemLogic.startUpdate();
+  ctx.response.body = await systemLogic.startUpdate();
   await next();
 });
 
 router.post('/quick-update', auth.jwt, async (ctx, next) => {
   await systemLogic.startQuickUpdate();
-  ctx.body = {};
+  ctx.response.body = {};
   await next();
 });
 
 router.get('/backup-status', auth.jwt, async (ctx, next) => {
-  ctx.body = await systemLogic.getBackupStatus();
+  ctx.response.body = await systemLogic.getBackupStatus();
   await next();
 });
 
 router.get('/debug-result', auth.jwt, async (ctx, next) => {
-  ctx.body = await systemLogic.getDebugResult();
+  ctx.response.body = await systemLogic.getDebugResult();
   await next();
 });
 
 router.post('/debug', auth.jwt, async (ctx, next) => {
-  ctx.body = await systemLogic.requestDebug();
+  ctx.response.body = await systemLogic.requestDebug();
   await next();
 });
 
 router.post('/shutdown', auth.jwt, async (ctx, next) => {
-  ctx.body = await systemLogic.requestShutdown();
+  ctx.response.body = await systemLogic.requestShutdown();
   await next();
 });
 
 router.post('/reboot', auth.jwt, async (ctx, next) => {
-  ctx.body = await systemLogic.requestReboot();
+  ctx.response.body = await systemLogic.requestReboot();
   await next();
 });
 
 router.get('/storage', async (ctx, next) => {
-  ctx.body = await diskLogic.readJsonStatusFile('storage');
+  ctx.response.body = await diskLogic.readJsonStatusFile('storage');
   await next();
 });
 
 router.get('/memory', async (ctx, next) => {
-  ctx.body = await diskLogic.readJsonStatusFile('memory');
+  ctx.response.body = await diskLogic.readJsonStatusFile('memory');
   await next();
 });
 
 router.get('/temperature', auth.jwt, async (ctx, next) => {
-  ctx.body = {
+  ctx.response.body = {
     temperature: await diskLogic.readJsonStatusFile('temperature'),
   };
   await next();
 });
 
 router.get('/uptime', auth.jwt, async (ctx, next) => {
-  ctx.body = {
+  ctx.response.body = {
     uptime: await diskLogic.readJsonStatusFile('uptime'),
   };
   await next();
@@ -138,33 +129,36 @@ router.get('/disk-type', auth.jwt, async (ctx, next) => {
       'external_storage',
     );
     externalStorage =
-      (externalStorageUnformatted.toString('utf-8').trim() as
+      (externalStorageUnformatted.trim() as
         | 'nvme'
         | 'unknown') || 'unknown';
   } catch (error: unknown) {
     console.error(error);
   }
 
-  ctx.body = {externalStorage};
+  ctx.response.body = {externalStorage};
   await next();
 });
 
 router.put('/update-channel', auth.jwt, async (ctx, next) => {
-  typeHelper.isString(ctx.request.body.channel, ctx);
-  await systemLogic.setUpdateChannel(ctx.request.body.channel as string);
-  ctx.body = {};
+  const body = await ctx.request.body({
+    type: "json",
+  }).value;
+  typeHelper.isString(body.channel, ctx);
+  await systemLogic.setUpdateChannel(body.channel as string);
+  ctx.response.body = {};
   await next();
 });
 
 router.get('/update-channel', auth.jwt, async (ctx, next) => {
-  ctx.body = {
+  ctx.response.body = {
     channel: constants.GITHUB_BRANCH,
   };
   await next();
 });
 
 router.get('/', auth.jwt, async (ctx, next) => {
-  ctx.body = {os: constants.IS_CITADEL_OS ? 'Citadel OS' : 'unknown'};
+  ctx.response.body = {os: constants.IS_CITADEL_OS ? 'Citadel OS' : 'unknown'};
   await next();
 });
 

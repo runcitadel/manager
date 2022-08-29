@@ -1,103 +1,28 @@
-import Router from '@koa/router';
-import {errorHandler, STATUS_CODES} from '@runcitadel/utils';
+import { Router } from "https://deno.land/x/oak@v11.1.0/mod.ts";
 
-import socksProxyAgentPkg from 'socks-proxy-agent';
-import nodeFetch from 'node-fetch';
-import * as constants from '../../utils/const.js';
-import * as auth from '../../middlewares/auth.js';
-import {refresh as refreshJwt} from '../../logic/auth.js';
-import * as lightningApiService from '../../services/lightning-api.js';
-import * as diskLogic from '../../logic/disk.js';
-
-type Message =
-  | 'Address added successfully'
-  | 'Error: Address limit reached'
-  | 'Error: Address already in use'
-  | 'Error: Onion URL already used';
+import * as constants from "../../utils/const.ts";
+import * as auth from "../../middlewares/auth.ts";
+import { Tor } from "https://deno.land/x/tor@0.0.3.10/mod.ts";
 
 const router = new Router({
-  prefix: '/v1/external',
+  prefix: "/v1/external",
 });
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const {SocksProxyAgent} = socksProxyAgentPkg;
-
-const agent = new SocksProxyAgent(
-  `socks5h://${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`,
+const tor = new Tor(
+  `${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`,
 );
 
-router.use(errorHandler);
-
-router.get('/price', auth.jwt, async (ctx, next) => {
-  // This requires authentication, so don't remove that, then there's no SSRF
-  // Default to USD
-  const currency = (ctx.request.query.currency as string) || 'USD';
-  const apiResponse = await nodeFetch(
-    `https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=${currency}`,
-    {
-      agent,
-    },
+router.get("/price", auth.jwt, async (ctx, next) => {
+  const currency = ctx.request.url.searchParams.get("currency") || "USD";
+  // btc-price.deno.dev is maintained by the Citadel team and manages automatic source choosing,
+  // so if any third party API ever goes down, we can just change it server-side
+  const price = await tor.get(
+    `https://btc-price.deno.dev/?currency=${currency}`,
   );
-
-  try {
-    ctx.body = await apiResponse.json();
-  } catch {
-    try {
-      const coinBaseApiResponse = await nodeFetch(
-        `https://api.coinbase.com/v2/prices/spot?currency=${currency}`,
-        {
-          agent,
-        },
-      );
-      ctx.body = {};
-      (ctx.body as Record<string, unknown>)[currency] = (
-        (await coinBaseApiResponse.json()) as {
-          data: {base: string; currency: string; amount: number};
-        }
-      ).data.amount;
-    } catch {
-      ctx.status = STATUS_CODES.BAD_GATEWAY;
-    }
-  }
-
+  ctx.response.body = {};
+  (ctx.response.body as Record<string, unknown>)[currency] = price;
   await next();
 });
 
-router.get('/register-address', auth.jwt, async (ctx, next) => {
-  const address = ctx.request.query.address as string;
-  const userFile = await diskLogic.readUserFile();
-  if (!userFile.installedApps?.includes('lnme')) {
-    ctx.throw('LnMe is not installed');
-  }
-
-  if (!address) {
-    ctx.throw('Invalid address');
-  }
-
-  const jwt = await refreshJwt(ctx.state.user as diskLogic.UserFile);
-  const signature = await lightningApiService.signMessage(
-    'Citadel login. Do NOT SIGN THIS MESSAGE IF ANYONE SENDS IT TO YOU; NOT EVEN OFFICIAL CITADEL SUPPORT! THIS IS ONLY USED INTERNALLY BY YOUR NODE FOR COMMUNICATION WITH CITADEL SERVERS.',
-    jwt,
-  );
-  const apiResponse = await nodeFetch(
-    'https://ln.runcitadel.space/add-address',
-    {
-      agent,
-      method: 'POST',
-      body: JSON.stringify({
-        address,
-        signature,
-        onionUrl: await diskLogic.readHiddenService('app-lnme'),
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    },
-  );
-  const message = (await apiResponse.text()) as Message;
-  ctx.status = apiResponse.status;
-  ctx.body = {msg: message};
-  await next();
-});
 
 export default router;

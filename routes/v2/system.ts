@@ -8,7 +8,7 @@ import * as constants from '../../utils/const.ts';
 
 
 const router = new Router({
-  prefix: "/v1/external",
+  prefix: "/v2/system",
 });
 
 

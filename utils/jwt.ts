@@ -1,7 +1,7 @@
 import { readJwtPrivateKeyFile } from "../logic/disk.ts";
 import { RSA } from "https://deno.land/x/god_crypto@v1.4.10/rsa.ts";
 import { encode } from "https://deno.land/x/god_crypto@v1.4.10/encode.ts";
-import { decode } from "https://deno.land/std@0.153.0/encoding/base64url.ts";
+import { encode as encodeBase64, decode } from "https://deno.land/std@0.153.0/encoding/base64url.ts";
 import { getNumericDate } from "https://deno.land/x/djwt@v2.7/mod.ts";
 
 export async function isValidJwt(
@@ -38,7 +38,7 @@ export async function generateJwt(account: string): Promise<string> {
   const expiration = getNumericDate(expiresIn);
   // {"alg":"RS256","typ":"JWT"} as base64url
   const header = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9";
-  const payload = encode.base64url(
+  const payload = encodeBase64(
     JSON.stringify({ account, exp: expiration }),
   );
   const unsigned = `${header}.${payload}`;

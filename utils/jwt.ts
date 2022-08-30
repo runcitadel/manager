@@ -1,37 +1,32 @@
-import jwt from "https://esm.sh/jsonwebtoken@8.5.1";
-import { readJwtPublicKeyFile, readJwtPrivateKeyFile } from '../logic/disk.ts';
+import { readJwtPrivateKeyFile } from "../logic/disk.ts";
+import { RSA } from "https://deno.land/x/god_crypto@v1.4.10/rsa.ts";
+import { encode } from "https://deno.land/x/god_crypto@v1.4.10/encode.ts";
+import { decode } from "https://deno.land/std@0.153.0/encoding/base64url.ts";
+import { getNumericDate } from "https://deno.land/x/djwt@v2.7/mod.ts";
 
-const {sign, verify} = jwt;
+export async function isValidJwt(
+  jwt: string,
+  pubkey: string,
+): Promise<boolean> {
+  try {
+    const [header, payload, signature] = jwt.split(".");
 
-export async function getIdFromJwt(payload: string): Promise<string> {
-  const pubkey = await readJwtPublicKeyFile();
-  return new Promise((resolve, reject) => {
-    verify(payload, pubkey, (error, decoded) => {
-      if (error) {
-        reject(new Error(`Invalid JWT: ${JSON.stringify(error)}`));
-        // Make sure decoded exists and is an object and id is defined and is a string
-      } else if (
-        typeof decoded === 'object' &&
-        typeof decoded.id === 'string'
-      ) {
-        resolve(decoded.id);
-      } else {
-        reject(new Error('Invalid JWT'));
-      }
-    });
-  });
-}
+    const key = RSA.parseKey(pubkey);
+    const rsa = new RSA(key);
 
-export function isValidJwt(payload: string, pubkey: string): Promise<boolean> {
-  return new Promise((resolve) => {
-    verify(payload, pubkey, (error) => {
-      if (error) {
-        resolve(false);
-      } else {
-        resolve(true);
-      }
-    });
-  });
+    const isValid = await rsa.verify(
+      encode.base64url(signature),
+      header + "." + payload,
+      { algorithm: "rsassa-pkcs1-v1_5", hash: "sha256" },
+    );
+    const decodedPayload = JSON.parse(
+      new TextDecoder().decode(decode(payload)),
+    );
+    return isValid && (decodedPayload.exp >= Date.now() / 1000);
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
 }
 
 // Environmental variables are strings, the expiry will be interpreted as milliseconds if not converted to int.
@@ -40,17 +35,21 @@ const expiresIn = Deno.env.get("JWT_EXPIRATION")
   : 3600;
 
 export async function generateJwt(account: string): Promise<string> {
-  const jwtPrivateKey = await readJwtPrivateKeyFile();
-  const jwtPubKey = await readJwtPublicKeyFile();
+  const expiration = getNumericDate(expiresIn);
+  // {"alg":"RS256","typ":"JWT"} as base64url
+  const header = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9";
+  const payload = encode.base64url(
+    JSON.stringify({ account, exp: expiration }),
+  );
+  const unsigned = `${header}.${payload}`;
 
-  const token = sign({id: account}, jwtPrivateKey, {
-    expiresIn,
-    algorithm: 'RS256',
-  });
+  const key = RSA.parseKey(await readJwtPrivateKeyFile());
+  const rsa = new RSA(key);
 
-  if (!(await isValidJwt(token, jwtPubKey))) {
-    throw new Error('Error generating JWT token.');
-  }
+  const signature = await rsa.sign(
+    unsigned,
+    { algorithm: "rsassa-pkcs1-v1_5", hash: "sha256" },
+  );
 
-  return token;
+  return `${unsigned}.${signature.base64url()}`;
 }

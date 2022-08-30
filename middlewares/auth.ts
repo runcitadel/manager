@@ -21,27 +21,21 @@ export async function generateJwtKeys(): Promise<void> {
   await diskLogic.writeJwtPublicKeyFile(publicKey);
 }
 
-// Override the authorization header with password that is in the body of the request if basic auth was not supplied.
-export const convertRequestBodyToBasicAuth: Middleware = async (
-  ctx,
-  next,
-): Promise<void> => {
-  const body = await ctx.request.body({
-    type: "json",
-  }).value;
-  if (body.password && !ctx.request.headers.get("authorization")) {
-    // We need to Base64 encode because Passport breaks on ":" characters
-    ctx.request.headers.set("authorization", "Basic " + body.password);
-  }
-
-  await next();
-};
-
 export const basic: Middleware = async (
   ctx,
   next,
 ): Promise<void> => {
-  const reqPassword = ctx.request.headers.get("Authorization")?.split(" ")[1];
+  let reqPassword = ctx.request.headers.get("Authorization")?.split(" ")[1];
+  // deno-lint-ignore no-explicit-any
+  let body: any;
+  try {
+    body = await ctx.request.body({
+      type: "json",
+    }).value;
+    reqPassword = body.password || reqPassword;
+  } catch {
+    // Allow failure
+  }
   if (!reqPassword) {
     ctx.throw(Status.BadRequest, '"Missing authorization header"');
   }
@@ -64,15 +58,11 @@ export const basic: Middleware = async (
     ctx.throw(Status.Unauthorized, '"Incorrect password"');
   }
 
-  const body = await ctx.request.body({
-    type: "json",
-  }).value;
-
   // Check 2FA token when enabled
   if (userInfo.settings?.twoFactorAuth) {
-    isString(body.totpToken, ctx);
+    isString(body?.totpToken, ctx);
     const vres = notp.totp.verify(
-      body.totpToken,
+      body?.totpToken,
       userInfo.settings.twoFactorKey || "",
     );
 

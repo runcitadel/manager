@@ -17,7 +17,6 @@ const COMPLETE = 100;
 // Endpoint to change your password.
 router.post(
   "/change-password",
-  auth.convertRequestBodyToBasicAuth,
   auth.basic,
   async (ctx, next) => {
     const body = await ctx.request.body({
@@ -91,12 +90,11 @@ router.get("/registered", async (ctx, next) => {
 // or the property password from the body.
 router.post(
   "/register",
-  auth.convertRequestBodyToBasicAuth,
   async (ctx, next) => {
     const body = await ctx.request.body({
       type: "json",
     }).value;
-    const plainTextPassword = getPasswordFromContext(ctx);
+    const plainTextPassword = await getPasswordFromContext(ctx);
     typeHelper.isString(plainTextPassword, ctx);
     const seed: string[] = body.seed as string[];
 
@@ -118,10 +116,9 @@ router.post(
 
 router.post(
   "/login",
-  auth.convertRequestBodyToBasicAuth,
   auth.basic,
   async (ctx, next) => {
-    const plainTextPassword = getPasswordFromContext(ctx);
+    const plainTextPassword = await getPasswordFromContext(ctx);
     typeHelper.isString(plainTextPassword, ctx);
     const jwt = await authLogic.login(plainTextPassword);
 
@@ -137,10 +134,9 @@ router.get("/info", auth.jwt, async (ctx, next) => {
 
 router.post(
   "/seed",
-  auth.convertRequestBodyToBasicAuth,
   auth.basic,
   async (ctx, next) => {
-    const plainTextPassword = getPasswordFromContext(ctx);
+    const plainTextPassword = await getPasswordFromContext(ctx);
     const seed = await authLogic.seed(plainTextPassword);
     ctx.response.body = { seed };
     await next();

@@ -39,7 +39,7 @@ export async function generateJwt(account: string): Promise<string> {
   // {"alg":"RS256","typ":"JWT"} as base64url
   const header = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9";
   const payload = encodeBase64(
-    JSON.stringify({ account, exp: expiration }),
+    JSON.stringify({ id: account, exp: expiration }),
   );
   const unsigned = `${header}.${payload}`;
 

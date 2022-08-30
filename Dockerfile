@@ -3,8 +3,8 @@ WORKDIR /app
 
 COPY . .
 
-RUN deno cache --check app.ts
+RUN deno cache --unstable --check app.ts
 
 EXPOSE 3000
 
-CMD ["deno", "run", "--allow-all", "app.ts"]
+CMD ["deno", "run", "--unstable", "--allow-all", "app.ts"]

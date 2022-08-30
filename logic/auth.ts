@@ -169,7 +169,8 @@ export async function login(plainTextPassword: string): Promise<string> {
     await setSystemPassword(plainTextPassword);
 
     return jwt;
-  } catch {
+  } catch (err) {
+    console.error(err);
     throw new Error("Unable to generate JWT");
   }
 }

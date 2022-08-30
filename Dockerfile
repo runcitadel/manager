@@ -3,7 +3,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN deno cache app.ts
+RUN deno cache --check app.ts
 
 EXPOSE 3000
 

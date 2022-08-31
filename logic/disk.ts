@@ -4,7 +4,7 @@ import type {
   versionFile,
   debugStatus,
 } from "https://esm.sh/@runcitadel/utils@0.9.2";
-import * as constants from '../utils/const.ts';
+import constants from '../utils/const.ts';
 import {runCommand} from '../services/karen.ts';
 import type {App} from './apps.ts';
 import { exists, existsSync, ensureFile } from "https://deno.land/std@0.153.0/fs/mod.ts";

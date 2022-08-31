@@ -8,7 +8,7 @@ import type {
   backupStatus,
   systemStatus,
 } from "https://esm.sh/@runcitadel/utils@0.9.2";
-import * as constants from '../utils/const.ts';
+import constants from '../utils/const.ts';
 import {runCommand} from '../services/karen.ts';
 import * as diskLogic from './disk.ts';
 import {Tor} from "https://deno.land/x/tor@0.0.3.10/mod.ts";

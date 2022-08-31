@@ -1,6 +1,6 @@
 import { Router } from "https://deno.land/x/oak@v11.1.0/mod.ts";
 
-import * as constants from "../../utils/const.ts";
+import constants from "../../utils/const.ts";
 import * as auth from "../../middlewares/auth.ts";
 import { Tor } from "https://deno.land/x/tor@0.0.3.10/mod.ts";
 

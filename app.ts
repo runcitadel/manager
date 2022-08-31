@@ -15,15 +15,26 @@ import external from "./routes/v1/external.ts";
 import apps from "./routes/v1/apps.ts";
 
 config();
-
 const appOptions = hasFlash() ? { serverConstructor: FlashServer } : undefined;
 
 const app = new Application(appOptions);
+
 
 app.use(logger.logger);
 app.use(logger.responseTime);
 
 app.use(oakCors({ origin: "*" }));
+
+// Handle errors
+app.use(async ({response}, next) => {
+  try {
+    await next();
+  // deno-lint-ignore no-explicit-any
+  } catch (err: any) {
+    response.status = err.status || 500;
+    response.body = err.message;
+  }
+});
 
 app.use(ping.routes());
 app.use(ping.allowedMethods());

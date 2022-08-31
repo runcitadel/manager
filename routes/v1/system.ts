@@ -16,7 +16,7 @@ router.get('/info', auth.jwt, async (ctx, next) => {
 });
 
 router.get('/dashboard-hidden-service', auth.jwt, async (ctx, next) => {
-  const url = await systemLogic.getHiddenServiceUrl();
+  const url = await diskLogic.readHiddenService('web');
 
   ctx.response.body = url;
   await next();

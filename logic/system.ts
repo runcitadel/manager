@@ -56,15 +56,6 @@ export async function getInfo(): Promise<VersionFile> {
   }
 }
 
-export async function getHiddenServiceUrl(): Promise<string> {
-  try {
-    const url = await diskLogic.readHiddenService('web');
-    return url;
-  } catch {
-    throw new Error('Unable to get hidden service url');
-  }
-}
-
 export async function getElectrumConnectionDetails(): Promise<ConnectionDetails> {
   try {
     const addressUnformatted = await diskLogic.readElectrumHiddenService();

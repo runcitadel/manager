@@ -44,19 +44,6 @@ type UserFile = {
   settings?: UserSettings;
 };
 
-export type ChangePasswordStatusType = {
-  percent: number;
-  error?: boolean;
-};
-
-let changePasswordStatus: ChangePasswordStatusType = { percent: 0 };
-
-resetChangePasswordStatus();
-
-export function resetChangePasswordStatus(): void {
-  changePasswordStatus = { percent: 0 };
-}
-
 // Sets system password
 const setSystemPassword = async (password: string) => {
   await diskLogic.writeStatusFile("password", password);
@@ -68,9 +55,6 @@ export async function changePassword(
   currentPassword: string,
   newPassword: string,
 ): Promise<void> {
-  resetChangePasswordStatus();
-  changePasswordStatus.percent = 1;
-
   try {
     // Update user file
     const user = await diskLogic.readUserFile();
@@ -93,18 +77,9 @@ export async function changePassword(
 
     // Update system password
     await setSystemPassword(newPassword);
-
-    changePasswordStatus.percent = 100;
   } catch {
-    changePasswordStatus.percent = 100;
-    changePasswordStatus.error = true;
-
     throw new Error("Unable to change password");
   }
-}
-
-export function getChangePasswordStatus(): ChangePasswordStatusType {
-  return changePasswordStatus;
 }
 
 // Returns an object with the hashed credentials inside.

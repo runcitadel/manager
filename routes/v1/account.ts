@@ -12,8 +12,6 @@ const router = new Router({
   prefix: "/v1/account",
 });
 
-const COMPLETE = 100;
-
 // Endpoint to change your password.
 router.post(
   "/change-password",
@@ -49,22 +47,15 @@ router.post(
       return;
     }
 
-    const status = authLogic.getChangePasswordStatus();
-
-    // Return a conflict if a change password process is already running
-    if (status.percent > 0 && status.percent !== COMPLETE) {
-      ctx.response.status = Status.Conflict;
-    }
-
     try {
       // Start change password process in the background and immediately return
       await authLogic.changePassword(currentPassword, newPassword);
       ctx.response.status = Status.OK;
-      ctx.response.body = status;
+      ctx.response.body = { percent: 100 };
     } catch (error: unknown) {
       ctx.throw(
         Status.InternalServerError,
-        typeof error === "string" ? error : JSON.stringify(error),
+        typeof error === "string" ? error : ((error as { message?: string }).message || JSON.stringify(error)),
       );
     }
 
@@ -74,8 +65,7 @@ router.post(
 
 // Returns the current status of the change password process.
 router.get("/change-password/status", auth.jwt, async (ctx, next) => {
-  const status = authLogic.getChangePasswordStatus();
-  ctx.response.body = status;
+  ctx.response.body = { percent: 100 };
   await next();
 });
 

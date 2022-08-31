@@ -106,7 +106,6 @@ router.post(
     typeHelper.isString(plainTextPassword, ctx);
     typeHelper.isMinPasswordLength(plainTextPassword, ctx);
 
-
     const jwt = await authLogic.register(body.name, plainTextPassword, seed);
 
     ctx.response.body = { jwt };

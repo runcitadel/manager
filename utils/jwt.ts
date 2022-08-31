@@ -1,7 +1,10 @@
 import { readJwtPrivateKeyFile } from "../logic/disk.ts";
 import { RSA } from "https://deno.land/x/god_crypto@v1.4.10/rsa.ts";
 import { encode } from "https://deno.land/x/god_crypto@v1.4.10/encode.ts";
-import { encode as encodeBase64, decode } from "https://deno.land/std@0.153.0/encoding/base64url.ts";
+import {
+  decode,
+  encode as encodeBase64,
+} from "https://deno.land/std@0.153.0/encoding/base64url.ts";
 import { getNumericDate } from "https://deno.land/x/djwt@v2.7/mod.ts";
 
 export async function isValidJwt(

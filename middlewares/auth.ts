@@ -4,10 +4,7 @@ import { isString } from "../utils/types.ts";
 import notp from "https://esm.sh/notp@2.0.3";
 
 import Rsa from "https://esm.sh/node-rsa@1.1.1";
-import {
-  Middleware,
-  Status,
-} from "https://deno.land/x/oak@v11.1.0/mod.ts";
+import { Middleware, Status } from "https://deno.land/x/oak@v11.1.0/mod.ts";
 
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.0/mod.ts";
 
@@ -45,7 +42,9 @@ export const basic: Middleware = async (
     userInfo = await diskLogic.readUserFile();
   } catch {
     ctx.throw(Status.Unauthorized, '"No user registered"');
-    throw new TypeError("This error should not be visible, but is required to get TypeScript to shut up");
+    throw new TypeError(
+      "This error should not be visible, but is required to get TypeScript to shut up",
+    );
   }
 
   const storedPassword = userInfo.password;
@@ -53,7 +52,10 @@ export const basic: Middleware = async (
     ctx.throw(Status.InternalServerError, '"No password stored"');
   }
 
-  const equal = await bcrypt.compare(reqPassword as string, storedPassword as string);
+  const equal = await bcrypt.compare(
+    reqPassword as string,
+    storedPassword as string,
+  );
   if (!equal) {
     ctx.throw(Status.Unauthorized, '"Incorrect password"');
   }

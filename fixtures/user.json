@@ -1,8 +1,8 @@
 {
-    "name": "Tester with password password123",
-    "password": "$2y$10$eFYz9TcRKU/89k1TFtpTa./Oru8TRNwq6cbFyk2RaEnxZtd41bbTO",
-    "seed": "l5fXDITKLWcSJ0NtEBhdxI6DBqvV9WXMnUED/Emm/hk=$e2fe151b531536bf37215193a9d3043c$l88huZpJPi2E$a724b8fa31b24ba8168a70c0c8c7262b3f6643308cfb6710799e98a4d8b18992$250000$cbc",
-    "installedApps": [
-        "example-app"
-    ]
+  "name": "Tester with password password123",
+  "password": "$2y$10$eFYz9TcRKU/89k1TFtpTa./Oru8TRNwq6cbFyk2RaEnxZtd41bbTO",
+  "seed": "l5fXDITKLWcSJ0NtEBhdxI6DBqvV9WXMnUED/Emm/hk=$e2fe151b531536bf37215193a9d3043c$l88huZpJPi2E$a724b8fa31b24ba8168a70c0c8c7262b3f6643308cfb6710799e98a4d8b18992$250000$cbc",
+  "installedApps": [
+    "example-app"
+  ]
 }

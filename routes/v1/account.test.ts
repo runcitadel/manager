@@ -19,7 +19,10 @@ Deno.test("Login with valid password works", async () => {
     .send('{"password":"password123"}');
   await karen.stop();
   assert(response.ok, "Response should return status 200");
-  assert(typeof response.body.jwt === "string", "JWT should be present and a string");
+  assert(
+    typeof response.body.jwt === "string",
+    "JWT should be present and a string",
+  );
 });
 
 Deno.test("Login with invalid password fails", async () => {
@@ -33,7 +36,11 @@ Deno.test("Login with invalid password fails", async () => {
   await karen.stop();
   assertEquals(response.statusCode, 401, "Response should return status 401");
   const error = JSON.parse(response.text);
-  assertEquals(error, "Incorrect password", "It should return an 'Incorrect password' message");
+  assertEquals(
+    error,
+    "Incorrect password",
+    "It should return an 'Incorrect password' message",
+  );
 });
 
 Deno.test("Can get the seed with valid password", async () => {
@@ -44,7 +51,11 @@ Deno.test("Can get the seed with valid password", async () => {
   )
     .send('{"password":"password123"}');
   assert(response.ok, "Response should return status 200");
-  assertEquals(response.body.seed, [ "this", "is", "the", "seed" ], "It should return the correct seed from user.json");
+  assertEquals(
+    response.body.seed,
+    ["this", "is", "the", "seed"],
+    "It should return the correct seed from user.json",
+  );
 });
 
 Deno.test("Can't get the seed with valid password", async () => {

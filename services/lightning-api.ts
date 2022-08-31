@@ -1,7 +1,6 @@
+import { Middleware } from "https://deno.land/x/citadel@v0.5.3/mod.ts";
 
-import {Middleware} from "https://deno.land/x/citadel@v0.5.3/mod.ts";
-
-const lnapiUrl = Deno.env.get("MIDDLEWARE_API_URL") || 'http://localhost';
+const lnapiUrl = Deno.env.get("MIDDLEWARE_API_URL") || "http://localhost";
 const lnapiPort = Deno.env.get("MIDDLEWARE_API_PORT") || 3005;
 const middleware = new Middleware(`${lnapiUrl}:${lnapiPort}`);
 

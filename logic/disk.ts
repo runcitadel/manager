@@ -1,13 +1,17 @@
 import type {
   backupStatus,
+  debugStatus,
   updateStatus,
   versionFile,
-  debugStatus,
 } from "https://esm.sh/@runcitadel/utils@0.9.2";
-import constants from '../utils/const.ts';
-import {runCommand} from '../services/karen.ts';
-import type {App} from './apps.ts';
-import { exists, existsSync, ensureFile } from "https://deno.land/std@0.153.0/fs/mod.ts";
+import constants from "../utils/const.ts";
+import { runCommand } from "../services/karen.ts";
+import type { App } from "./apps.ts";
+import {
+  ensureFile,
+  exists,
+  existsSync,
+} from "https://deno.land/std@0.153.0/fs/mod.ts";
 import { join } from "https://deno.land/std@0.153.0/path/mod.ts";
 type UserSettings = {
   twoFactorAuth: boolean;
@@ -51,16 +55,16 @@ function writeJsonFile(path: string, data: unknown): Promise<void> {
 
 async function safeWriteTextFile(
   filePath: string,
-  data: string
+  data: string,
 ): Promise<void> {
   const tempFileName = `${filePath}.${getRandomString(8)}`;
 
   await Deno.writeTextFile(tempFileName, data);
   try {
-      await Deno.rename(tempFileName, filePath);
+    await Deno.rename(tempFileName, filePath);
   } catch (err) {
-      await Deno.remove(tempFileName);
-      throw err;
+    await Deno.remove(tempFileName);
+    throw err;
   }
 }
 
@@ -105,13 +109,13 @@ export async function is2faEnabled(): Promise<boolean> {
 
 export async function readUserFile(): Promise<UserFile> {
   const defaultProperties: UserFile = {
-    name: '',
-    password: '',
-    seed: '',
+    name: "",
+    password: "",
+    seed: "",
     installedApps: [],
   };
   const userFile = (await readJsonFile(constants.USER_FILE)) as UserFile;
-  return {...defaultProperties, ...userFile};
+  return { ...defaultProperties, ...userFile };
 }
 
 export async function writeUserFile(json: UserFile): Promise<void> {
@@ -134,23 +138,23 @@ export function seedFileExists(): boolean {
 }
 
 export function readElectrumHiddenService(): Promise<string> {
-  return readHiddenService('electrum');
+  return readHiddenService("electrum");
 }
 
 export function readBitcoinP2pHiddenService(): Promise<string> {
-  return readHiddenService('bitcoin-p2p');
+  return readHiddenService("bitcoin-p2p");
 }
 
 export function readBitcoinRpcHiddenService(): Promise<string> {
-  return readHiddenService('bitcoin-rpc');
+  return readHiddenService("bitcoin-rpc");
 }
 
 export function readLndRestHiddenService(): Promise<string> {
-  return readHiddenService('lnd-rest');
+  return readHiddenService("lnd-rest");
 }
 
 export function readLndGrpcHiddenService(): Promise<string> {
-  return readHiddenService('lnd-grpc');
+  return readHiddenService("lnd-grpc");
 }
 
 export function readLndCert(): Promise<string> {
@@ -166,19 +170,19 @@ export function readVersionFile(): Promise<versionFile> {
 }
 
 export function readUpdateStatusFile(): Promise<updateStatus> {
-  return readJsonStatusFile<updateStatus>('update');
+  return readJsonStatusFile<updateStatus>("update");
 }
 
 export async function writeUpdateStatusFile(json: updateStatus): Promise<void> {
-  await writeJsonStatusFile('update', json);
+  await writeJsonStatusFile("update", json);
 }
 
 export function updateLockFileExists(): Promise<boolean> {
-  return statusFileExists('update-in-progress');
+  return statusFileExists("update-in-progress");
 }
 
 export function readBackupStatusFile(): Promise<backupStatus> {
-  return readJsonStatusFile<backupStatus>('backup');
+  return readJsonStatusFile<backupStatus>("backup");
 }
 
 export function readJwtPrivateKeyFile(): Promise<string> {
@@ -198,15 +202,15 @@ export function writeJwtPublicKeyFile(data: string): Promise<void> {
 }
 
 export function shutdown(): Promise<void> {
-  return runCommand('trigger shutdown');
+  return runCommand("trigger shutdown");
 }
 
 export function reboot(): Promise<void> {
-  return runCommand('trigger reboot');
+  return runCommand("trigger reboot");
 }
 
 export function readDebugStatusFile(): Promise<debugStatus> {
-  return readJsonStatusFile<debugStatus>('debug');
+  return readJsonStatusFile<debugStatus>("debug");
 }
 
 export async function writeStatusFile(
@@ -214,7 +218,7 @@ export async function writeStatusFile(
   contents: string,
 ): Promise<void | NodeJS.ErrnoException> {
   if (!/^[\w-]+$/.test(statusFile)) {
-    throw new Error('Invalid status file characters');
+    throw new Error("Invalid status file characters");
   }
 
   const statusFilePath = join(constants.STATUS_DIR, statusFile);
@@ -226,7 +230,7 @@ export async function readStatusFile<FileType = unknown>(
   statusFile: string,
 ): Promise<FileType> {
   if (!/^[\w-]+$/.test(statusFile)) {
-    throw new Error('Invalid status file characters');
+    throw new Error("Invalid status file characters");
   }
 
   const statusFilePath = join(constants.STATUS_DIR, statusFile);
@@ -235,7 +239,7 @@ export async function readStatusFile<FileType = unknown>(
 
 export function statusFileExists(statusFile: string): Promise<boolean> {
   if (!/^[\w-]+$/.test(statusFile)) {
-    throw new Error('Invalid status file characters');
+    throw new Error("Invalid status file characters");
   }
 
   const statusFilePath = join(constants.STATUS_DIR, statusFile);
@@ -244,7 +248,7 @@ export function statusFileExists(statusFile: string): Promise<boolean> {
 
 export function deleteStatusFile(statusFile: string): Promise<void> {
   if (!/^[\w-]+$/.test(statusFile)) {
-    throw new Error('Invalid status file characters');
+    throw new Error("Invalid status file characters");
   }
 
   const statusFilePath = join(constants.STATUS_DIR, statusFile);
@@ -252,19 +256,19 @@ export function deleteStatusFile(statusFile: string): Promise<void> {
 }
 
 export async function readAppRegistry(): Promise<App[]> {
-  const appRegistryFile = join(constants.APPS_DIR, 'registry.json');
+  const appRegistryFile = join(constants.APPS_DIR, "registry.json");
   return (await readJsonFile(appRegistryFile)) as App[];
 }
 
 export function readHiddenService(id: string): Promise<string> {
   if (!/^[\w-]+$/.test(id)) {
-    throw new Error('Invalid hidden service ID');
+    throw new Error("Invalid hidden service ID");
   }
 
   const hiddenServiceFile = join(
     constants.TOR_HIDDEN_SERVICE_DIR,
     id,
-    'hostname',
+    "hostname",
   );
   return Deno.readTextFile(hiddenServiceFile);
 }

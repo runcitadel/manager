@@ -1,7 +1,4 @@
-import {
-  Application,
-  Router,
-} from "https://deno.land/x/oak@v11.1.0/mod.ts";
+import { Application, Router } from "https://deno.land/x/oak@v11.1.0/mod.ts";
 import { SuperDeno, superoak } from "https://deno.land/x/superoak@4.7.0/mod.ts";
 import { join } from "https://deno.land/std@0.153.0/path/mod.ts";
 import constants from "../utils/const.ts";
@@ -50,7 +47,7 @@ export class FakeKaren {
   #connection: Deno.Listener | null = null;
   #connections: Deno.Conn[] = [];
   async start(): Promise<void> {
-    if(this.#isRunning) {
+    if (this.#isRunning) {
       throw new Error("Karen is already running");
     }
     this.#isRunning = true;
@@ -66,14 +63,15 @@ export class FakeKaren {
     while (this.#isRunning) {
       try {
         const connection = await this.#connection?.accept() as Deno.Conn;
-        if(connection) this.#connections.push(connection);
+        if (connection) this.#connections.push(connection);
       } catch (err) {
-        if(this.#isRunning)
+        if (this.#isRunning) {
           throw err;
+        }
       }
     }
   }
- 
+
   async stop() {
     this.#isRunning = false;
     for (const connection of this.#connections) {

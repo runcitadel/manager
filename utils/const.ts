@@ -32,7 +32,8 @@ export default {
       50_001;
   },
   get BITCOIN_P2P_PORT() {
-    return Number.parseInt(Deno.env.get("BITCOIN_P2P_PORT") || "8333", 10) || 8333;
+    return Number.parseInt(Deno.env.get("BITCOIN_P2P_PORT") || "8333", 10) ||
+      8333;
   },
   get BITCOIN_RPC_PORT() {
     return Number.parseInt(Deno.env.get("BITCOIN_RPC_PORT") || "8332", 10) ||
@@ -64,7 +65,8 @@ export default {
     return Deno.env.get("TOR_PROXY_IP") || "192.168.0.1";
   },
   get TOR_PROXY_PORT() {
-    return Number.parseInt(Deno.env.get("TOR_PROXY_PORT") || "9050", 10) || 9050;
+    return Number.parseInt(Deno.env.get("TOR_PROXY_PORT") || "9050", 10) ||
+      9050;
   },
   get IS_CITADEL_OS() {
     return Deno.env.get("IS_CITADEL_OS") === "true";

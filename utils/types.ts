@@ -1,11 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 import validator from "https://esm.sh/validator@13.7.0";
 import { Context, State, Status } from "https://deno.land/x/oak@v11.1.0/mod.ts";
-import { Buffer } from "https://deno.land/std@0.153.0/node/buffer.ts";
 
-// Max length is listed here:
-// https://github.com/lightningnetwork/lnd/blob/fd1f6a7bc46b1e50ff3879b8bd3876d347dbb73d/channeldb/invoices.go#L84
-const MAX_MEMO_LENGTH = 1024;
 const MIN_PASSWORD_LENGTH = 12;
 
 export interface Middleware<
@@ -201,23 +197,5 @@ export function isString<
 >(value: unknown, ctx: T): void {
   if (typeof value !== "string") {
     ctx.throw(Status.BadRequest, "Object must be of type string.");
-  }
-}
-
-/**
- * Checks if a string has a valid length for a memo
- *
- * @param string The string to check
- * @param ctx The koa context
- */
-export function isValidMemoLength<
-  S extends State = Record<string, any>,
-  T extends Context = Context<S>,
->(string: string, ctx: T): void {
-  if (Buffer.byteLength(string, "utf8") > MAX_MEMO_LENGTH) {
-    ctx.throw(
-      Status.BadRequest,
-      "Must be less than " + MAX_MEMO_LENGTH + " bytes.",
-    );
   }
 }

@@ -4,7 +4,7 @@ import * as diskLogic from "../../logic/disk.ts";
 import * as auth from "../../middlewares/auth.ts";
 import * as typeHelper from "../../utils/types.ts";
 
-import notp from "https://esm.sh/notp@2.0.3";
+import { TOTP } from "https://deno.land/x/god_crypto@v1.4.10/otp.ts";
 import * as authLogic from "../../logic/auth.ts";
 import { getPasswordFromContext } from "../../utils/auth.ts";
 
@@ -160,9 +160,10 @@ router.post("/totp/enable", auth.jwt, async (ctx) => {
     const key = info.settings?.twoFactorKey;
 
     typeHelper.isString(body.authenticatorToken, ctx);
-    const vres = notp.totp.verify(body.authenticatorToken, key);
+    const totp = new TOTP(key as string);
+    const isValid = totp.verify(body.authenticatorToken as string);
 
-    if (vres && vres.delta === 0) {
+    if (isValid) {
       await authLogic.enableTotp(key);
       ctx.response.body = { success: true };
     } else {
@@ -184,9 +185,10 @@ router.post("/totp/disable", auth.jwt, async (ctx, next) => {
     const key = info.settings?.twoFactorKey;
 
     typeHelper.isString(body.authenticatorToken, ctx);
-    const vres = notp.totp.verify(body.authenticatorToken, key);
+    const totp = new TOTP(key as string);
+    const isValid = totp.verify(body.authenticatorToken as string);
 
-    if (vres && vres.delta === 0) {
+    if (isValid) {
       await diskLogic.disable2fa();
       ctx.response.body = { success: true };
     } else {

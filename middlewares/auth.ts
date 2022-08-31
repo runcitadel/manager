@@ -1,7 +1,7 @@
 import { isValidJwt } from "../utils/jwt.ts";
 import * as diskLogic from "../logic/disk.ts";
 import { isString } from "../utils/types.ts";
-import notp from "https://esm.sh/notp@2.0.3";
+import { TOTP } from "https://deno.land/x/god_crypto@v1.4.10/otp.ts";
 
 import Rsa from "https://esm.sh/node-rsa@1.1.1";
 import { Middleware, Status } from "https://deno.land/x/oak@v11.1.0/mod.ts";
@@ -63,12 +63,10 @@ export const basic: Middleware = async (
   // Check 2FA token when enabled
   if (userInfo.settings?.twoFactorAuth) {
     isString(body?.totpToken, ctx);
-    const vres = notp.totp.verify(
-      body?.totpToken,
-      userInfo.settings.twoFactorKey || "",
-    );
+    const totp = new TOTP(userInfo.settings.twoFactorKey as string);
+    const isValid = totp.verify(body?.totpToken as string);
 
-    if (!vres || vres.delta !== 0) {
+    if (!isValid) {
       ctx.throw(Status.Unauthorized, '"Incorrect 2FA code"');
     }
   }

@@ -1,5 +1,3 @@
-import * as crypto from "https://deno.land/std@0.153.0/node/crypto.ts";
-import { Buffer } from "https://deno.land/std@0.153.0/node/buffer.ts";
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.0/mod.ts";
 import { CipherSeed } from "https://esm.sh/aezeed@0.0.5";
 import iocane from "https://esm.sh/iocane@5.1.1/web";
@@ -8,9 +6,23 @@ import * as lightningApiService from "../services/lightning-api.ts";
 import { generateJwt } from "../utils/jwt.ts";
 import { runCommand } from "../services/karen.ts";
 import * as diskLogic from "./disk.ts";
+import { hmac } from "https://deno.land/x/god_crypto@v1.4.10/hmac.ts";
+
+function getRandomString(s: number) {
+  if (s % 2 == 1) {
+    throw new Deno.errors.InvalidData("Only even sizes are supported");
+  }
+  const buf = new Uint8Array(s / 2);
+  crypto.getRandomValues(buf);
+  let ret = "";
+  for (let i = 0; i < buf.length; ++i) {
+    ret += ("0" + buf[i].toString(16)).slice(-2);
+  }
+  return ret;
+}
 
 export function generateRandomKey(): string {
-  return crypto.randomBytes(10).toString("hex");
+  return getRandomString(10);
 }
 
 export function encodeKey(key: string) {
@@ -22,7 +34,7 @@ export type UserInfo = {
   name: string;
   password?: string;
   plainTextPassword?: string;
-  seed?: string | Buffer | ArrayBuffer;
+  seed?: string;
   installedApps?: string[];
 };
 
@@ -37,7 +49,7 @@ type UserFile = {
   /** The users password, hashed by bcrypt */
   password?: string;
   /** The users mnemoic LND seed */
-  seed?: string | Buffer | ArrayBuffer;
+  seed?: string;
   /** The list of IDs of installed apps */
   installedApps?: string[];
   /** User settings */
@@ -63,7 +75,7 @@ export async function changePassword(
     // Re-encrypt seed with new password
     const decryptedSeed = await iocane
       .createAdapter()
-      .decrypt(user.seed as string | Buffer, currentPassword);
+      .decrypt(user.seed as string, currentPassword);
     const encryptedSeed = await iocane
       .createAdapter()
       .encrypt(decryptedSeed, newPassword);
@@ -110,10 +122,7 @@ export async function deriveSeed(
   const userSeed = await seed(plainTextPassword);
   const mnemonic = userSeed.join(" ");
   const { entropy } = CipherSeed.fromMnemonic(mnemonic);
-  const generatedSeed = crypto
-    .createHmac("sha256", entropy)
-    .update("umbrel-seed")
-    .digest("hex");
+  const generatedSeed = hmac("sha256", entropy, "umbrel-seed").hex();
   return diskLogic.writeSeedFile(generatedSeed);
 }
 
@@ -127,10 +136,7 @@ export function deriveCitadelSeed(
   }
 
   const { entropy } = CipherSeed.fromMnemonic(mnemonic.join(" "));
-  const generatedSeed = crypto
-    .createHmac("sha256", entropy)
-    .update("umbrel-seed")
-    .digest("hex");
+  const generatedSeed = hmac("sha256", entropy, "umbrel-seed").hex();
   return diskLogic.writeSeedFile(generatedSeed);
 }
 

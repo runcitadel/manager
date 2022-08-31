@@ -26,15 +26,21 @@ app.use(logger.responseTime);
 app.use(oakCors({ origin: "*" }));
 
 app.use(ping.routes());
+app.use(ping.allowedMethods());
 
 // V1 API
 app.use(account.routes());
+app.use(account.allowedMethods());
 app.use(external.routes());
+app.use(external.allowedMethods());
 app.use(apps.routes());
+app.use(apps.allowedMethods());
 // Unused right now
 app.use(system.routes());
+app.use(system.allowedMethods());
 
 // V2 API for Citadel SDK
 app.use(system2.routes());
+app.use(system2.allowedMethods());
 
 app.listen("0.0.0.0:3000");

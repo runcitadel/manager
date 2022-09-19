@@ -1,5 +1,7 @@
 # manager
 
+[![codecov](https://codecov.io/github/runcitadel/manager/branch/main/graph/badge.svg?token=9WJ88AUTB9)](https://codecov.io/github/runcitadel/manager)
+
 Manager provides a low-level system API that handles:
 - User authentication using JWT
 - Encryption/decryption of sensitive information, such as the lightning wallet's seed

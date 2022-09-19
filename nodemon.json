@@ -1,4 +1,0 @@
-{
-  "legacyWatch": true,
-  "ignore": [".git", ".github", ".yarn", "node_modules"]
-}

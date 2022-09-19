@@ -1,0 +1,6 @@
+{
+  "version": "0.0.2",
+  "name": "Citadel Test update",
+  "requires": ">=0.0.1",
+  "notes": "This file is only used during automated tests of Citadel, please ignore it."
+}

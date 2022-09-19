@@ -1,21 +1,32 @@
-import * as crypto from 'node:crypto';
-import {Buffer} from 'node:buffer';
-import * as bcrypt from '@node-rs/bcrypt';
-import {CipherSeed} from 'aezeed';
-import * as iocane from 'iocane';
-import base32 from 'thirty-two';
-import * as lightningApiService from '../services/lightning-api.js';
-import {generateJwt} from '../utils/jwt.js';
-import {runCommand} from '../services/karen.js';
-import * as diskLogic from './disk.js';
-import {migrateAdminLegacyUser} from './user.js';
+import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.0/mod.ts";
+import { CipherSeed } from "https://esm.sh/aezeed@0.0.5";
+import iocane from "https://esm.sh/iocane@5.1.1/web";
+import { encode } from "https://deno.land/std@0.153.0/encoding/base32.ts";
+import * as lightningApiService from "../services/lightning-api.ts";
+import { generateJwt } from "../utils/jwt.ts";
+import { runCommand } from "../services/karen.ts";
+import * as diskLogic from "./disk.ts";
+import { hmac } from "https://deno.land/x/god_crypto@v1.4.10/hmac.ts";
+
+function getRandomString(s: number) {
+  if (s % 2 == 1) {
+    throw new Deno.errors.InvalidData("Only even sizes are supported");
+  }
+  const buf = new Uint8Array(s / 2);
+  crypto.getRandomValues(buf);
+  let ret = "";
+  for (let i = 0; i < buf.length; ++i) {
+    ret += ("0" + buf[i].toString(16)).slice(-2);
+  }
+  return ret;
+}
 
 export function generateRandomKey(): string {
-  return crypto.randomBytes(10).toString('hex');
+  return getRandomString(10);
 }
 
 export function encodeKey(key: string) {
-  return base32.encode(key).toString();
+  return encode(new TextEncoder().encode(key));
 }
 
 export type UserInfo = {
@@ -23,7 +34,7 @@ export type UserInfo = {
   name: string;
   password?: string;
   plainTextPassword?: string;
-  seed?: string | Buffer | ArrayBuffer;
+  seed?: string;
   installedApps?: string[];
 };
 
@@ -38,31 +49,16 @@ type UserFile = {
   /** The users password, hashed by bcrypt */
   password?: string;
   /** The users mnemoic LND seed */
-  seed?: string | Buffer | ArrayBuffer;
+  seed?: string;
   /** The list of IDs of installed apps */
   installedApps?: string[];
   /** User settings */
   settings?: UserSettings;
 };
 
-export type ChangePasswordStatusType = {
-  percent: number;
-  error?: boolean;
-};
-
-const saltRounds = 10;
-
-let changePasswordStatus: ChangePasswordStatusType = {percent: 0};
-
-resetChangePasswordStatus();
-
-export function resetChangePasswordStatus(): void {
-  changePasswordStatus = {percent: 0};
-}
-
 // Sets system password
 const setSystemPassword = async (password: string) => {
-  await diskLogic.writeStatusFile('password', password);
+  await diskLogic.writeStatusFile("password", password);
   await runCommand(`trigger change-password`);
 };
 
@@ -71,23 +67,15 @@ export async function changePassword(
   currentPassword: string,
   newPassword: string,
 ): Promise<void> {
-  resetChangePasswordStatus();
-  changePasswordStatus.percent = 1;
-
   try {
     // Update user file
     const user = await diskLogic.readUserFile();
-    const credentials = hashCredentials(newPassword);
-
-    // Check if user.seed is of type ArrayBuffer, if so convert it to Buffer
-    if (user.seed instanceof ArrayBuffer) {
-      user.seed = Buffer.from(user.seed);
-    }
+    const encryptedPassword = await hashPassword(newPassword);
 
     // Re-encrypt seed with new password
     const decryptedSeed = await iocane
       .createAdapter()
-      .decrypt(user.seed as string | Buffer, currentPassword);
+      .decrypt(user.seed as string, currentPassword);
     const encryptedSeed = await iocane
       .createAdapter()
       .encrypt(decryptedSeed, newPassword);
@@ -95,40 +83,20 @@ export async function changePassword(
     // Update user file
     await diskLogic.writeUserFile({
       ...user,
-      password: credentials.password,
+      password: encryptedPassword,
       seed: encryptedSeed,
     });
 
     // Update system password
     await setSystemPassword(newPassword);
-
-    changePasswordStatus.percent = 100;
-    try {
-      const futureUser = await migrateAdminLegacyUser(user.name, newPassword);
-      await futureUser.changePassword(newPassword);
-    } catch (error: unknown) {
-      console.warn(error);
-    }
   } catch {
-    changePasswordStatus.percent = 100;
-    changePasswordStatus.error = true;
-
-    throw new Error('Unable to change password');
+    throw new Error("Unable to change password");
   }
 }
 
-export function getChangePasswordStatus(): ChangePasswordStatusType {
-  return changePasswordStatus;
-}
-
 // Returns an object with the hashed credentials inside.
-export function hashCredentials(password: string): {
-  password: string;
-  plainTextPassword: string;
-} {
-  const hash = bcrypt.hashSync(password, saltRounds);
-
-  return {password: hash, plainTextPassword: password};
+export function hashPassword(password: string): Promise<string> {
+  return bcrypt.hash(password);
 }
 
 // Returns true if the user is registered otherwise false.
@@ -145,61 +113,46 @@ export async function isRegistered(): Promise<boolean> {
 // Derives the root seed and persists it to disk to be used for
 // determinstically deriving further entropy for any other service.
 export async function deriveSeed(
-  user: UserInfo,
+  plainTextPassword: string,
 ): Promise<void | NodeJS.ErrnoException> {
   if (diskLogic.seedFileExists()) {
     return;
   }
 
-  const userSeed = await seed(user);
-  const mnemonic = userSeed.join(' ');
-  const {entropy} = CipherSeed.fromMnemonic(mnemonic);
-  const generatedSeed = crypto
-    .createHmac('sha256', entropy)
-    .update('umbrel-seed')
-    .digest('hex');
+  const userSeed = await seed(plainTextPassword);
+  const mnemonic = userSeed.join(" ");
+  const { entropy } = CipherSeed.fromMnemonic(mnemonic);
+  const generatedSeed = hmac("sha256", entropy, "umbrel-seed").hex();
   return diskLogic.writeSeedFile(generatedSeed);
 }
 
 // Derives the root seed and persists it to disk to be used for
 // determinstically deriving further entropy for any other service.
-export async function deriveCitadelSeed(
+export function deriveCitadelSeed(
   mnemonic: string[],
-): Promise<void | NodeJS.ErrnoException> {
+): void | Promise<void> {
   if (diskLogic.seedFileExists()) {
     return;
   }
 
-  const {entropy} = CipherSeed.fromMnemonic(mnemonic.join(' '));
-  const generatedSeed = crypto
-    .createHmac('sha256', entropy)
-    .update('umbrel-seed')
-    .digest('hex');
+  const { entropy } = CipherSeed.fromMnemonic(mnemonic.join(" "));
+  const generatedSeed = hmac("sha256", entropy, "umbrel-seed").hex();
   return diskLogic.writeSeedFile(generatedSeed);
 }
 
-export async function generateTemporaryJwt(): Promise<string> {
-  try {
-    return await generateJwt('temporary');
-  } catch {
-    throw new Error('Unable to generate JWT');
-  }
-}
-
 // Log the user into the device. Caches the password if login is successful. Then returns jwt.
-export async function login(user: UserInfo): Promise<string> {
+export async function login(plainTextPassword: string): Promise<string> {
   try {
-    const jwt = await generateJwt(user.username!);
+    const jwt = await generateJwt("admin");
 
-    await deriveSeed(user);
+    await deriveSeed(plainTextPassword);
 
-    // This is only needed temporarily to update hardcoded passwords
-    // on existing users without requiring them to change their password
-    await setSystemPassword(user.password!);
+    await setSystemPassword(plainTextPassword);
 
     return jwt;
-  } catch {
-    throw new Error('Unable to generate JWT');
+  } catch (err) {
+    console.error(err);
+    throw new Error("Unable to generate JWT");
   }
 }
 
@@ -213,40 +166,33 @@ export async function getInfo(): Promise<UserFile> {
 
     return user;
   } catch {
-    throw new Error('Unable to get account info');
+    throw new Error("Unable to get account info");
   }
 }
 
-export async function seed(user: UserInfo): Promise<string[]> {
+export async function seed(plainTextPassword: string): Promise<string[]> {
   // Decrypt mnemonic seed
   try {
-    let {seed} = await diskLogic.readUserFile();
-
-    if (seed instanceof ArrayBuffer) {
-      seed = Buffer.from(seed);
-    }
-
-    if (seed instanceof Buffer) {
-      seed = seed.toString('utf-8');
-    }
+    const { seed } = await diskLogic.readUserFile();
 
     const decryptedSeed = (await iocane
       .createAdapter()
-      .decrypt(seed as string, user.plainTextPassword!)) as string;
+      .decrypt(seed as string, plainTextPassword!)) as string;
 
-    return decryptedSeed.split(',');
+    return decryptedSeed.split(",");
   } catch {
-    throw new Error('Unable to decrypt mnemonic seed');
+    throw new Error("Unable to decrypt mnemonic seed");
   }
 }
 
 // Registers the the user to the device. Returns an error if a user already exists.
 export async function register(
-  user: UserInfo,
+  name: string,
+  plainTextPassword: string,
   seed: string[],
 ): Promise<string> {
   if (await isRegistered()) {
-    throw new Error('User already exists');
+    throw new Error("User already exists");
   }
 
   // Encrypt mnemonic seed for storage
@@ -254,27 +200,28 @@ export async function register(
   try {
     encryptedSeed = await iocane
       .createAdapter()
-      .encrypt(seed.join(','), user.plainTextPassword!);
+      .encrypt(seed.join(","), plainTextPassword);
   } catch {
-    throw new Error('Unable to encrypt mnemonic seed');
+    throw new Error("Unable to encrypt mnemonic seed");
   }
 
   // Save user
   try {
+    const hashedPassword = await hashPassword(plainTextPassword);
     await diskLogic.writeUserFile({
-      name: user.name,
-      password: user.password,
+      name: name,
+      password: hashedPassword,
       seed: encryptedSeed,
     });
   } catch {
-    throw new Error('Unable to register user');
+    throw new Error("Unable to register user");
   }
 
   // Update system password
   try {
-    await setSystemPassword(user.plainTextPassword!);
+    await setSystemPassword(plainTextPassword);
   } catch {
-    throw new Error('Unable to set system password');
+    throw new Error("Unable to set system password");
   }
 
   // Derive seed
@@ -282,16 +229,16 @@ export async function register(
     await deriveCitadelSeed(seed);
   } catch (error: unknown) {
     console.error(error);
-    throw new Error('Unable to create seed');
+    throw new Error("Unable to create seed");
   }
 
   // Generate JWt
   let jwt;
   try {
-    jwt = await generateJwt(user.username!);
+    jwt = await generateJwt("admin");
   } catch {
     await diskLogic.deleteUserFile();
-    throw new Error('Unable to generate JWT');
+    throw new Error("Unable to generate JWT");
   }
 
   // Initialize lnd wallet
@@ -299,21 +246,21 @@ export async function register(
     await lightningApiService.initializeWallet(seed, jwt);
   } catch (error: unknown) {
     await diskLogic.deleteUserFile();
-    throw new Error((error as {response: {data: string}}).response.data);
+    throw new Error((error as { response: { data: string } }).response.data);
   }
 
-  await runCommand('trigger app-update');
+  await runCommand("trigger app-update");
   // Return token
   return jwt;
 }
 
 // Generate and return a new jwt token.
-export async function refresh(user: UserInfo): Promise<string> {
+export async function refresh(): Promise<string> {
   try {
-    const jwt = await generateJwt(user.username!);
+    const jwt = await generateJwt("admin");
     return jwt;
   } catch {
-    throw new Error('Unable to generate JWT');
+    throw new Error("Unable to generate JWT");
   }
 }
 

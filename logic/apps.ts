@@ -1,9 +1,9 @@
-import * as lightningService from '../services/lightning-api.js';
-import {runCommand} from '../services/karen.js';
-import * as diskLogic from './disk.js';
+import * as lightningService from "../services/lightning-api.ts";
+import { runCommand } from "../services/karen.ts";
+import * as diskLogic from "./disk.ts";
 
 /** A dependency an app could have */
-export type Dependency = 'bitcoind' | 'electrum' | 'lnd' | 'c-lightning';
+export type Dependency = "bitcoind" | "electrum" | "lnd" | "c-lightning";
 
 export type App = {
   /** The id of the app, the name as a simple string without spaces */
@@ -119,29 +119,29 @@ export async function get(
       try {
         app.hiddenService = await diskLogic.readHiddenService(`app-${app.id}`);
       } catch {
-        app.hiddenService = '';
+        app.hiddenService = "";
       }
 
       app.dependencies = app.dependencies || [];
 
       for (const dependency of app.dependencies) {
-        if (typeof dependency === 'string') {
+        if (typeof dependency === "string") {
           if (
-            (dependency === 'c-lightning' &&
-              lightningImplementation === 'lnd') ||
-            (dependency === 'lnd' && lightningImplementation === 'c-lightning')
+            (dependency === "c-lightning" &&
+              lightningImplementation === "lnd") ||
+            (dependency === "lnd" && lightningImplementation === "c-lightning")
           ) {
             app.compatible = false;
             // Skip validating other dependencies
             continue;
           }
         } else if (
-          (dependency.includes('c-lightning') &&
-            !dependency.includes('lnd') &&
-            lightningImplementation === 'lnd') ||
-          (dependency.includes('lnd') &&
-            !dependency.includes('c-lightning') &&
-            lightningImplementation === 'c-lightning')
+          (dependency.includes("c-lightning") &&
+            !dependency.includes("lnd") &&
+            lightningImplementation === "lnd") ||
+          (dependency.includes("lnd") &&
+            !dependency.includes("c-lightning") &&
+            lightningImplementation === "c-lightning")
         ) {
           app.compatible = false;
           // Skip validating other dependencies
@@ -164,7 +164,7 @@ export async function get(
   return apps;
 }
 
-async function isValidAppId(id: string): Promise<boolean> {
+function isValidAppId(id: string): boolean {
   if (!id) {
     return false;
   }
@@ -174,41 +174,41 @@ async function isValidAppId(id: string): Promise<boolean> {
 }
 
 export async function install(id: string): Promise<void> {
-  if (!(await isValidAppId(id))) {
-    throw new Error('Invalid app id');
+  if (!isValidAppId(id)) {
+    throw new Error("Invalid app id");
   }
 
   try {
     await runCommand(`trigger app install ${id}`);
   } catch {
-    throw new Error('Could not communicate with karen');
+    throw new Error("Could not communicate with karen");
   }
 }
 
 export async function uninstall(id: string): Promise<void> {
   if (!(await isValidAppId(id))) {
-    throw new Error('Invalid app id');
+    throw new Error("Invalid app id");
   }
 
   try {
     await runCommand(`trigger app uninstall ${id}`);
   } catch {
-    throw new Error('Could not communicate with karen');
+    throw new Error("Could not communicate with karen");
   }
 }
 
 export async function update(id: string): Promise<void> {
   if (!(await isValidAppId(id))) {
-    throw new Error('Invalid app id');
+    throw new Error("Invalid app id");
   }
 
   try {
     await runCommand(`trigger app update ${id}`);
   } catch {
-    throw new Error('Could not communicate with karen');
+    throw new Error("Could not communicate with karen");
   }
 }
 
-export async function getAvailableUpdates(): Promise<string[]> {
-  return diskLogic.readJsonStatusFile<string[]>('app-updates');
+export function getAvailableUpdates(): Promise<string[]> {
+  return diskLogic.readJsonStatusFile<string[]>("app-updates");
 }

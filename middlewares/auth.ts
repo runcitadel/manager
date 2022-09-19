@@ -1,236 +1,94 @@
-import {Buffer} from 'node:buffer';
-import {STATUS_CODES, typeHelper} from '@runcitadel/utils';
-import * as passportJWT from 'passport-jwt';
-import * as passportHTTP from 'passport-http';
-import * as bcrypt from '@node-rs/bcrypt';
-import Rsa from 'node-rsa';
-import type {Next, Context} from 'koa';
-import passport from 'koa-passport';
-import notp from 'notp';
-import * as authLogic from '../logic/auth.js';
-import * as diskLogic from '../logic/disk.js';
+import { isValidJwt } from "../utils/jwt.ts";
+import * as diskLogic from "../logic/disk.ts";
+import { isString } from "../utils/types.ts";
+import { TOTP } from "https://deno.land/x/god_crypto@v1.4.10/otp.ts";
 
-/* eslint-disable @typescript-eslint/naming-convention */
-const JwtStrategy = passportJWT.Strategy;
-const BasicStrategy = passportHTTP.BasicStrategy;
-const ExtractJwt = passportJWT.ExtractJwt;
+import Rsa from "https://esm.sh/node-rsa@1.1.1";
+import { Middleware, Status } from "https://deno.land/x/oak@v11.1.0/mod.ts";
 
-const JWT_AUTH = 'jwt';
-const JWT_AUTH_2FA = 'jwt_2fa';
-const REGISTRATION_AUTH = 'register';
-const BASIC_AUTH = 'basic';
-
-const SYSTEM_USER = 'admin';
-/* eslint-enable @typescript-eslint/naming-convention */
-
-const b64encode = (string: string) =>
-  Buffer.from(string, 'utf-8').toString('base64');
-const b64decode = (b64: string) => Buffer.from(b64, 'base64').toString('utf-8');
+import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.0/mod.ts";
 
 export async function generateJwtKeys(): Promise<void> {
-  const key = new Rsa({b: 4096});
+  const key = new Rsa({ b: 4096 });
 
-  const privateKey = key.exportKey('private');
-  const publicKey = key.exportKey('public');
+  const privateKey = key.exportKey("private");
+  const publicKey = key.exportKey("public");
 
   await diskLogic.writeJwtPrivateKeyFile(privateKey);
   await diskLogic.writeJwtPublicKeyFile(publicKey);
 }
 
-export async function createJwtOptions(): Promise<{
-  jwtFromRequest: passportJWT.JwtFromRequestFunction;
-  secretOrKey: string;
-  algorithm: string;
-}> {
-  await generateJwtKeys();
-  const pubKey = await diskLogic.readJwtPublicKeyFile();
+export const basic: Middleware = async (
+  ctx,
+  next,
+): Promise<void> => {
+  let reqPassword = ctx.request.headers.get("Authorization")?.split(" ")[1];
+  // deno-lint-ignore no-explicit-any
+  let body: any;
+  try {
+    body = await ctx.request.body({
+      type: "json",
+    }).value;
+    reqPassword = body.password || reqPassword;
+  } catch {
+    // Allow failure
+  }
+  if (!reqPassword) {
+    ctx.throw(Status.BadRequest, '"Missing authorization header"');
+  }
+  isString(reqPassword, ctx);
+  let userInfo: diskLogic.UserFile;
+  try {
+    userInfo = await diskLogic.readUserFile();
+  } catch {
+    ctx.throw(Status.Unauthorized, '"No user registered"');
+    throw new TypeError(
+      "This error should not be visible, but is required to get TypeScript to shut up",
+    );
+  }
 
-  return {
-    jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('jwt'),
-    secretOrKey: pubKey,
-    algorithm: 'RS256',
-  };
-}
+  const storedPassword = userInfo.password;
+  if (!storedPassword) {
+    ctx.throw(Status.InternalServerError, '"No password stored"');
+  }
 
-passport.serializeUser((user, done) => {
-  done(null, SYSTEM_USER);
-});
+  const equal = await bcrypt.compare(
+    reqPassword as string,
+    storedPassword as string,
+  );
+  if (!equal) {
+    ctx.throw(Status.Unauthorized, '"Incorrect password"');
+  }
 
-passport.use(
-  BASIC_AUTH,
-  new BasicStrategy((username, password, next) => {
-    password = b64decode(password);
-    const user = {
-      username: SYSTEM_USER,
-      password,
-      plainTextPassword: password,
-    };
-    next(null, user);
-  }),
-);
+  // Check 2FA token when enabled
+  if (userInfo.settings?.twoFactorAuth) {
+    isString(body?.totpToken, ctx);
+    const totp = new TOTP(userInfo.settings.twoFactorKey as string);
+    const isValid = totp.verify(body?.totpToken as string);
 
-const jwtOptions = await createJwtOptions();
-
-passport.use(
-  JWT_AUTH,
-  new JwtStrategy(jwtOptions, (jwtPayload, done) => {
-    done(null, {username: SYSTEM_USER});
-  }),
-);
-
-passport.use(
-  JWT_AUTH_2FA,
-  new JwtStrategy(jwtOptions, (jwtPayload, done) => {
-    done(null, {username: SYSTEM_USER});
-  }),
-);
-
-passport.use(
-  REGISTRATION_AUTH,
-  new BasicStrategy((username, password, next) => {
-    password = b64decode(password);
-    const credentials = authLogic.hashCredentials(password);
-
-    next(null, credentials);
-  }),
-);
-
-// Override the authorization header with password that is in the body of the request if basic auth was not supplied.
-export async function convertRequestBodyToBasicAuth(
-  ctx: Context,
-  next: Next,
-): Promise<void> {
-  if (ctx.request.body.password && !ctx.request.headers.authorization) {
-    // We need to Base64 encode because Passport breaks on ":" characters
-    const password = b64encode(ctx.request.body.password);
-    ctx.request.headers.authorization =
-      'Basic ' + Buffer.from(SYSTEM_USER + ':' + password).toString('base64');
+    if (!isValid) {
+      ctx.throw(Status.Unauthorized, '"Incorrect 2FA code"');
+    }
   }
 
   await next();
-}
+};
 
-export async function basic(ctx: Context, next: Next): Promise<void> {
-  await passport.authenticate(
-    BASIC_AUTH,
-    {session: false},
-    async (error, user) => {
-      if (error || user === false) {
-        ctx.throw(STATUS_CODES.UNAUTHORIZED, 'Invalid state');
-      }
-
-      let userInfo: diskLogic.UserFile;
-      try {
-        userInfo = await diskLogic.readUserFile();
-      } catch {
-        ctx.throw(STATUS_CODES.UNAUTHORIZED, 'No user registered');
-      }
-
-      const storedPassword = userInfo.password;
-      if (!storedPassword) {
-        ctx.throw(STATUS_CODES.UNAUTHORIZED, '"No password stored"');
-      }
-
-      const equal = await bcrypt.verify(user.password, storedPassword);
-      if (!equal) {
-        ctx.throw(STATUS_CODES.UNAUTHORIZED, '"Incorrect password"');
-      }
-
-      // Check 2FA token when enabled
-      if (userInfo.settings?.twoFactorAuth) {
-        typeHelper.isString(ctx.request.body.totpToken, ctx);
-        const vres = notp.totp.verify(
-          ctx.request.body.totpToken,
-          userInfo.settings.twoFactorKey || '',
-        );
-
-        if (!vres || vres.delta !== 0) {
-          ctx.throw(STATUS_CODES.UNAUTHORIZED, '"Incorrect 2FA code"');
-        }
-      }
-
-      try {
-        await ctx.logIn(user);
-      } catch (error: unknown) {
-        console.error(error);
-        ctx.throw(
-          STATUS_CODES.INTERNAL_SERVER_ERROR,
-          'Failed to log in. Your password seemed to be correct though. Please contact the Citadel support team.',
-        );
-      }
-
-      await next();
-    },
-  )(ctx, next);
-}
-
-// eslint-enable @typescript-eslint/no-unsafe-member-access
-export async function temporaryJwt(ctx: Context, next: Next): Promise<void> {
-  await passport.authenticate(
-    JWT_AUTH_2FA,
-    {session: false},
-    async (error, user) => {
-      if (error || user === false) {
-        ctx.throw(STATUS_CODES.UNAUTHORIZED, 'Invalid JWT');
-      }
-
-      try {
-        await ctx.logIn(user);
-      } catch {
-        ctx.throw(
-          STATUS_CODES.INTERNAL_SERVER_ERROR,
-          'An internal error occured. Please contact the Citadel support team.',
-        );
-      }
-
-      await next();
-    },
-  )(ctx, next);
-}
-
-// eslint-enable @typescript-eslint/no-unsafe-member-access
-export async function jwt(ctx: Context, next: Next): Promise<void> {
-  await passport.authenticate(
-    JWT_AUTH,
-    {session: false},
-    async (error, user) => {
-      if (error || user === false) {
-        ctx.throw(STATUS_CODES.UNAUTHORIZED, 'Invalid JWT');
-      }
-
-      try {
-        await ctx.logIn(user);
-      } catch {
-        ctx.throw(
-          STATUS_CODES.INTERNAL_SERVER_ERROR,
-          'An internal error occured. Please contact the Citadel support team.',
-        );
-      }
-
-      await next();
-    },
-  )(ctx, next);
-}
-
-export async function register(ctx: Context, next: Next): Promise<void> {
-  await passport.authenticate(
-    REGISTRATION_AUTH,
-    {session: false},
-    async (error, user) => {
-      if (error || user === false) {
-        ctx.throw(STATUS_CODES.UNAUTHORIZED, 'Invalid state');
-      }
-
-      try {
-        await ctx.logIn(user);
-      } catch {
-        ctx.throw(
-          STATUS_CODES.INTERNAL_SERVER_ERROR,
-          'An internal error occured. Please contact the Citadel support team.',
-        );
-      }
-
-      await next();
-    },
-  )(ctx, next);
-}
+export const jwt: Middleware = async (
+  ctx,
+  next,
+): Promise<void> => {
+  const reqJwt = ctx.request.headers.get("Authorization")?.split(" ")[1];
+  if (!reqJwt) {
+    ctx.throw(Status.BadRequest, '"Missing authorization header"');
+  }
+  isString(reqJwt, ctx);
+  const isValid = await isValidJwt(
+    reqJwt as string,
+    await diskLogic.readJwtPublicKeyFile(),
+  );
+  if (!isValid) {
+    ctx.throw(Status.Unauthorized, '"Invalid JWT"');
+  }
+  await next();
+};

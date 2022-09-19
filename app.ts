@@ -1,61 +1,56 @@
-import {config} from 'dotenv';
+import { config } from "https://deno.land/x/dotenv@v3.2.0/mod.ts";
+import {
+  Application,
+  FlashServer,
+  hasFlash,
+} from "https://deno.land/x/oak@v11.1.0/mod.ts";
+import { oakCors } from "https://deno.land/x/cors@v1.2.2/mod.ts";
+import logger from "https://deno.land/x/oak_logger@1.0.0/mod.ts";
 
-import Koa, {Context} from 'koa';
-import morgan from 'koa-morgan';
-import bodyParser from 'koa-body';
-import passport from 'koa-passport';
-import cors from '@koa/cors';
-
-import {errorHandler, corsOptions} from '@runcitadel/utils';
-
-import ping from './routes/ping.js';
-import account from './routes/v1/account.js';
-import system from './routes/v1/system.js';
-import system2 from './routes/v2/system.js';
-import external from './routes/v1/external.js';
-import apps from './routes/v1/apps.js';
-
-// Unstable V3 API with multi-account support
-import account3 from './routes/v3/account.js';
-import system3 from './routes/v3/system.js';
-import apps3 from './routes/v3/apps.js';
+import ping from "./routes/ping.ts";
+import account from "./routes/v1/account.ts";
+import system from "./routes/v1/system.ts";
+import system2 from "./routes/v2/system.ts";
+import external from "./routes/v1/external.ts";
+import apps from "./routes/v1/apps.ts";
 
 config();
+const appOptions = hasFlash() ? { serverConstructor: FlashServer } : undefined;
 
-const app = new Koa();
+const app = new Application(appOptions);
 
-app.use(errorHandler);
+app.use(logger.logger);
+app.use(logger.responseTime);
 
-app.on('error', (error: Error, ctx: Context) => {
-  const route = ctx.request.URL.pathname ?? '';
-  const message = error.message ?? JSON.stringify(error);
-  console.warn(`[WARNING] ${message} on ${route}.`);
-  console.warn(error.stack);
+app.use(oakCors({ origin: "*" }));
+
+// Handle errors
+app.use(async ({ response }, next) => {
+  try {
+    await next();
+    // deno-lint-ignore no-explicit-any
+  } catch (err: any) {
+    response.status = err.status || 500;
+    response.body = err.message;
+  }
 });
 
-// Handles CORS
-app.use(cors(corsOptions));
-
-app.use(bodyParser());
-app.use(passport.initialize());
-app.use(passport.session());
-
-app.use(morgan('combined'));
-
 app.use(ping.routes());
+app.use(ping.allowedMethods());
 
-// V1 API used by the old dashboard
+// V1 API
 app.use(account.routes());
-app.use(system.routes());
+app.use(account.allowedMethods());
 app.use(external.routes());
+app.use(external.allowedMethods());
 app.use(apps.routes());
+app.use(apps.allowedMethods());
+// Unused right now
+app.use(system.routes());
+app.use(system.allowedMethods());
 
 // V2 API for Citadel SDK
 app.use(system2.routes());
+app.use(system2.allowedMethods());
 
-// Unstable V3 API with multi-account support
-app.use(account3.routes());
-app.use(system3.routes());
-app.use(apps3.routes());
-
-export default app;
+app.listen("0.0.0.0:3000");

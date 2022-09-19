@@ -1,23 +1,20 @@
-import nodeFetch from 'node-fetch';
-import semver from 'semver';
-import {encode, UrlVersion} from '@runcitadel/lndconnect';
-import socksProxyAgentPkg from 'socks-proxy-agent';
+import * as semver from "https://deno.land/std@0.153.0/semver/mod.ts";
+import { encode as encodeLnurl } from "https://deno.land/x/lndconnect@v1.0.1/mod.ts";
+import { encode as encodeHex } from "https://deno.land/std@0.153.0/encoding/hex.ts";
 
 import type {
-  updateStatus,
-  debugStatus,
   backupStatus,
+  debugStatus,
   systemStatus,
-} from '@runcitadel/utils';
-import * as constants from '../utils/const.js';
-import {runCommand} from '../services/karen.js';
-import * as diskLogic from './disk.js';
+  updateStatus,
+} from "https://esm.sh/@runcitadel/utils@0.9.2";
+import constants from "../utils/const.ts";
+import { runCommand } from "../services/karen.ts";
+import * as diskLogic from "./disk.ts";
+import { Tor } from "https://deno.land/x/tor@0.0.3.10/mod.ts";
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const {SocksProxyAgent} = socksProxyAgentPkg;
-
-const agent = new SocksProxyAgent(
-  `socks5h://${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`,
+const tor = new Tor(
+  `${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`,
 );
 
 export type ConnectionDetails = {
@@ -55,20 +52,13 @@ export async function getInfo(): Promise<VersionFile> {
     const info = await diskLogic.readVersionFile();
     return info;
   } catch {
-    throw new Error('Unable to get system information');
+    throw new Error("Unable to get system information");
   }
 }
 
-export async function getHiddenServiceUrl(): Promise<string> {
-  try {
-    const url = await diskLogic.readHiddenService('web');
-    return url;
-  } catch {
-    throw new Error('Unable to get hidden service url');
-  }
-}
-
-export async function getElectrumConnectionDetails(): Promise<ConnectionDetails> {
+export async function getElectrumConnectionDetails(): Promise<
+  ConnectionDetails
+> {
   try {
     const addressUnformatted = await diskLogic.readElectrumHiddenService();
     const address = addressUnformatted.trim();
@@ -80,11 +70,13 @@ export async function getElectrumConnectionDetails(): Promise<ConnectionDetails>
       connectionString,
     };
   } catch {
-    throw new Error('Unable to get Electrum hidden service url');
+    throw new Error("Unable to get Electrum hidden service url");
   }
 }
 
-export async function getBitcoinP2pConnectionDetails(): Promise<ConnectionDetails> {
+export async function getBitcoinP2pConnectionDetails(): Promise<
+  ConnectionDetails
+> {
   try {
     const address = await diskLogic.readBitcoinP2pHiddenService();
     const port = constants.BITCOIN_P2P_PORT;
@@ -95,11 +87,13 @@ export async function getBitcoinP2pConnectionDetails(): Promise<ConnectionDetail
       connectionString,
     };
   } catch {
-    throw new Error('Unable to get Bitcoin P2P hidden service url');
+    throw new Error("Unable to get Bitcoin P2P hidden service url");
   }
 }
 
-export async function getBitcoinRpcConnectionDetails(): Promise<RpcConnectionDetails> {
+export async function getBitcoinRpcConnectionDetails(): Promise<
+  RpcConnectionDetails
+> {
   try {
     const [user, hiddenService] = await Promise.all([
       diskLogic.readUserFile(),
@@ -110,7 +104,8 @@ export async function getBitcoinRpcConnectionDetails(): Promise<RpcConnectionDet
     const rpcpassword = constants.BITCOIN_RPC_PASSWORD;
     const address = hiddenService;
     const port = constants.BITCOIN_RPC_PORT;
-    const connectionString = `btcrpc://${rpcuser}:${rpcpassword}@${address}:${port}?label=${label}`;
+    const connectionString =
+      `btcrpc://${rpcuser}:${rpcpassword}@${address}:${port}?label=${label}`;
     return {
       rpcuser,
       rpcpassword,
@@ -119,7 +114,7 @@ export async function getBitcoinRpcConnectionDetails(): Promise<RpcConnectionDet
       connectionString,
     };
   } catch {
-    throw new Error('Unable to get Bitcoin RPC connection details');
+    throw new Error("Unable to get Bitcoin RPC connection details");
   }
 }
 
@@ -137,12 +132,13 @@ export async function getAvailableUpdate(): Promise<VersionFile | string> {
     // Try finding for a new update until there's a new version available
     // which is compatible with the currently installed version
     while (isNewVersionAvailable && !isCompatibleWithCurrentVersion) {
-      const infoUrl = `https://raw.githubusercontent.com/${constants.GITHUB_REPO}/${tag}/info.json`;
+      const infoUrl =
+        `https://raw.githubusercontent.com/${constants.GITHUB_REPO}/${tag}/info.json`;
 
       // eslint-disable-next-line no-await-in-loop
-      const latestVersionInfo = await nodeFetch(infoUrl, {agent});
+      const latestVersionInfo = await tor.get(infoUrl);
       // eslint-disable-next-line no-await-in-loop
-      data = (await latestVersionInfo.json()) as VersionFile;
+      data = JSON.parse(latestVersionInfo) as VersionFile;
 
       const latestVersion = data.version;
       const requiresVersionRange = data.requires;
@@ -180,9 +176,9 @@ export async function getAvailableUpdate(): Promise<VersionFile | string> {
       return data!;
     }
 
-    return 'Your Citadel is up-to-date';
+    return "Your Citadel is up-to-date";
   } catch {
-    throw new Error('Unable to check for update');
+    throw new Error("Unable to check for update");
   }
 }
 
@@ -191,25 +187,25 @@ export async function getUpdateStatus(): Promise<updateStatus> {
     const status = await diskLogic.readUpdateStatusFile();
     return status;
   } catch {
-    throw new Error('Unable to get update status');
+    throw new Error("Unable to get update status");
   }
 }
 
-export async function startUpdate(): Promise<{message: string} | string> {
+export async function startUpdate(): Promise<{ message: string } | string> {
   let availableUpdate;
 
   // Fetch available update
   try {
     availableUpdate = await getAvailableUpdate();
-    if (typeof availableUpdate === 'string') return availableUpdate;
+    if (typeof availableUpdate === "string") return availableUpdate;
   } catch {
-    throw new Error('Unable to fetch latest release');
+    throw new Error("Unable to fetch latest release");
   }
 
   // Make sure an update is not already in progress
   const updateInProgress = await diskLogic.updateLockFileExists();
   if (updateInProgress) {
-    throw new Error('An update is already in progress');
+    throw new Error("An update is already in progress");
   }
 
   // Update status file with update version
@@ -218,14 +214,14 @@ export async function startUpdate(): Promise<{message: string} | string> {
     updateStatus.updateTo = `v${availableUpdate.version}`;
     await diskLogic.writeUpdateStatusFile(updateStatus);
   } catch {
-    throw new Error('Could not update the update-status file');
+    throw new Error("Could not update the update-status file");
   }
 
   try {
-    await runCommand('trigger update');
-    return {message: 'Updating to Citadel v' + availableUpdate.version};
+    await runCommand("trigger update");
+    return { message: "Updating to Citadel v" + availableUpdate.version };
   } catch {
-    throw new Error('Unable to get backup status');
+    throw new Error("Unable to get backup status");
   }
 }
 
@@ -234,7 +230,7 @@ export async function getBackupStatus(): Promise<backupStatus> {
     const status = await diskLogic.readBackupStatusFile();
     return status;
   } catch {
-    throw new Error('Unable to get backup status');
+    throw new Error("Unable to get backup status");
   }
 }
 
@@ -243,26 +239,26 @@ export async function getLndConnectUrls(): Promise<LndConnectionDetails> {
   try {
     cert = await diskLogic.readLndCert();
   } catch {
-    throw new Error('Unable to read lnd cert file');
+    throw new Error("Unable to read lnd cert file");
   }
 
   let macaroon: string;
   try {
     const macaroonBuffer = await diskLogic.readLndAdminMacaroon();
-    macaroon = macaroonBuffer.toString('hex');
+    macaroon = new TextDecoder().decode(encodeHex(macaroonBuffer));
   } catch {
-    throw new Error('Unable to read lnd macaroon file');
+    throw new Error("Unable to read lnd macaroon file");
   }
 
   let restTorHost;
   try {
     restTorHost = await diskLogic.readLndRestHiddenService();
-    restTorHost += ':8080';
+    restTorHost += ":8080";
   } catch {
-    throw new Error('Unable to read lnd REST hostname file');
+    throw new Error("Unable to read lnd REST hostname file");
   }
 
-  const restTor = encode({
+  const restTor = encodeLnurl({
     host: restTorHost,
     cert,
     macaroon,
@@ -271,109 +267,29 @@ export async function getLndConnectUrls(): Promise<LndConnectionDetails> {
   let grpcTorHost;
   try {
     grpcTorHost = await diskLogic.readLndGrpcHiddenService();
-    grpcTorHost += ':10009';
+    grpcTorHost += ":10009";
   } catch {
-    throw new Error('Unable to read lnd gRPC hostname file');
+    throw new Error("Unable to read lnd gRPC hostname file");
   }
 
-  const grpcTor = encode({
+  const grpcTor = encodeLnurl({
     host: grpcTorHost,
     cert,
     macaroon,
   });
 
   const restLocalHost = `${constants.DEVICE_HOSTNAME}:8080`;
-  const restLocal = encode({
+  const restLocal = encodeLnurl({
     host: restLocalHost,
     cert,
     macaroon,
   });
 
   const grpcLocalHost = `${constants.DEVICE_HOSTNAME}:10009`;
-  const grpcLocal = encode({
+  const grpcLocal = encodeLnurl({
     host: grpcLocalHost,
     cert,
     macaroon,
-  });
-
-  return {
-    restTor,
-    restLocal,
-    grpcTor,
-    grpcLocal,
-  };
-}
-
-export async function getLnConnectUrls(
-  lightningImplementation: 'lnd' | 'c-lightning' | 'c-lightning-rest',
-): Promise<LndConnectionDetails> {
-  let cert;
-  try {
-    cert = await diskLogic.readLndCert();
-  } catch {
-    throw new Error('Unable to read lnd cert file');
-  }
-
-  let macaroon: string;
-  try {
-    const macaroonBuffer = await diskLogic.readLndAdminMacaroon();
-    macaroon = macaroonBuffer.toString('hex');
-  } catch {
-    throw new Error('Unable to read lnd macaroon file');
-  }
-
-  let restTorHost;
-  try {
-    restTorHost = await diskLogic.readLndRestHiddenService();
-    restTorHost += ':8080';
-  } catch {
-    throw new Error('Unable to read lnd REST hostname file');
-  }
-
-  if (lightningImplementation === 'c-lightning') {
-    lightningImplementation = 'c-lightning-rest';
-  }
-
-  const restTor = encode({
-    host: restTorHost,
-    cert,
-    macaroon,
-    server: lightningImplementation,
-    version: UrlVersion.LNCONNECT_UNIVERSAL_V0,
-  });
-
-  let grpcTorHost;
-  try {
-    grpcTorHost = await diskLogic.readLndGrpcHiddenService();
-    grpcTorHost += ':10009';
-  } catch {
-    throw new Error('Unable to read lnd gRPC hostname file');
-  }
-
-  const grpcTor = encode({
-    host: grpcTorHost,
-    cert,
-    macaroon,
-    server: lightningImplementation,
-    version: UrlVersion.LNCONNECT_UNIVERSAL_V0,
-  });
-
-  const restLocalHost = `${constants.DEVICE_HOSTNAME}:8080`;
-  const restLocal = encode({
-    host: restLocalHost,
-    cert,
-    macaroon,
-    server: lightningImplementation,
-    version: UrlVersion.LNCONNECT_UNIVERSAL_V0,
-  });
-
-  const grpcLocalHost = `${constants.DEVICE_HOSTNAME}:10009`;
-  const grpcLocal = encode({
-    host: grpcLocalHost,
-    cert,
-    macaroon,
-    server: lightningImplementation,
-    version: UrlVersion.LNCONNECT_UNIVERSAL_V0,
   });
 
   return {
@@ -386,14 +302,14 @@ export async function getLnConnectUrls(
 
 export async function requestDebug(): Promise<debugStatus> {
   try {
-    await runCommand('trigger debug');
+    await runCommand("trigger debug");
     return {
-      status: 'requested',
+      status: "requested",
       debug: null,
       dmesg: null,
     };
   } catch {
-    throw new Error('Could not communicate with karen');
+    throw new Error("Could not communicate with karen");
   }
 }
 
@@ -401,7 +317,7 @@ export async function getDebugResult(): Promise<debugStatus> {
   try {
     return await diskLogic.readDebugStatusFile();
   } catch {
-    throw new Error('Unable to get debug results');
+    throw new Error("Unable to get debug results");
   }
 }
 
@@ -409,11 +325,11 @@ export async function requestShutdown(): Promise<systemStatus> {
   try {
     await diskLogic.shutdown();
     return {
-      type: 'shutdown',
-      status: 'requested',
+      type: "shutdown",
+      status: "requested",
     };
   } catch {
-    throw new Error('Unable to request shutdown');
+    throw new Error("Unable to request shutdown");
   }
 }
 
@@ -421,18 +337,18 @@ export async function requestReboot(): Promise<systemStatus> {
   try {
     await diskLogic.reboot();
     return {
-      type: 'reboot',
-      status: 'requested',
+      type: "reboot",
+      status: "requested",
     };
   } catch {
-    throw new Error('Unable to request reboot');
+    throw new Error("Unable to request reboot");
   }
 }
 
-export async function setUpdateChannel(channel: string): Promise<void> {
+export function setUpdateChannel(channel: string): Promise<void> {
   return runCommand(`trigger set-update-channel ${channel}`);
 }
 
-export async function startQuickUpdate(): Promise<void> {
+export function startQuickUpdate(): Promise<void> {
   return runCommand(`trigger quick-update`);
 }

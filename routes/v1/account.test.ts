@@ -69,3 +69,10 @@ Deno.test("Can't get the seed with valid password", async () => {
   const error = JSON.parse(response.text);
   assertEquals(error, "Incorrect password");
 });
+
+Deno.test("/registered returns true if user file exists", async () => {
+  const app = await routerToSuperDeno(account);
+  const response = await app.get("/v1/account/registered").send();
+  assert(response.ok, "Response should return status 200");
+  assert(response.body.registered);
+});

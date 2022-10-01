@@ -10,6 +10,7 @@ import type {
 } from "https://esm.sh/@runcitadel/utils@0.9.2";
 import constants from "../utils/const.ts";
 import { runCommand } from "../services/karen.ts";
+import * as appsLogic from "./apps.ts";
 import * as diskLogic from "./disk.ts";
 import { Tor } from "https://deno.land/x/tor@0.0.3.10/mod.ts";
 
@@ -60,7 +61,11 @@ export async function getElectrumConnectionDetails(): Promise<
   ConnectionDetails
 > {
   try {
-    const addressUnformatted = await diskLogic.readElectrumHiddenService();
+    const electrum = await appsLogic.getImplementation("electrum");
+    if (!electrum) {
+      throw new Error("No electrum implementation found!");
+    }
+    const addressUnformatted = await diskLogic.readHiddenService(`app-${electrum}`);
     const address = addressUnformatted.trim();
     const port = constants.ELECTRUM_PORT;
     const connectionString = `${address}:${port}:t`;

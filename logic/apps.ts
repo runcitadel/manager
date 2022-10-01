@@ -52,12 +52,24 @@ export type MetadataV4 = {
   /**
    * The app's default password. Can also be $APP_SEED for a random password
    */
-  defaultPassword?: string | undefined;
+  defaultPassword?: string;
+  /**
+   * A description of the app
+   */
+  description: string;
   developers: Record<string, string>;
   /**
    * A list of promo images for the apps
    */
-  gallery?: string[] | undefined;
+  gallery?: string[];
+  /**
+   * The app id, only set in output
+   */
+  id?: string;
+  /**
+   * For "virtual" apps, the service the app implements
+   */
+  implements?: string;
   /**
    * The name of the app
    */
@@ -65,7 +77,7 @@ export type MetadataV4 = {
   /**
    * The path the "Open" link on the dashboard should lead to
    */
-  path?: string | undefined;
+  path?: string;
   /**
    * Permissions the app requires
    */
@@ -89,11 +101,12 @@ export type MetadataV4 = {
   /**
    * A list of containers to update automatically (still validated by the Citadel team)
    */
-  updateContainers?: string[] | undefined;
+  updateContainers?: string[] | null;
   /**
    * The version of the app
    */
-  version: string;
+  version:         string;
+  versionControl?: null | string;
   /** Automatically added */
   hiddenService?: string;
   /** Automatically added */
@@ -211,4 +224,10 @@ export async function update(id: string): Promise<void> {
 
 export function getAvailableUpdates(): Promise<string[]> {
   return diskLogic.readJsonStatusFile<string[]>("app-updates");
+}
+
+export async function getImplementation(service: string): Promise<string | undefined> {
+  const installedApps = (await diskLogic.readUserFile()).installedApps || [];
+  const implementations = (await diskLogic.readVirtualApps())[service] || [];
+  return implementations.find((implementation) => installedApps.includes(implementation));
 }

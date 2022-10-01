@@ -44,9 +44,9 @@ function getRandomString(s: number) {
   return ret;
 }
 
-async function readJsonFile(path: string) {
+async function readJsonFile<T = unknown>(path: string): Promise<T> {
   const contents = await Deno.readTextFile(path);
-  return JSON.parse(contents);
+  return JSON.parse(contents) as T;
 }
 
 function writeJsonFile(path: string, data: unknown): Promise<void> {
@@ -135,10 +135,6 @@ export function readSeedFile(): Promise<string> {
 
 export function seedFileExists(): boolean {
   return existsSync(constants.SEED_FILE);
-}
-
-export function readElectrumHiddenService(): Promise<string> {
-  return readHiddenService("electrum");
 }
 
 export function readBitcoinP2pHiddenService(): Promise<string> {
@@ -255,9 +251,14 @@ export function deleteStatusFile(statusFile: string): Promise<void> {
   return Deno.remove(statusFilePath);
 }
 
-export async function readAppRegistry(): Promise<App[]> {
+export function readAppRegistry(): Promise<App[]> {
   const appRegistryFile = join(constants.APPS_DIR, "registry.json");
-  return (await readJsonFile(appRegistryFile)) as App[];
+  return readJsonFile<App[]>(appRegistryFile);
+}
+
+export function readVirtualApps(): Promise<Record<string, string[]>> {
+  const appRegistryFile = join(constants.APPS_DIR, "virtual-apps.json");
+  return readJsonFile<Record<string, string[]>>(appRegistryFile);
 }
 
 export function readHiddenService(id: string): Promise<string> {

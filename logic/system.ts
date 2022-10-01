@@ -182,7 +182,8 @@ export async function getAvailableUpdate(): Promise<VersionFile | string> {
     }
 
     return "Your Citadel is up-to-date";
-  } catch {
+  } catch (err) {
+    console.error(err);
     throw new Error("Unable to check for update");
   }
 }

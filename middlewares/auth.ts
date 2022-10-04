@@ -18,6 +18,12 @@ export async function generateJwtKeys(): Promise<void> {
   await diskLogic.writeJwtPublicKeyFile(publicKey);
 }
 
+try {
+  await diskLogic.readJwtPublicKeyFile();
+} catch {
+  await generateJwtKeys();
+}
+
 export const basic: Middleware = async (
   ctx,
   next,

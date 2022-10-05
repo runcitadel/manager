@@ -31,7 +31,7 @@ app.use(async ({ response }, next) => {
     // deno-lint-ignore no-explicit-any
   } catch (err: any) {
     response.status = err.status || 500;
-    response.body = err.message;
+    response.body = JSON.stringify(err.message || err);
   }
 });
 

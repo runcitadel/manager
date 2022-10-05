@@ -40,14 +40,14 @@ export const basic: Middleware = async (
     // Allow failure
   }
   if (!reqPassword) {
-    ctx.throw(Status.BadRequest, '"Missing authorization header"');
+    ctx.throw(Status.BadRequest, "Missing authorization header");
   }
   isString(reqPassword, ctx);
   let userInfo: diskLogic.UserFile;
   try {
     userInfo = await diskLogic.readUserFile();
   } catch {
-    ctx.throw(Status.Unauthorized, '"No user registered"');
+    ctx.throw(Status.Unauthorized, "No user registered");
     throw new TypeError(
       "This error should not be visible, but is required to get TypeScript to shut up",
     );
@@ -55,7 +55,7 @@ export const basic: Middleware = async (
 
   const storedPassword = userInfo.password;
   if (!storedPassword) {
-    ctx.throw(Status.InternalServerError, '"No password stored"');
+    ctx.throw(Status.InternalServerError, "No password stored");
   }
 
   const equal = await bcrypt.compare(
@@ -63,7 +63,7 @@ export const basic: Middleware = async (
     storedPassword as string,
   );
   if (!equal) {
-    ctx.throw(Status.Unauthorized, '"Incorrect password"');
+    ctx.throw(Status.Unauthorized, "Incorrect password");
   }
 
   // Check 2FA token when enabled
@@ -73,7 +73,7 @@ export const basic: Middleware = async (
     const isValid = totp.verify(body?.totpToken as string);
 
     if (!isValid) {
-      ctx.throw(Status.Unauthorized, '"Incorrect 2FA code"');
+      ctx.throw(Status.Unauthorized, "Incorrect 2FA code");
     }
   }
 
@@ -86,7 +86,7 @@ export const jwt: Middleware = async (
 ): Promise<void> => {
   const reqJwt = ctx.request.headers.get("Authorization")?.split(" ")[1];
   if (!reqJwt) {
-    ctx.throw(Status.BadRequest, '"Missing authorization header"');
+    ctx.throw(Status.BadRequest, "Missing authorization header");
   }
   isString(reqJwt, ctx);
   const isValid = await isValidJwt(
@@ -94,7 +94,7 @@ export const jwt: Middleware = async (
     await diskLogic.readJwtPublicKeyFile(),
   );
   if (!isValid) {
-    ctx.throw(Status.Unauthorized, '"Invalid JWT"');
+    ctx.throw(Status.Unauthorized, "Invalid JWT");
   }
   await next();
 };

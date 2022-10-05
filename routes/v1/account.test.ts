@@ -86,7 +86,49 @@ Deno.test("Password change fails with password which is too short", async () => 
   )
     .send('{"password":"password1234", "newPassword": "password123"}');
   await karen.stop();
-  assert(response.status === 401, "Response should return status 401");
+  assert(response.status === 400, "Response should return status 400");
+});
+
+Deno.test("Password change fails if password is unchanged", async () => {
+  await karen.start();
+  const app = await routerToSuperDeno(account);
+  const response = await app.post("/v1/account/change-password").set(
+    "Content-Type",
+    "application/json",
+  )
+    .send('{"password":"password1234", "newPassword": "password1234"}');
+  await karen.stop();
+  assert(response.status === 400, "Response should return status 400");
+  const error = JSON.parse(response.text);
+  assertEquals(error, "The new password must not be the same as existing password");
+});
+
+Deno.test("Password change fails if new password is missing", async () => {
+  await karen.start();
+  const app = await routerToSuperDeno(account);
+  const response = await app.post("/v1/account/change-password").set(
+    "Content-Type",
+    "application/json",
+  )
+    .send('{"password":"password1234"}');
+  await karen.stop();
+  assert(response.status === 400, "Response should return status 400");
+  const error = JSON.parse(response.text);
+  assertEquals(error, "Received invalid data.");
+});
+
+Deno.test("Password change fails if new password is an object", async () => {
+  await karen.start();
+  const app = await routerToSuperDeno(account);
+  const response = await app.post("/v1/account/change-password").set(
+    "Content-Type",
+    "application/json",
+  )
+    .send('{"password":"password1234", "newPasswort": {"object":"object"}}');
+  await karen.stop();
+  assert(response.status === 400, "Response should return status 400");
+  const error = JSON.parse(response.text);
+  assertEquals(error, "Received invalid data.");
 });
 
 Deno.test("Password change works with valid password", async () => {

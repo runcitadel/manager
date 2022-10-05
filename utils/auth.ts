@@ -16,7 +16,7 @@ export async function getPasswordFromContext<
     // Allow failure
   }
   if (!reqPassword) {
-    ctx.throw(Status.BadRequest, '"Missing authorization header"');
+    ctx.throw(Status.BadRequest, "Missing authorization header");
   }
   typeHelper.isString(reqPassword, ctx);
   return reqPassword as string;

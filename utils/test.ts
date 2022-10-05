@@ -12,7 +12,8 @@ export function routerToSuperDeno(router: Router): Promise<SuperDeno> {
       // deno-lint-ignore no-explicit-any
     } catch (err: any) {
       response.status = err.status || 500;
-      response.body = err.message;
+      response.body = JSON.stringify(err.message || err);
+      response.headers.set("content-type", "application/json");
     }
   });
   app.use(router.routes());

@@ -36,15 +36,15 @@ router.post(
       //typeHelper.isMinPasswordLength(currentPassword, ctx);
       typeHelper.isString(newPassword, ctx);
       typeHelper.isMinPasswordLength(newPassword, ctx);
-      if (newPassword === currentPassword) {
-        ctx.throw(
-          Status.BadRequest,
-          "The new password must not be the same as existing password",
-        );
-      }
     } catch {
-      ctx.throw(Status.Unauthorized, "Invalid password supplied.");
+      ctx.throw(Status.BadRequest, "Invalid password supplied.");
       return;
+    }
+    if (newPassword === currentPassword) {
+      ctx.throw(
+        Status.BadRequest,
+        "The new password must not be the same as existing password",
+      );
     }
 
     try {

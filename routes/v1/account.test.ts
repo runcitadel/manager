@@ -1,10 +1,11 @@
-import { FakeKaren, routerToSuperDeno, setEnv, cleanup } from "../../utils/test.ts";
-import account from "./account.ts";
 import {
-  assert,
-  assertFalse,
-} from "https://deno.land/std@0.153.0/testing/asserts.ts";
-import { assertEquals } from "https://deno.land/std@0.152.0/testing/asserts.ts";
+  FakeKaren,
+  routerToSuperDeno,
+  setEnv,
+  test,
+} from "../../utils/test.ts";
+import account from "./account.ts";
+import { assert } from "https://deno.land/std@0.153.0/testing/asserts.ts";
 
 setEnv();
 
@@ -12,62 +13,36 @@ const karen = new FakeKaren();
 Deno.test("Login with valid password works", async () => {
   await karen.start();
   const app = await routerToSuperDeno(account);
-  const response = await app.post("/v1/account/login").set(
-    "Content-Type",
-    "application/json",
-  )
+  const response = await app
+    .post("/v1/account/login")
+    .set("Content-Type", "application/json")
     .send('{"password":"password1234"}');
   await karen.stop();
   assert(response.ok, "Response should return status 200");
   assert(
     typeof response.body.jwt === "string",
-    "JWT should be present and a string",
+    "JWT should be present and a string"
   );
 });
 
-Deno.test("Login with invalid password fails", async () => {
-  await karen.start();
-  const app = await routerToSuperDeno(account);
-  const response = await app.post("/v1/account/login").set(
-    "Content-Type",
-    "application/json",
-  )
-    .send('{"password":"Invalid password"}');
-  await karen.stop();
-  assertEquals(response.statusCode, 401, "Response should return status 401");
-  const error = JSON.parse(response.text);
-  assertEquals(
-    error,
-    "Incorrect password",
-    "It should return an 'Incorrect password' message",
-  );
+test("Login with invalid password fails", {
+  router: account,
+  method: "POST",
+  url: "/v1/account/login",
+  expectedStatus: 401,
+  expectedData: "Incorrect password",
+  body: { password: "password12345" },
 });
 
-Deno.test("Can get the seed with valid password", async () => {
-  const app = await routerToSuperDeno(account);
-  const response = await app.post("/v1/account/seed").set(
-    "Content-Type",
-    "application/json",
-  )
-    .send('{"password":"password1234"}');
-  assert(response.ok, "Response should return status 200");
-  assertEquals(
-    response.body.seed,
-    ["this", "is", "the", "seed"],
-    "It should return the correct seed from user.json",
-  );
-});
-
-Deno.test("Can't get the seed with valid password", async () => {
-  const app = await routerToSuperDeno(account);
-  const response = await app.post("/v1/account/seed").set(
-    "Content-Type",
-    "application/json",
-  )
-    .send('{"password":"Invalid password"}');
-  assertFalse(response.ok);
-  const error = JSON.parse(response.text);
-  assertEquals(error, "Incorrect password");
+test("Can get the seed with valid password", {
+  router: account,
+  method: "POST",
+  url: "/v1/account/seed",
+  expectedStatus: 200,
+  expectedData: {
+    seed: ["this", "is", "the", "seed"],
+  },
+  body: { password: "password1234" },
 });
 
 Deno.test("/registered returns true if user file exists", async () => {
@@ -77,70 +52,70 @@ Deno.test("/registered returns true if user file exists", async () => {
   assert(response.body.registered);
 });
 
-Deno.test("Password change fails with password which is too short", async () => {
-  await karen.start();
-  const app = await routerToSuperDeno(account);
-  const response = await app.post("/v1/account/change-password").set(
-    "Content-Type",
-    "application/json",
-  )
-    .send('{"password":"password1234", "newPassword": "password123"}');
-  await karen.stop();
-  assert(response.status === 400, "Response should return status 400");
+Deno.test(
+  "Password change fails with password which is too short",
+  async () => {
+    await karen.start();
+    const app = await routerToSuperDeno(account);
+    const response = await app
+      .post("/v1/account/change-password")
+      .set("Content-Type", "application/json")
+      .send('{"password":"password1234", "newPassword": "password123"}');
+    await karen.stop();
+    assert(response.status === 400, "Response should return status 400");
+  }
+);
+
+test("Password change fails passwords are the same", {
+  router: account,
+  method: "POST",
+  url: "/v1/account/change-password",
+  expectedStatus: 400,
+  expectedData: "The new password must not be the same as existing password",
+  body: { password: "password1234", newPassword: "password1234" },
 });
 
-Deno.test("Password change fails if password is unchanged", async () => {
-  await karen.start();
-  const app = await routerToSuperDeno(account);
-  const response = await app.post("/v1/account/change-password").set(
-    "Content-Type",
-    "application/json",
-  )
-    .send('{"password":"password1234", "newPassword": "password1234"}');
-  await karen.stop();
-  assert(response.status === 400, "Response should return status 400");
-  const error = JSON.parse(response.text);
-  assertEquals(error, "The new password must not be the same as existing password");
+test("Password change fails if new password is missing", {
+  router: account,
+  method: "POST",
+  url: "/v1/account/change-password",
+  expectedStatus: 400,
+  expectedData: "Received invalid data.",
+  body: { password: "password1234" },
 });
 
-Deno.test("Password change fails if new password is missing", async () => {
-  await karen.start();
-  const app = await routerToSuperDeno(account);
-  const response = await app.post("/v1/account/change-password").set(
-    "Content-Type",
-    "application/json",
-  )
-    .send('{"password":"password1234"}');
-  await karen.stop();
-  assert(response.status === 400, "Response should return status 400");
-  const error = JSON.parse(response.text);
-  assertEquals(error, "Received invalid data.");
+test("Password change fails if new password is an object", {
+  router: account,
+  method: "POST",
+  url: "/v1/account/change-password",
+  expectedStatus: 400,
+  expectedData: "Received invalid data.",
+  body: { password: "password1234", newPassword: { value: "password12345" } },
 });
 
-Deno.test("Password change fails if new password is an object", async () => {
-  await karen.start();
-  const app = await routerToSuperDeno(account);
-  const response = await app.post("/v1/account/change-password").set(
-    "Content-Type",
-    "application/json",
-  )
-    .send('{"password":"password1234", "newPasswort": {"object":"object"}}');
-  await karen.stop();
-  assert(response.status === 400, "Response should return status 400");
-  const error = JSON.parse(response.text);
-  assertEquals(error, "Received invalid data.");
+test("Password change works with valid password", {
+  router: account,
+  method: "POST",
+  url: "/v1/account/change-password",
+  expectedStatus: 200,
+  expectedData: { percent: 100 },
+  body: { password: "password1234", newPassword: "password12345" },
 });
 
-Deno.test("Password change works with valid password", async () => {
-  await karen.start();
-  const app = await routerToSuperDeno(account);
-  const response = await app.post("/v1/account/change-password").set(
-    "Content-Type",
-    "application/json",
-  )
-  .send('{"password":"password1234", "newPassword": "password12345"}');
-  await karen.stop();
-  await cleanup();
-  assert(response.ok, "Response should return status 200");
-  //assert(response2.ok, "Changing password back response should return status 200");
+test("Password change progress always returns 100% for backwards compat", {
+  router: account,
+  method: "GET",
+  url: "/v1/account/change-password/status",
+  expectedStatus: 200,
+  expectedData: { percent: 100 },
+  includeJwt: true,
+});
+
+test("getinfo returns valid data", {
+  router: account,
+  method: "GET",
+  url: "/v1/account/info",
+  expectedStatus: 200,
+  expectedData: { name: "Tester with password password123", installedApps: ["example-app"] },
+  includeJwt: true,
 });

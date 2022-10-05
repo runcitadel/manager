@@ -12,11 +12,16 @@ export async function isValidJwt(
   pubkey: string,
 ): Promise<boolean> {
   try {
+    if (!jwt) {
+      return false;
+    }
     const [header, payload, signature] = jwt.split(".");
 
     const key = RSA.parseKey(pubkey);
     const rsa = new RSA(key);
-
+    if (!header || !payload || !signature) {
+      return false;
+    }
     const isValid = await rsa.verify(
       encode.base64url(signature),
       header + "." + payload,

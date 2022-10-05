@@ -1,8 +1,14 @@
 import { Application, Router } from "https://deno.land/x/oak@v11.1.0/mod.ts";
-import { SuperDeno, superoak } from "https://deno.land/x/superoak@4.7.0/mod.ts";
+import {
+  SuperDeno,
+  superoak,
+  Test,
+} from "https://deno.land/x/superoak@4.7.0/mod.ts";
 import { join } from "https://deno.land/std@0.153.0/path/mod.ts";
 import constants from "../utils/const.ts";
 import { writeStatusFile, writeUserFile } from "../logic/disk.ts";
+import { assertEquals } from "https://deno.land/std@0.153.0/testing/asserts.ts";
+import { generateJwt } from "./jwt.ts";
 
 export function routerToSuperDeno(router: Router): Promise<SuperDeno> {
   const app = new Application();
@@ -46,13 +52,11 @@ export function setEnv(citadelOs = false) {
 
 export async function cleanup() {
   const standardUserFile = {
-    "name": "Tester with password password123",
-    "password": "$2a$10$XOWhRrdr.s6UZi.U5uwS5eY04P9HD4qjHcj8Ofck5sxx5tiICP5y6",
-    "seed": "v4i4eoHmr5Wa1V6RLiXfw0qMzoJZUYj/Wf24HIw0p2Q=$6ab24c0706b26e3ff566d116b2c1b065$0/xFZcU29uMo$b7be1e091cea58521d75004a79862204c84e35150822d9c1972f22c6f74a4f5b$250000$cbc",
-    "installedApps": [
-        "example-app"
-    ]
-};
+    name: "Tester with password password123",
+    password: "$2a$10$XOWhRrdr.s6UZi.U5uwS5eY04P9HD4qjHcj8Ofck5sxx5tiICP5y6",
+    seed: "v4i4eoHmr5Wa1V6RLiXfw0qMzoJZUYj/Wf24HIw0p2Q=$6ab24c0706b26e3ff566d116b2c1b065$0/xFZcU29uMo$b7be1e091cea58521d75004a79862204c84e35150822d9c1972f22c6f74a4f5b$250000$cbc",
+    installedApps: ["example-app"],
+  };
   await writeUserFile(standardUserFile);
   await writeStatusFile("password", "password1234");
 }
@@ -96,4 +100,60 @@ export class FakeKaren {
     await this.#connection?.close();
     await Deno.remove(constants.KAREN_SOCKET);
   }
+}
+
+export function test(
+  name: string,
+  {
+    router,
+    method,
+    url,
+    expectedStatus,
+    expectedData,
+    body,
+    includeJwt,
+  }: {
+    router: Router;
+    method: "GET" | "POST" | "PUT";
+    url: string;
+    expectedStatus: number;
+    expectedData?: unknown;
+    body?: unknown;
+    includeJwt?: boolean;
+  }
+) {
+  return Deno.test(name, async () => {
+    setEnv();
+    const karen = new FakeKaren();
+    await karen.start();
+    const app = await routerToSuperDeno(router);
+    let req: Test;
+    if (method == "GET") {
+      req = app.get(url);
+      if (body) throw new TypeError("Get can't have a body!");
+    } else if (method == "POST") {
+      req = app.post(url);
+    } else if (method === "PUT") {
+      req = app.put(url);
+    } else {
+      throw new Error("Method not supported by the wrapper function");
+    }
+    if (includeJwt)
+      req.set("Authorization", `Bearer ${await generateJwt("admin")}`);
+    if (body) {
+      req.set("Content-Type", "application/json");
+    }
+    const response = await req.send(body ? JSON.stringify(body) : undefined);
+    await karen.stop();
+    await cleanup();
+    assertEquals(
+      response.status,
+      expectedStatus
+    );
+    if (expectedData)
+      assertEquals(
+        JSON.parse(response.text),
+        expectedData
+      );
+  });
 }

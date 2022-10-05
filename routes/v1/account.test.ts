@@ -1,4 +1,4 @@
-import { FakeKaren, routerToSuperDeno, setEnv } from "../../utils/test.ts";
+import { FakeKaren, routerToSuperDeno, setEnv, cleanup } from "../../utils/test.ts";
 import account from "./account.ts";
 import {
   assert,
@@ -16,7 +16,7 @@ Deno.test("Login with valid password works", async () => {
     "Content-Type",
     "application/json",
   )
-    .send('{"password":"password123"}');
+    .send('{"password":"password1234"}');
   await karen.stop();
   assert(response.ok, "Response should return status 200");
   assert(
@@ -49,7 +49,7 @@ Deno.test("Can get the seed with valid password", async () => {
     "Content-Type",
     "application/json",
   )
-    .send('{"password":"password123"}');
+    .send('{"password":"password1234"}');
   assert(response.ok, "Response should return status 200");
   assertEquals(
     response.body.seed,
@@ -75,4 +75,30 @@ Deno.test("/registered returns true if user file exists", async () => {
   const response = await app.get("/v1/account/registered").send();
   assert(response.ok, "Response should return status 200");
   assert(response.body.registered);
+});
+
+Deno.test("Password change fails with password which is too short", async () => {
+  await karen.start();
+  const app = await routerToSuperDeno(account);
+  const response = await app.post("/v1/account/change-password").set(
+    "Content-Type",
+    "application/json",
+  )
+    .send('{"password":"password1234", "newPassword": "password123"}');
+  await karen.stop();
+  assert(response.status === 401, "Response should return status 401");
+});
+
+Deno.test("Password change works with valid password", async () => {
+  await karen.start();
+  const app = await routerToSuperDeno(account);
+  const response = await app.post("/v1/account/change-password").set(
+    "Content-Type",
+    "application/json",
+  )
+  .send('{"password":"password1234", "newPassword": "password12345"}');
+  await karen.stop();
+  await cleanup();
+  assert(response.ok, "Response should return status 200");
+  //assert(response2.ok, "Changing password back response should return status 200");
 });

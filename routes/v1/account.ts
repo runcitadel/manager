@@ -33,7 +33,7 @@ router.post(
 
     try {
       typeHelper.isString(currentPassword, ctx);
-      typeHelper.isMinPasswordLength(currentPassword, ctx);
+      //typeHelper.isMinPasswordLength(currentPassword, ctx);
       typeHelper.isString(newPassword, ctx);
       typeHelper.isMinPasswordLength(newPassword, ctx);
       if (newPassword === currentPassword) {

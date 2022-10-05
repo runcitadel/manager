@@ -2,6 +2,7 @@ import { Application, Router } from "https://deno.land/x/oak@v11.1.0/mod.ts";
 import { SuperDeno, superoak } from "https://deno.land/x/superoak@4.7.0/mod.ts";
 import { join } from "https://deno.land/std@0.153.0/path/mod.ts";
 import constants from "../utils/const.ts";
+import { writeStatusFile, writeUserFile } from "../logic/disk.ts";
 
 export function routerToSuperDeno(router: Router): Promise<SuperDeno> {
   const app = new Application();
@@ -42,6 +43,19 @@ export function setEnv(citadelOs = false) {
   }
 }
 
+export async function cleanup() {
+  const standardUserFile = {
+    "name": "Tester with password password123",
+    "password": "$2a$10$XOWhRrdr.s6UZi.U5uwS5eY04P9HD4qjHcj8Ofck5sxx5tiICP5y6",
+    "seed": "v4i4eoHmr5Wa1V6RLiXfw0qMzoJZUYj/Wf24HIw0p2Q=$6ab24c0706b26e3ff566d116b2c1b065$0/xFZcU29uMo$b7be1e091cea58521d75004a79862204c84e35150822d9c1972f22c6f74a4f5b$250000$cbc",
+    "installedApps": [
+        "example-app"
+    ]
+};
+  await writeUserFile(standardUserFile);
+  await writeStatusFile("password", "password1234");
+}
+
 export class FakeKaren {
   #isRunning = false;
   #connection: Deno.Listener | null = null;
@@ -62,7 +76,7 @@ export class FakeKaren {
   async #keepListening() {
     while (this.#isRunning) {
       try {
-        const connection = await this.#connection?.accept() as Deno.Conn;
+        const connection = (await this.#connection?.accept()) as Deno.Conn;
         if (connection) this.#connections.push(connection);
       } catch (err) {
         if (this.#isRunning) {

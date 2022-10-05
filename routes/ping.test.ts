@@ -1,6 +1,8 @@
 import ping from "./ping.ts";
 import { assert } from "https://deno.land/std@0.153.0/testing/asserts.ts";
-import { routerToSuperDeno } from "../utils/test.ts";
+import { routerToSuperDeno, setEnv } from "../utils/test.ts";
+
+setEnv();
 
 Deno.test("It correctly responds to a ping", async () => {
   const app = await routerToSuperDeno(ping);

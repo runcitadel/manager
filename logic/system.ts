@@ -7,7 +7,7 @@ import type {
   debugStatus,
   systemStatus,
   updateStatus,
-} from "https://esm.sh/@runcitadel/utils@0.9.2";
+} from "../utils/types.ts";
 import constants from "../utils/const.ts";
 import { runCommand } from "../services/karen.ts";
 import * as appsLogic from "./apps.ts";

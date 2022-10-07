@@ -3,16 +3,28 @@ import * as diskLogic from "../logic/disk.ts";
 import { isString } from "../utils/types.ts";
 import { TOTP } from "https://deno.land/x/god_crypto@v1.4.10/otp.ts";
 
-import Rsa from "https://esm.sh/node-rsa@1.1.1";
+import Rsa from "npm:node-rsa";
 import { Middleware, Status } from "https://deno.land/x/oak@v11.1.0/mod.ts";
 
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.0/mod.ts";
 
-export async function generateJwtKeys(): Promise<void> {
+export function genKeys(): {
+  privateKey: string;
+  publicKey: string;
+} {
   const key = new Rsa({ b: 4096 });
 
   const privateKey = key.exportKey("private");
   const publicKey = key.exportKey("public");
+
+  return {
+    privateKey,
+    publicKey,
+  }
+}
+
+export async function generateJwtKeys(): Promise<void> {
+  const { privateKey, publicKey } = genKeys();
 
   await diskLogic.writeJwtPrivateKeyFile(privateKey);
   await diskLogic.writeJwtPublicKeyFile(publicKey);

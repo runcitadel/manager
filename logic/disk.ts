@@ -3,7 +3,7 @@ import type {
   debugStatus,
   updateStatus,
   versionFile,
-} from "https://esm.sh/@runcitadel/utils@0.9.2";
+} from "../utils/types.ts";
 import constants from "../utils/const.ts";
 import { runCommand } from "../services/karen.ts";
 import type { App } from "./apps.ts";
@@ -212,7 +212,7 @@ export function readDebugStatusFile(): Promise<debugStatus> {
 export async function writeStatusFile(
   statusFile: string,
   contents: string,
-): Promise<void | NodeJS.ErrnoException> {
+): Promise<void> {
   if (!/^[\w-]+$/.test(statusFile)) {
     throw new Error("Invalid status file characters");
   }
@@ -292,7 +292,7 @@ export async function readJsonStatusFile<FileType = unknown>(
 export async function writeJsonStatusFile(
   resource: string,
   data: unknown,
-): Promise<void | NodeJS.ErrnoException> {
+): Promise<void> {
   const statusFilePath = join(
     constants.STATUS_DIR,
     `${resource}-status.json`,

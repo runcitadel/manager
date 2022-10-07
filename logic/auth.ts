@@ -1,6 +1,6 @@
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.0/mod.ts";
-import { CipherSeed } from "https://esm.sh/aezeed@0.0.5";
-import iocane from "https://esm.sh/iocane@5.1.1/web";
+import aezeed from "npm:aezeed";
+import iocane from "npm:iocane";
 import { encode } from "https://deno.land/std@0.153.0/encoding/base32.ts";
 import * as lightningApiService from "../services/lightning-api.ts";
 import { generateJwt } from "../utils/jwt.ts";
@@ -89,7 +89,8 @@ export async function changePassword(
 
     // Update system password
     await setSystemPassword(newPassword);
-  } catch {
+  } catch (err) {
+    console.error(err);
     throw new Error("Unable to change password");
   }
 }
@@ -114,14 +115,14 @@ export async function isRegistered(): Promise<boolean> {
 // determinstically deriving further entropy for any other service.
 export async function deriveSeed(
   plainTextPassword: string,
-): Promise<void | NodeJS.ErrnoException> {
+): Promise<void> {
   if (diskLogic.seedFileExists()) {
     return;
   }
 
   const userSeed = await seed(plainTextPassword);
   const mnemonic = userSeed.join(" ");
-  const { entropy } = CipherSeed.fromMnemonic(mnemonic);
+  const { entropy } = aezeed.CipherSeed.fromMnemonic(mnemonic);
   const generatedSeed = hmac("sha256", entropy, "umbrel-seed").hex();
   return diskLogic.writeSeedFile(generatedSeed);
 }
@@ -135,7 +136,7 @@ export function deriveCitadelSeed(
     return;
   }
 
-  const { entropy } = CipherSeed.fromMnemonic(mnemonic.join(" "));
+  const { entropy } = aezeed.CipherSeed.fromMnemonic(mnemonic.join(" "));
   const generatedSeed = hmac("sha256", entropy, "umbrel-seed").hex();
   return diskLogic.writeSeedFile(generatedSeed);
 }

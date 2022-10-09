@@ -3,7 +3,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN deno cache --unstable --check app.ts
+RUN deno cache --unstable app.ts
 
 RUN apt update \
   && apt install -y curl \

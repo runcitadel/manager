@@ -95,12 +95,12 @@ router.post("/reboot", auth.jwt, async (ctx, next) => {
   await next();
 });
 
-router.get("/storage", async (ctx, next) => {
+router.get("/storage", auth.jwt, async (ctx, next) => {
   ctx.response.body = await diskLogic.readJsonStatusFile("storage");
   await next();
 });
 
-router.get("/memory", async (ctx, next) => {
+router.get("/memory", auth.jwt, async (ctx, next) => {
   ctx.response.body = await diskLogic.readJsonStatusFile("memory");
   await next();
 });

@@ -78,7 +78,7 @@ router.post("/update", auth.jwt, async (ctx, next) => {
   await next();
 });
 
-router.get("/backup-status", async (ctx, next) => {
+router.get("/backup-status", auth.jwt, async (ctx, next) => {
   const backup = await systemLogic.getBackupStatus();
 
   ctx.response.body = backup;

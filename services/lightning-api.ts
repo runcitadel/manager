@@ -11,9 +11,3 @@ export async function initializeWallet(
   middleware.jwt = jwt;
   await middleware.lightning.wallet.init(seed);
 }
-
-export async function getImplementation(jwt: string) {
-  middleware.jwt = jwt;
-  const version = await middleware.lightning.info.version();
-  return version.implementation.toLowerCase();
-}

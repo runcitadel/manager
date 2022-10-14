@@ -15,7 +15,7 @@ router.get("/", auth.jwt, async (ctx, next) => {
   const query = {
     installed: ctx.request.url.searchParams.get("installed") === "1",
   };
-  const apps = await appsLogic.get(query, jwt as string);
+  const apps = await appsLogic.get(query);
   ctx.response.body = { apps, jwt };
   await next();
 });

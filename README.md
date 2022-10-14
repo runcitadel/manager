@@ -1,4 +1,4 @@
-# manager
+# Citadel manager
 
 [![codecov](https://codecov.io/github/runcitadel/manager/branch/main/graph/badge.svg?token=9WJ88AUTB9)](https://codecov.io/github/runcitadel/manager)
 
@@ -62,7 +62,7 @@ If you're looking for a bigger challenge, before opening a pull request please [
 
 ## 🙏 Acknowledgements
 
-Manager is inspired by and built upon the work done by [Umbrel](https://github.com/getumbrel) on its open-source [Node Manager API](https://github.com/getumbrel/umbrel-manager).
+Manager is inspired by and built upon the work done by [Umbrel](https://github.com/getumbrel) on its open-source [Manager API](https://github.com/getumbrel/umbrel-manager).
 
 The original code we forked is licensed under
 

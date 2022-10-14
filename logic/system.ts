@@ -329,7 +329,7 @@ export async function getDebugResult(): Promise<debugStatus> {
 
 export async function requestShutdown(): Promise<systemStatus> {
   try {
-    await diskLogic.shutdown();
+    await runCommand("trigger shutdown");
     return {
       type: "shutdown",
       status: "requested",
@@ -341,7 +341,7 @@ export async function requestShutdown(): Promise<systemStatus> {
 
 export async function requestReboot(): Promise<systemStatus> {
   try {
-    await diskLogic.reboot();
+    await runCommand("trigger reboot");
     return {
       type: "reboot",
       status: "requested",

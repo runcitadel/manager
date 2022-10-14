@@ -5,7 +5,6 @@ import type {
   versionFile,
 } from "../utils/types.ts";
 import constants from "../utils/const.ts";
-import { runCommand } from "../services/karen.ts";
 import type { App } from "./apps.ts";
 import {
   ensureFile,
@@ -31,7 +30,7 @@ export type UserFile = {
   settings?: UserSettings;
 };
 
-function getRandomString(s: number) {
+export function getRandomString(s: number) {
   if (s % 2 == 1) {
     throw new Deno.errors.InvalidData("Only even sizes are supported");
   }
@@ -195,14 +194,6 @@ export function writeJwtPrivateKeyFile(data: string): Promise<void> {
 
 export function writeJwtPublicKeyFile(data: string): Promise<void> {
   return safeWriteTextFile(constants.JWT_PUBLIC_KEY_FILE, data);
-}
-
-export function shutdown(): Promise<void> {
-  return runCommand("trigger shutdown");
-}
-
-export function reboot(): Promise<void> {
-  return runCommand("trigger reboot");
 }
 
 export function readDebugStatusFile(): Promise<debugStatus> {

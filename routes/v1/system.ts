@@ -105,7 +105,7 @@ router.post("/reboot", auth.jwt, async (ctx, next) => {
   await next();
 });
 
-router.get("/storage", async (ctx, next) => {
+router.get("/storage", auth.jwt, async (ctx, next) => {
   const update = await diskLogic.readJsonStatusFile("storage");
 
   // deno-lint-ignore ban-types
@@ -113,7 +113,7 @@ router.get("/storage", async (ctx, next) => {
   await next();
 });
 
-router.get("/memory", async (ctx, next) => {
+router.get("/memory", auth.jwt, async (ctx, next) => {
   const update = await diskLogic.readJsonStatusFile("memory");
 
   // deno-lint-ignore ban-types
@@ -121,7 +121,7 @@ router.get("/memory", async (ctx, next) => {
   await next();
 });
 
-router.get("/temperature", async (ctx, next) => {
+router.get("/temperature", auth.jwt, async (ctx, next) => {
   const update = await diskLogic.readJsonStatusFile("temperature");
 
   // deno-lint-ignore ban-types
@@ -129,7 +129,7 @@ router.get("/temperature", async (ctx, next) => {
   await next();
 });
 
-router.get("/uptime", async (ctx, next) => {
+router.get("/uptime", auth.jwt, async (ctx, next) => {
   const update = await diskLogic.readJsonStatusFile("uptime");
 
   // deno-lint-ignore ban-types
@@ -137,7 +137,7 @@ router.get("/uptime", async (ctx, next) => {
   await next();
 });
 
-router.get("/is-citadel-os", async (ctx, next) => {
+router.get("/is-citadel-os", auth.jwt, async (ctx, next) => {
   ctx.response.body = constants.IS_CITADEL_OS;
   await next();
 });

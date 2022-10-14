@@ -25,7 +25,7 @@ export type MetadataV4 = {
   /**
    * The app id, only set in output
    */
-  id?: string;
+  id: string;
   /**
    * For "virtual" apps, the service the app implements
    */

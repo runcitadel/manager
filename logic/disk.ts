@@ -5,7 +5,7 @@ import type {
   versionFile,
 } from "../utils/types.ts";
 import constants from "../utils/const.ts";
-import type { App } from "./apps.ts";
+import type { MetadataV4 } from "./apps.ts";
 import {
   ensureFile,
   exists,
@@ -242,9 +242,9 @@ export function deleteStatusFile(statusFile: string): Promise<void> {
   return Deno.remove(statusFilePath);
 }
 
-export function readAppRegistry(): Promise<App[]> {
+export function readAppRegistry(): Promise<MetadataV4[]> {
   const appRegistryFile = join(constants.APPS_DIR, "registry.json");
-  return readJsonFile<App[]>(appRegistryFile);
+  return readJsonFile<MetadataV4[]>(appRegistryFile);
 }
 
 export function readVirtualApps(): Promise<Record<string, string[]>> {

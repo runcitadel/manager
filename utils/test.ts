@@ -4,7 +4,7 @@ import {
   superoak,
   Test,
 } from "https://deno.land/x/superoak@4.7.0/mod.ts";
-import { join } from "https://deno.land/std@0.153.0/path/mod.ts";
+import { join } from "https://deno.land/std@0.159.0/path/mod.ts";
 import constants from "../utils/const.ts";
 import {
   writeJwtPrivateKeyFile,
@@ -12,7 +12,7 @@ import {
   writeStatusFile,
   writeUserFile,
 } from "../logic/disk.ts";
-import { assertEquals } from "https://deno.land/std@0.153.0/testing/asserts.ts";
+import { assertEquals } from "https://deno.land/std@0.159.0/testing/asserts.ts";
 import { generateJwt } from "./jwt.ts";
 
 export function routerToSuperDeno(router: Router): Promise<SuperDeno> {

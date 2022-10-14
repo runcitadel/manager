@@ -5,7 +5,7 @@ import {
   test,
 } from "../../utils/test.ts";
 import account from "./account.ts";
-import { assert } from "https://deno.land/std@0.153.0/testing/asserts.ts";
+import { assert } from "https://deno.land/std@0.159.0/testing/asserts.ts";
 
 setEnv();
 

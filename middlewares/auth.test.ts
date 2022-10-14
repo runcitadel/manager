@@ -1,9 +1,9 @@
 import { cleanup, setEnv } from "../utils/test.ts";
 import constants from "../utils/const.ts";
-import { assert } from "https://deno.land/std@0.153.0/testing/asserts.ts";
+import { assert } from "https://deno.land/std@0.159.0/testing/asserts.ts";
 import {
     exists,
-  } from "https://deno.land/std@0.153.0/fs/mod.ts";
+  } from "https://deno.land/std@0.159.0/fs/mod.ts";
 setEnv();
 
 Deno.test("JWT pubkeys are automatically generated", async () => {

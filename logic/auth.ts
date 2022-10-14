@@ -1,7 +1,7 @@
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.0/mod.ts";
 import aezeed from "npm:aezeed";
 import iocane from "https://esm.sh/iocane@5.1.1/web/index";
-import { encode } from "https://deno.land/std@0.153.0/encoding/base32.ts";
+import { encode } from "https://deno.land/std@0.159.0/encoding/base32.ts";
 import * as lightningApiService from "../services/lightning-api.ts";
 import { generateJwt } from "../utils/jwt.ts";
 import { runCommand } from "../services/karen.ts";

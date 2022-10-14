@@ -10,8 +10,8 @@ import {
   ensureFile,
   exists,
   existsSync,
-} from "https://deno.land/std@0.153.0/fs/mod.ts";
-import { join } from "https://deno.land/std@0.153.0/path/mod.ts";
+} from "https://deno.land/std@0.159.0/fs/mod.ts";
+import { join } from "https://deno.land/std@0.159.0/path/mod.ts";
 type UserSettings = {
   twoFactorAuth: boolean;
   twoFactorKey: string | false;

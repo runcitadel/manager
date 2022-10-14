@@ -1,6 +1,6 @@
-import * as semver from "https://deno.land/std@0.153.0/semver/mod.ts";
+import * as semver from "https://deno.land/std@0.159.0/semver/mod.ts";
 import { encode as encodeLnurl } from "https://deno.land/x/lndconnect@v1.0.1/mod.ts";
-import { encode as encodeHex } from "https://deno.land/std@0.153.0/encoding/hex.ts";
+import { encode as encodeHex } from "https://deno.land/std@0.159.0/encoding/hex.ts";
 
 import type {
   backupStatus,

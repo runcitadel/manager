@@ -1,5 +1,5 @@
 import ping from "./ping.ts";
-import { assert } from "https://deno.land/std@0.153.0/testing/asserts.ts";
+import { assert } from "https://deno.land/std@0.159.0/testing/asserts.ts";
 import { routerToSuperDeno, setEnv } from "../utils/test.ts";
 
 setEnv();

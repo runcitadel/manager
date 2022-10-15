@@ -65,7 +65,7 @@ export async function getElectrumConnectionDetails(): Promise<
     if (!electrum) {
       throw new Error("No electrum implementation found!");
     }
-    const addressUnformatted = await diskLogic.readHiddenService(`app-${electrum}`);
+    const addressUnformatted = await diskLogic.readHiddenService(`app-${electrum}-service`);
     const address = addressUnformatted.trim();
     const port = constants.ELECTRUM_PORT;
     const connectionString = `${address}:${port}:t`;

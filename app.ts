@@ -9,7 +9,6 @@ import logger from "https://deno.land/x/oak_logger@1.0.0/mod.ts";
 
 import ping from "./routes/ping.ts";
 import account from "./routes/v1/account.ts";
-import system from "./routes/v1/system.ts";
 import system2 from "./routes/v2/system.ts";
 import external from "./routes/v1/external.ts";
 import apps from "./routes/v1/apps.ts";
@@ -45,9 +44,6 @@ app.use(external.routes());
 app.use(external.allowedMethods());
 app.use(apps.routes());
 app.use(apps.allowedMethods());
-// Unused right now
-app.use(system.routes());
-app.use(system.allowedMethods());
 
 // V2 API for Citadel SDK
 app.use(system2.routes());

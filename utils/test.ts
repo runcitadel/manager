@@ -14,6 +14,7 @@ import {
 } from "../logic/disk.ts";
 import { assertEquals } from "https://deno.land/std@0.159.0/testing/asserts.ts";
 import { generateJwt } from "./jwt.ts";
+import { readAll } from "https://deno.land/std@0.152.0/streams/conversion.ts";
 
 export function routerToSuperDeno(router: Router): Promise<SuperDeno> {
   const app = new Application();
@@ -138,7 +139,7 @@ export class FakeKaren {
   #isRunning = false;
   #connection: Deno.Listener | null = null;
   #connections: Deno.Conn[] = [];
-  async start(): Promise<void> {
+  async start(): Promise<AsyncGenerator<string, string, void>> {
     if (this.#isRunning) {
       throw new Error("Karen is already running");
     }
@@ -148,31 +149,48 @@ export class FakeKaren {
       transport: "unix",
     });
     // This will never end until stop() is called, so do not await it
-    this.#keepListening();
+    return this.#keepListening();
   }
 
-  async #keepListening() {
+  async *#keepListening(): AsyncGenerator<string, string, void> {
     while (this.#isRunning) {
       try {
         const connection = (await this.#connection?.accept()) as Deno.Conn;
-        if (connection) this.#connections.push(connection);
+        if (connection) {
+          this.#connections.push(connection);
+          const bytesReceived = await readAll(connection);
+          yield new TextDecoder().decode(bytesReceived);
+        }
       } catch (err) {
         if (this.#isRunning) {
           throw err;
         }
       }
     }
+    return "";
   }
 
   async stop() {
     this.#isRunning = false;
     for (const connection of this.#connections) {
-      connection.close();
+      try {
+        connection.close();
+      } catch (e: unknown) {
+        console.error(e);
+      }
     }
     this.#connections = [];
     await this.#connection?.close();
     await Deno.remove(constants.KAREN_SOCKET);
   }
+}
+
+export async function logKarenStuff(generator: AsyncGenerator<string, string, void>): Promise<string[]> {
+  const result = [];
+  for await (const msg of generator) {
+    result.push(msg);
+  }
+  return result;
 }
 
 export function test(
@@ -185,6 +203,7 @@ export function test(
     expectedData,
     body,
     includeJwt,
+    expectedKarenMessages,
   }: {
     router: Router;
     method: "GET" | "POST" | "PUT";
@@ -193,12 +212,14 @@ export function test(
     expectedData?: unknown;
     body?: unknown;
     includeJwt?: boolean;
+    expectedKarenMessages?: string[];
   }
 ) {
   return Deno.test(name, async () => {
     setEnv();
     const karen = new FakeKaren();
-    await karen.start();
+    const karenMessagesGenerator = await karen.start();
+    const karenMessagesPromise = logKarenStuff(karenMessagesGenerator);
     const app = await routerToSuperDeno(router);
     let req: Test;
     if (method == "GET") {
@@ -218,8 +239,10 @@ export function test(
     }
     const response = await req.send(body ? JSON.stringify(body) : undefined);
     await karen.stop();
+    const karenMessages = await karenMessagesPromise;
     await cleanup();
     assertEquals(response.status, expectedStatus);
     if (expectedData) assertEquals(JSON.parse(response.text), expectedData);
+    if (expectedKarenMessages) assertEquals(karenMessages, expectedKarenMessages);
   });
 }

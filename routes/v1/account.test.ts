@@ -4,12 +4,14 @@ import {
   setEnv,
   test,
 } from "../../utils/test.ts";
-import account from "./account.ts";
 import { assert } from "https://deno.land/std@0.159.0/testing/asserts.ts";
 
 setEnv();
 
+const account = (await import("./account.ts")).default;
+
 const karen = new FakeKaren();
+
 Deno.test("Login with valid password works", async () => {
   await karen.start();
   const app = await routerToSuperDeno(account);
@@ -100,6 +102,7 @@ test("Password change works with valid password", {
   expectedStatus: 200,
   expectedData: { percent: 100 },
   body: { password: "password1234", newPassword: "password12345" },
+  expectedKarenMessages: ["trigger change-password"]
 });
 
 test("Password change progress always returns 100% for backwards compat", {

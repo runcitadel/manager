@@ -12,11 +12,6 @@ import constants from "../utils/const.ts";
 import { runCommand } from "../services/karen.ts";
 import * as appsLogic from "./apps.ts";
 import * as diskLogic from "./disk.ts";
-import { Tor } from "https://deno.land/x/tor@0.0.3.10/mod.ts";
-
-const tor = new Tor(
-  `${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`,
-);
 
 export type ConnectionDetails = {
   address: string;
@@ -141,9 +136,9 @@ export async function getAvailableUpdate(): Promise<VersionFile | string> {
         `https://raw.githubusercontent.com/${constants.GITHUB_REPO}/${tag}/info.json`;
 
       // eslint-disable-next-line no-await-in-loop
-      const latestVersionInfo = await tor.get(infoUrl);
+      const response = await fetch(infoUrl);
       // eslint-disable-next-line no-await-in-loop
-      data = JSON.parse(latestVersionInfo) as VersionFile;
+      data = await response.json() as VersionFile;
 
       const latestVersion = data.version;
       const requiresVersionRange = data.requires;

@@ -94,6 +94,9 @@ export async function get(
       }
 
       app.permissions = app.permissions || [];
+      if (app.implements && await getImplementation(app.implements) !== app.id) {
+        app.compatible = false;
+      }
     }),
   );
 

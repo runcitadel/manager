@@ -8,7 +8,7 @@ import { oakCors } from "https://deno.land/x/cors@v1.2.2/mod.ts";
 import logger from "https://deno.land/x/oak_logger@1.0.0/mod.ts";
 
 import ping from "./routes/ping.ts";
-import account from "./routes/v2/account.ts";
+import account from "./routes/v1/account.ts";
 import system from "./routes/v2/system.ts";
 import external from "./routes/v1/external.ts";
 import apps from "./routes/v1/apps.ts";

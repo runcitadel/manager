@@ -146,7 +146,7 @@ export async function getAvailableUpdate(): Promise<VersionFile | string> {
         client: tor,
       });
       // eslint-disable-next-line no-await-in-loop
-      data = JSON.parse(await latestVersionInfo.json()) as VersionFile;
+      data = await latestVersionInfo.json() as VersionFile;
 
       const latestVersion = data.version;
       const requiresVersionRange = data.requires;

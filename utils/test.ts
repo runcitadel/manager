@@ -1,5 +1,6 @@
 import { Application, Router } from "https://deno.land/x/oak@v11.1.0/mod.ts";
 import {
+  IResponse,
   SuperDeno,
   superoak,
   Test,
@@ -185,7 +186,7 @@ export class FakeKaren {
   }
 }
 
-export async function logKarenStuff(generator: AsyncGenerator<string, string, void>): Promise<string[]> {
+export async function getKarenMessages(generator: AsyncGenerator<string, string, void>): Promise<string[]> {
   const result = [];
   for await (const msg of generator) {
     result.push(msg);
@@ -193,7 +194,74 @@ export async function logKarenStuff(generator: AsyncGenerator<string, string, vo
   return result;
 }
 
-export function test(
+
+export function runTest<PreTestResult = unknown, TestResult = unknown>(
+  name: string,
+  preTest: (() => PreTestResult) | null | undefined,
+  test: (fromPreTest: Awaited<PreTestResult>) => TestResult,
+  postTest: (args: {
+    result: Awaited<TestResult>,
+    karenMessages: string[],
+  }) => unknown,
+) {
+  return Deno.test(name, async () => {
+    const preTestResult = await ((preTest ? preTest() : undefined) as PreTestResult);
+    setEnv();
+    const karen = new FakeKaren();
+    const karenMessagesGenerator = await karen.start();
+    const karenMessagesPromise = getKarenMessages(karenMessagesGenerator);
+    const testResult = await test(preTestResult);
+    await karen.stop();
+    const karenMessages = await karenMessagesPromise;
+    await cleanup();
+    await postTest({ result: testResult, karenMessages });
+  });
+}
+
+export function testRequest(
+  name: string,
+  {
+    router,
+    method,
+    url,
+    body,
+    includeJwt,
+  }: {
+    router: Router;
+    method: "GET" | "POST" | "PUT";
+    url: string;
+    body?: unknown;
+    includeJwt?: boolean;
+  },
+  preTest: (() => unknown) | null | undefined,
+  validateReply: (args: {
+    result: IResponse,
+    karenMessages: string[],
+  }) => unknown,
+) {
+  return runTest(name, preTest, async () => {
+    const app = await routerToSuperDeno(router);
+    let req: Test;
+    if (method == "GET") {
+      req = app.get(url);
+      if (body) throw new TypeError("Get can't have a body!");
+    } else if (method == "POST") {
+      req = app.post(url);
+    } else if (method === "PUT") {
+      req = app.put(url);
+    } else {
+      throw new Error("Method not supported by the wrapper function");
+    }
+    if (includeJwt)
+      req.set("Authorization", `Bearer ${await generateJwt("admin")}`);
+    if (body) {
+      req.set("Content-Type", "application/json");
+    }
+    return await req.send(body ? JSON.stringify(body) : undefined);
+  }, validateReply)
+}
+
+export function testAndValidateRequest(
   name: string,
   {
     router,
@@ -215,32 +283,7 @@ export function test(
     expectedKarenMessages?: string[];
   }
 ) {
-  return Deno.test(name, async () => {
-    setEnv();
-    const karen = new FakeKaren();
-    const karenMessagesGenerator = await karen.start();
-    const karenMessagesPromise = logKarenStuff(karenMessagesGenerator);
-    const app = await routerToSuperDeno(router);
-    let req: Test;
-    if (method == "GET") {
-      req = app.get(url);
-      if (body) throw new TypeError("Get can't have a body!");
-    } else if (method == "POST") {
-      req = app.post(url);
-    } else if (method === "PUT") {
-      req = app.put(url);
-    } else {
-      throw new Error("Method not supported by the wrapper function");
-    }
-    if (includeJwt)
-      req.set("Authorization", `Bearer ${await generateJwt("admin")}`);
-    if (body) {
-      req.set("Content-Type", "application/json");
-    }
-    const response = await req.send(body ? JSON.stringify(body) : undefined);
-    await karen.stop();
-    const karenMessages = await karenMessagesPromise;
-    await cleanup();
+  return testRequest(name, { router, method, url, body, includeJwt }, null, ({ result: response, karenMessages }) => {
     assertEquals(response.status, expectedStatus);
     if (expectedData) assertEquals(JSON.parse(response.text), expectedData);
     if (expectedKarenMessages) assertEquals(karenMessages, expectedKarenMessages);

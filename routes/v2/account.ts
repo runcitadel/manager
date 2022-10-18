@@ -27,17 +27,14 @@ router.post(
       ctx.throw(Status.BadRequest, "Received invalid data.");
     }
 
-    // Use password from the body by default. Basic auth has issues handling special characters.
     const currentPassword: string = body.password as string;
     const newPassword: string = body.newPassword as string;
 
     try {
-      typeHelper.isString(currentPassword, ctx);
-      //typeHelper.isMinPasswordLength(currentPassword, ctx);
       typeHelper.isString(newPassword, ctx);
       typeHelper.isMinPasswordLength(newPassword, ctx);
     } catch {
-      ctx.throw(Status.BadRequest, "Invalid password supplied.");
+      ctx.throw(Status.BadRequest, "New password does not meet the security requirements.");
       return;
     }
     if (newPassword === currentPassword) {

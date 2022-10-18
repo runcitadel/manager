@@ -43,19 +43,6 @@ type UserSettings = {
   twoFactorKey: string | false;
 };
 
-type UserFile = {
-  /** The user's name */
-  name: string;
-  /** The users password, hashed by bcrypt */
-  password?: string;
-  /** The users mnemoic LND seed */
-  seed?: string;
-  /** The list of IDs of installed apps */
-  installedApps?: string[];
-  /** User settings */
-  settings?: UserSettings;
-};
-
 // Sets system password
 const setSystemPassword = async (password: string) => {
   await diskLogic.writeStatusFile("password", password);
@@ -157,7 +144,7 @@ export async function login(plainTextPassword: string): Promise<string> {
   }
 }
 
-export async function getInfo(): Promise<UserFile> {
+export async function getInfo(): Promise<diskLogic.UserFile> {
   try {
     const user = await diskLogic.readUserFile();
 
@@ -267,12 +254,12 @@ export async function refresh(): Promise<string> {
 
 export async function enableTotp(key?: string): Promise<string> {
   const newKey = key ? key : generateRandomKey();
-  await diskLogic.enable2fa(newKey);
+  await diskLogic.enableTotp(newKey);
   return newKey;
 }
 
-export async function setupTotp(key?: string): Promise<string> {
+export async function generateTotpKey(key?: string): Promise<string> {
   const newKey = key ? key : generateRandomKey();
-  await diskLogic.setup2fa(newKey);
+  await diskLogic.saveTotpKey(newKey);
   return newKey;
 }

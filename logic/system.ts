@@ -12,11 +12,12 @@ import constants from "../utils/const.ts";
 import { runCommand } from "../services/karen.ts";
 import * as appsLogic from "./apps.ts";
 import * as diskLogic from "./disk.ts";
-import { Tor } from "https://deno.land/x/tor@0.0.3.10/mod.ts";
 
-const tor = new Tor(
-  `${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`,
-);
+const tor = Deno.createHttpClient({
+  proxy: {
+    url: `socks5h://${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`,
+  },
+});
 
 export type ConnectionDetails = {
   address: string;
@@ -141,9 +142,11 @@ export async function getAvailableUpdate(): Promise<VersionFile | string> {
         `https://raw.githubusercontent.com/${constants.GITHUB_REPO}/${tag}/info.json`;
 
       // eslint-disable-next-line no-await-in-loop
-      const latestVersionInfo = await tor.get(infoUrl);
+      const latestVersionInfo = await fetch(infoUrl, {
+        client: tor,
+      });
       // eslint-disable-next-line no-await-in-loop
-      data = JSON.parse(latestVersionInfo) as VersionFile;
+      data = JSON.parse(await latestVersionInfo.json()) as VersionFile;
 
       const latestVersion = data.version;
       const requiresVersionRange = data.requires;
@@ -162,9 +165,8 @@ export async function getAvailableUpdate(): Promise<VersionFile | string> {
       );
 
       // Calculate the minimum required version
-      const minimumVersionRequired = `v${
-        semver.minVersion(requiresVersionRange)!.raw
-      }`;
+      const minimumVersionRequired = `v${semver.minVersion(requiresVersionRange)!.raw
+        }`;
 
       // If the minimum required version is what we just checked for, exit
       // This usually happens when an OTA update breaking release x.y.z is made

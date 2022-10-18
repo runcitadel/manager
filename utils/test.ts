@@ -210,8 +210,12 @@ export function runTest<PreTestResult = unknown, TestResult = unknown>(
     const karen = new FakeKaren();
     const karenMessagesGenerator = await karen.start();
     const karenMessagesPromise = getKarenMessages(karenMessagesGenerator);
-    const testResult = await test(preTestResult);
-    await karen.stop();
+    let testResult: Awaited<TestResult>;
+    try {
+      testResult = await test(preTestResult);
+    } finally {
+      await karen.stop();
+    }
     const karenMessages = await karenMessagesPromise;
     await cleanup();
     await postTest({ result: testResult, karenMessages });

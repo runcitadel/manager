@@ -83,10 +83,12 @@ export async function saveTotpKey(key: string): Promise<void> {
   await writeUserFile(userFile);
 }
 
-export async function enableTotp(key: string): Promise<void> {
+export async function enableTotp(): Promise<void> {
   const userFile = await readUserFile();
   userFile.secondFactors = ["totp"];
-  userFile.totpSecret = key;
+  if (!userFile.totpSecret) {
+    throw new Error("No TOTP secret stored!");
+  }
   await writeUserFile(userFile);
 }
 

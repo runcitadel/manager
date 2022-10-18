@@ -1,10 +1,13 @@
 import {
   FakeKaren,
   routerToSuperDeno,
+  runTest,
   setEnv,
   testAndValidateRequest,
 } from "../../utils/test.ts";
 import { assert } from "https://deno.land/std@0.159.0/testing/asserts.ts";
+import { generateJwt } from "../../utils/jwt.ts";
+import { TOTP } from "https://deno.land/x/god_crypto@v1.4.10/otp.ts";
 
 setEnv();
 
@@ -117,4 +120,37 @@ testAndValidateRequest("getinfo returns valid data", {
   expectedStatus: 200,
   expectedData: { name: "Tester with password password123", installedApps: ["example-app"] },
   includeJwt: true,
+});
+
+runTest("TOTP can be enabled", null, async () => {
+  let app = await routerToSuperDeno(account);
+  const request = app.get("/v1/account/totp/setup");
+  request.set("Authorization", `Bearer ${await generateJwt("admin")}`);
+  const setupResult = await request.send();
+  const key = setupResult.body?.key;
+  assert(setupResult.ok, "Response should return status 200");
+  assert(
+    typeof key === "string",
+    "Key should be present and a string"
+  );
+  const totp = new TOTP(key);
+  const currentToken = totp.generate();
+  app = await routerToSuperDeno(account);
+  const enableRequest = app.post("/v1/account/totp/enable");
+  enableRequest.set("Authorization", `Bearer ${await generateJwt("admin")}`);
+  enableRequest.set("Content-Type", "application/json");
+  const enableResult = await enableRequest.send(JSON.stringify({
+    authenticatorToken: currentToken,
+  }));
+  assert(enableResult.ok, "Response should return status 200");
+  assert(
+    enableResult.body?.success,
+    "It should return success: true"
+  );
+  app = await routerToSuperDeno(account);
+  const statusRequest = app.get("/v1/account/totp/status");
+  return await statusRequest.send();
+}, ({ result }) => {
+  assert(result.ok, "Getting the enabled status of TOTP should succeed");
+  assert(result.body?.totpEnabled, "TOTP should be set to enabled");
 });

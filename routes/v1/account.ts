@@ -138,8 +138,7 @@ router.post("/refresh", auth.jwt, async (ctx, next) => {
 router.get("/totp/setup", auth.jwt, async (ctx, next) => {
   const info = await authLogic.getInfo();
   const key = await authLogic.generateTotpKey(info.totpSecret);
-  const encodedKey = authLogic.encodeKey(key);
-  ctx.response.body = { key: encodedKey.toString() };
+  ctx.response.body = { key };
   await next();
 });
 
@@ -158,7 +157,7 @@ router.post("/totp/enable", auth.jwt, async (ctx) => {
     const isValid = totp.verify(body.authenticatorToken as string);
 
     if (isValid) {
-      await authLogic.enableTotp(key);
+      await authLogic.enableTotp();
       ctx.response.body = { success: true };
     } else {
       ctx.throw(Status.Unauthorized, "TOTP token invalid");

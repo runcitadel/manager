@@ -2,7 +2,6 @@ import { config } from "https://deno.land/x/dotenv@v3.2.0/mod.ts";
 import {
   Application,
   FlashServer,
-  hasFlash,
 } from "https://deno.land/x/oak@v11.1.0/mod.ts";
 import { oakCors } from "https://deno.land/x/cors@v1.2.2/mod.ts";
 import logger from "https://deno.land/x/oak_logger@1.0.0/mod.ts";
@@ -14,9 +13,8 @@ import external from "./routes/v1/external.ts";
 import apps from "./routes/v1/apps.ts";
 
 config();
-const appOptions = hasFlash() ? { serverConstructor: FlashServer } : undefined;
 
-const app = new Application(appOptions);
+const app = new Application();
 
 app.use(logger.logger);
 app.use(logger.responseTime);

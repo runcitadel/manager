@@ -12,10 +12,6 @@ import {
   existsSync,
 } from "https://deno.land/std@0.159.0/fs/mod.ts";
 import { join } from "https://deno.land/std@0.159.0/path/mod.ts";
-type UserSettings = {
-  twoFactorAuth: boolean;
-  twoFactorKey: string | false;
-};
 
 export type UserFile = {
   /** The user's name */
@@ -26,8 +22,12 @@ export type UserFile = {
   seed?: string;
   /** The list of IDs of installed apps */
   installedApps?: string[];
-  /** User settings */
-  settings?: UserSettings;
+  /** Auth type */
+  secondFactors?: ("totp" | "webauthn")[];
+  totpSecret?: string;
+  webauthnSecret?: string;
+  // /** User settings */
+  // settings?: UserSettings;
 };
 
 export function getRandomString(s: number) {
@@ -71,39 +71,35 @@ export function deleteUserFile(): Promise<void> {
   return Deno.remove(constants.USER_FILE);
 }
 
-export async function disable2fa(): Promise<void> {
+export async function disableTotp(): Promise<void> {
   const userFile = await readUserFile();
-  userFile.settings = {
-    ...userFile.settings,
-    twoFactorAuth: false,
-    twoFactorKey: false,
-  };
+  userFile.secondFactors = [];
   await writeUserFile(userFile);
 }
 
-export async function setup2fa(key: string): Promise<void> {
+export async function saveTotpKey(key: string): Promise<void> {
   const userFile = await readUserFile();
-  userFile.settings = {
-    ...userFile.settings,
-    twoFactorAuth: false,
-    twoFactorKey: key,
-  };
+  userFile.totpSecret = key;
   await writeUserFile(userFile);
 }
 
-export async function enable2fa(key: string): Promise<void> {
+export async function enableTotp(): Promise<void> {
   const userFile = await readUserFile();
-  userFile.settings = {
-    ...userFile.settings,
-    twoFactorAuth: true,
-    twoFactorKey: key,
-  };
+  userFile.secondFactors = ["totp"];
+  if (!userFile.totpSecret) {
+    throw new Error("No TOTP secret stored!");
+  }
   await writeUserFile(userFile);
 }
 
-export async function is2faEnabled(): Promise<boolean> {
+export async function isTotpEnabled(): Promise<boolean> {
   const userFile = await readUserFile();
-  return userFile.settings?.twoFactorAuth ?? false;
+  return userFile.secondFactors?.includes("totp") || false;
+}
+
+export async function isWebauthnEnabled(): Promise<boolean> {
+  const userFile = await readUserFile();
+  return userFile.secondFactors?.includes("webauthn") || false;
 }
 
 export async function readUserFile(): Promise<UserFile> {

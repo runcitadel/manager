@@ -1,5 +1,6 @@
 import { Application, Router } from "https://deno.land/x/oak@v11.1.0/mod.ts";
 import {
+  IResponse,
   SuperDeno,
   superoak,
   Test,
@@ -14,6 +15,7 @@ import {
 } from "../logic/disk.ts";
 import { assertEquals } from "https://deno.land/std@0.159.0/testing/asserts.ts";
 import { generateJwt } from "./jwt.ts";
+import { readAll } from "https://deno.land/std@0.152.0/streams/conversion.ts";
 
 export function routerToSuperDeno(router: Router): Promise<SuperDeno> {
   const app = new Application();
@@ -138,7 +140,7 @@ export class FakeKaren {
   #isRunning = false;
   #connection: Deno.Listener | null = null;
   #connections: Deno.Conn[] = [];
-  async start(): Promise<void> {
+  async start(): Promise<AsyncGenerator<string, string, void>> {
     if (this.#isRunning) {
       throw new Error("Karen is already running");
     }
@@ -148,26 +150,35 @@ export class FakeKaren {
       transport: "unix",
     });
     // This will never end until stop() is called, so do not await it
-    this.#keepListening();
+    return this.#keepListening();
   }
 
-  async #keepListening() {
+  async *#keepListening(): AsyncGenerator<string, string, void> {
     while (this.#isRunning) {
       try {
         const connection = (await this.#connection?.accept()) as Deno.Conn;
-        if (connection) this.#connections.push(connection);
+        if (connection) {
+          this.#connections.push(connection);
+          const bytesReceived = await readAll(connection);
+          yield new TextDecoder().decode(bytesReceived);
+        }
       } catch (err) {
         if (this.#isRunning) {
           throw err;
         }
       }
     }
+    return "";
   }
 
   async stop() {
     this.#isRunning = false;
     for (const connection of this.#connections) {
-      connection.close();
+      try {
+        connection.close();
+      } catch (e: unknown) {
+        console.error(e);
+      }
     }
     this.#connections = [];
     await this.#connection?.close();
@@ -175,30 +186,64 @@ export class FakeKaren {
   }
 }
 
-export function test(
+export async function getKarenMessages(generator: AsyncGenerator<string, string, void>): Promise<string[]> {
+  const result = [];
+  for await (const msg of generator) {
+    result.push(msg);
+  }
+  return result;
+}
+
+
+export function runTest<PreTestResult = unknown, TestResult = unknown>(
+  name: string,
+  preTest: (() => PreTestResult) | null | undefined,
+  test: (fromPreTest: Awaited<PreTestResult>) => TestResult,
+  postTest: (args: {
+    result: Awaited<TestResult>,
+    karenMessages: string[],
+  }) => unknown,
+) {
+  return Deno.test(name, async () => {
+    const preTestResult = await ((preTest ? preTest() : undefined) as PreTestResult);
+    setEnv();
+    const karen = new FakeKaren();
+    const karenMessagesGenerator = await karen.start();
+    const karenMessagesPromise = getKarenMessages(karenMessagesGenerator);
+    let testResult: Awaited<TestResult>;
+    try {
+      testResult = await test(preTestResult);
+    } finally {
+      await karen.stop();
+    }
+    const karenMessages = await karenMessagesPromise;
+    await cleanup();
+    await postTest({ result: testResult, karenMessages });
+  });
+}
+
+export function testRequest(
   name: string,
   {
     router,
     method,
     url,
-    expectedStatus,
-    expectedData,
     body,
     includeJwt,
   }: {
     router: Router;
     method: "GET" | "POST" | "PUT";
     url: string;
-    expectedStatus: number;
-    expectedData?: unknown;
     body?: unknown;
     includeJwt?: boolean;
-  }
+  },
+  preTest: (() => unknown) | null | undefined,
+  validateReply: (args: {
+    result: IResponse,
+    karenMessages: string[],
+  }) => unknown,
 ) {
-  return Deno.test(name, async () => {
-    setEnv();
-    const karen = new FakeKaren();
-    await karen.start();
+  return runTest(name, preTest, async () => {
     const app = await routerToSuperDeno(router);
     let req: Test;
     if (method == "GET") {
@@ -216,10 +261,35 @@ export function test(
     if (body) {
       req.set("Content-Type", "application/json");
     }
-    const response = await req.send(body ? JSON.stringify(body) : undefined);
-    await karen.stop();
-    await cleanup();
+    return await req.send(body ? JSON.stringify(body) : undefined);
+  }, validateReply)
+}
+
+export function testAndValidateRequest(
+  name: string,
+  {
+    router,
+    method,
+    url,
+    expectedStatus,
+    expectedData,
+    body,
+    includeJwt,
+    expectedKarenMessages,
+  }: {
+    router: Router;
+    method: "GET" | "POST" | "PUT";
+    url: string;
+    expectedStatus: number;
+    expectedData?: unknown;
+    body?: unknown;
+    includeJwt?: boolean;
+    expectedKarenMessages?: string[];
+  }
+) {
+  return testRequest(name, { router, method, url, body, includeJwt }, null, ({ result: response, karenMessages }) => {
     assertEquals(response.status, expectedStatus);
     if (expectedData) assertEquals(JSON.parse(response.text), expectedData);
+    if (expectedKarenMessages) assertEquals(karenMessages, expectedKarenMessages);
   });
 }

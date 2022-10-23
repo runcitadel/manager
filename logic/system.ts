@@ -136,9 +136,9 @@ export async function getAvailableUpdate(): Promise<VersionFile | string> {
         `https://raw.githubusercontent.com/${constants.GITHUB_REPO}/${tag}/info.json`;
 
       // eslint-disable-next-line no-await-in-loop
-      const response = await fetch(infoUrl);
+      const latestVersionInfo = await fetch(infoUrl);
       // eslint-disable-next-line no-await-in-loop
-      data = await response.json() as VersionFile;
+      data = await latestVersionInfo.json() as VersionFile;
 
       const latestVersion = data.version;
       const requiresVersionRange = data.requires;
@@ -157,9 +157,8 @@ export async function getAvailableUpdate(): Promise<VersionFile | string> {
       );
 
       // Calculate the minimum required version
-      const minimumVersionRequired = `v${
-        semver.minVersion(requiresVersionRange)!.raw
-      }`;
+      const minimumVersionRequired = `v${semver.minVersion(requiresVersionRange)!.raw
+        }`;
 
       // If the minimum required version is what we just checked for, exit
       // This usually happens when an OTA update breaking release x.y.z is made

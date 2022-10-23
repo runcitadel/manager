@@ -1,12 +1,12 @@
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.0/mod.ts";
 import aezeed from "npm:aezeed";
 import iocane from "https://esm.sh/iocane@5.1.1/web/index";
-import { encode } from "https://deno.land/std@0.159.0/encoding/base32.ts";
 import * as lightningApiService from "../services/lightning-api.ts";
 import { generateJwt } from "../utils/jwt.ts";
 import { runCommand } from "../services/karen.ts";
 import * as diskLogic from "./disk.ts";
 import { hmac } from "https://deno.land/x/god_crypto@v1.4.10/hmac.ts";
+import { TOTP } from "https://deno.land/x/god_crypto@v1.4.10/otp.ts";
 
 function getRandomString(s: number) {
   if (s % 2 == 1) {
@@ -25,10 +25,6 @@ export function generateRandomKey(): string {
   return getRandomString(10);
 }
 
-export function encodeKey(key: string) {
-  return encode(new TextEncoder().encode(key));
-}
-
 export type UserInfo = {
   username?: string;
   name: string;
@@ -36,24 +32,6 @@ export type UserInfo = {
   plainTextPassword?: string;
   seed?: string;
   installedApps?: string[];
-};
-
-type UserSettings = {
-  twoFactorAuth: boolean;
-  twoFactorKey: string | false;
-};
-
-type UserFile = {
-  /** The user's name */
-  name: string;
-  /** The users password, hashed by bcrypt */
-  password?: string;
-  /** The users mnemoic LND seed */
-  seed?: string;
-  /** The list of IDs of installed apps */
-  installedApps?: string[];
-  /** User settings */
-  settings?: UserSettings;
 };
 
 // Sets system password
@@ -157,7 +135,7 @@ export async function login(plainTextPassword: string): Promise<string> {
   }
 }
 
-export async function getInfo(): Promise<UserFile> {
+export async function getInfo(): Promise<diskLogic.UserFile> {
   try {
     const user = await diskLogic.readUserFile();
 
@@ -265,14 +243,12 @@ export async function refresh(): Promise<string> {
   }
 }
 
-export async function enableTotp(key?: string): Promise<string> {
-  const newKey = key ? key : generateRandomKey();
-  await diskLogic.enable2fa(newKey);
-  return newKey;
+export function enableTotp(): Promise<void> {
+  return diskLogic.enableTotp();
 }
 
-export async function setupTotp(key?: string): Promise<string> {
-  const newKey = key ? key : generateRandomKey();
-  await diskLogic.setup2fa(newKey);
+export async function generateTotpKey(key?: string): Promise<string> {
+  const newKey = key ? key : TOTP.generateSecret(16);
+  await diskLogic.saveTotpKey(newKey);
   return newKey;
 }

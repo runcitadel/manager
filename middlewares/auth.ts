@@ -79,9 +79,9 @@ export const basic: Middleware = async (
   }
 
   // Check 2FA token when enabled
-  if (userInfo.settings?.twoFactorAuth) {
+  if (await diskLogic.isTotpEnabled()) {
     isString(body?.totpToken, ctx);
-    const totp = new TOTP(userInfo.settings.twoFactorKey as string);
+    const totp = new TOTP((await diskLogic.readUserFile()).totpSecret as string);
     const isValid = totp.verify(body?.totpToken as string);
 
     if (!isValid) {

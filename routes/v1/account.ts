@@ -27,17 +27,14 @@ router.post(
       ctx.throw(Status.BadRequest, "Received invalid data.");
     }
 
-    // Use password from the body by default. Basic auth has issues handling special characters.
     const currentPassword: string = body.password as string;
     const newPassword: string = body.newPassword as string;
 
     try {
-      typeHelper.isString(currentPassword, ctx);
-      //typeHelper.isMinPasswordLength(currentPassword, ctx);
       typeHelper.isString(newPassword, ctx);
       typeHelper.isMinPasswordLength(newPassword, ctx);
     } catch {
-      ctx.throw(Status.BadRequest, "Invalid password supplied.");
+      ctx.throw(Status.BadRequest, "New password does not meet the security requirements.");
       return;
     }
     if (newPassword === currentPassword) {
@@ -140,12 +137,8 @@ router.post("/refresh", auth.jwt, async (ctx, next) => {
 
 router.get("/totp/setup", auth.jwt, async (ctx, next) => {
   const info = await authLogic.getInfo();
-  const twoFactorKey = info.settings?.twoFactorKey
-    ? info.settings?.twoFactorKey
-    : undefined;
-  const key = await authLogic.setupTotp(twoFactorKey);
-  const encodedKey = authLogic.encodeKey(key);
-  ctx.response.body = { key: encodedKey.toString() };
+  const key = await authLogic.generateTotpKey(info.totpSecret);
+  ctx.response.body = { key };
   await next();
 });
 
@@ -155,16 +148,16 @@ router.post("/totp/enable", auth.jwt, async (ctx) => {
   }).value;
   const info = await authLogic.getInfo();
 
-  if (info.settings?.twoFactorKey && body.authenticatorToken) {
+  if (info.totpSecret && body.authenticatorToken) {
     // TOTP should be already set up
-    const key = info.settings?.twoFactorKey;
+    const key = info.totpSecret;
 
     typeHelper.isString(body.authenticatorToken, ctx);
     const totp = new TOTP(key as string);
     const isValid = totp.verify(body.authenticatorToken as string);
 
     if (isValid) {
-      await authLogic.enableTotp(key);
+      await authLogic.enableTotp();
       ctx.response.body = { success: true };
     } else {
       ctx.throw(Status.Unauthorized, "TOTP token invalid");
@@ -180,16 +173,16 @@ router.post("/totp/disable", auth.jwt, async (ctx, next) => {
     type: "json",
   }).value;
 
-  if (info.settings?.twoFactorKey && body.authenticatorToken) {
+  if (await diskLogic.isTotpEnabled() && body.authenticatorToken) {
     // TOTP should be already set up
-    const key = info.settings?.twoFactorKey;
+    const key = info.totpSecret;
 
     typeHelper.isString(body.authenticatorToken, ctx);
     const totp = new TOTP(key as string);
     const isValid = totp.verify(body.authenticatorToken as string);
 
     if (isValid) {
-      await diskLogic.disable2fa();
+      await diskLogic.disableTotp();
       ctx.response.body = { success: true };
     } else {
       ctx.throw(Status.Unauthorized, "TOTP token invalid");
@@ -203,9 +196,7 @@ router.post("/totp/disable", auth.jwt, async (ctx, next) => {
 
 // Returns the current status of TOTP.
 router.get("/totp/status", async (ctx, next) => {
-  const userFile = await diskLogic.readUserFile();
-  const status = userFile.settings?.twoFactorAuth ?? false;
-  ctx.response.body = { totpEnabled: status };
+  ctx.response.body = { totpEnabled: await diskLogic.isTotpEnabled() };
   await next();
 });
 

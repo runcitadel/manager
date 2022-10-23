@@ -1,7 +1,6 @@
 import { config } from "https://deno.land/x/dotenv@v3.2.0/mod.ts";
 import {
   Application,
-  FlashServer,
 } from "https://deno.land/x/oak@v11.1.0/mod.ts";
 import { oakCors } from "https://deno.land/x/cors@v1.2.2/mod.ts";
 import logger from "https://deno.land/x/oak_logger@1.0.0/mod.ts";
@@ -36,14 +35,14 @@ app.use(ping.routes());
 app.use(ping.allowedMethods());
 
 // V1 API
+app.use(account.routes());
+app.use(account.allowedMethods());
 app.use(external.routes());
 app.use(external.allowedMethods());
 app.use(apps.routes());
 app.use(apps.allowedMethods());
 
 // V2 API for Citadel SDK
-app.use(account.routes());
-app.use(account.allowedMethods());
 app.use(system.routes());
 app.use(system.allowedMethods());
 

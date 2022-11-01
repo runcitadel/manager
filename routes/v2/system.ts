@@ -160,4 +160,12 @@ router.get("/", auth.jwt, async (ctx, next) => {
   await next();
 });
 
+router.get("/i2p", auth.jwt, async (ctx, next) => {
+  ctx.response.body = {
+    username: constants.I2P_USERNAME,
+    password: constants.I2P_PASSWORD,
+  };
+  await next();
+});
+
 export default router;

@@ -71,4 +71,10 @@ export default {
   get IS_CITADEL_OS() {
     return Deno.env.get("IS_CITADEL_OS") === "true";
   },
+  get I2P_USERNAME() {
+    return Deno.env.get("I2P_USERNAME");
+  },
+  get I2P_PASSWORD() {
+    return Deno.env.get("I2P_PASSWORD");
+  },
 };
